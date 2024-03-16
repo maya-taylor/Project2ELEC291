@@ -1,4 +1,4 @@
-##ELEC 291/292 Project 2: Robot Car 
+ELEC 291/292 Project 2: Robot Car 
 
 ## Notes: 
 ###   * Organize files into folders
