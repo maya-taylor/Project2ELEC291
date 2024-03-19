@@ -17,7 +17,7 @@ PORTN=$(shell type COMPORT.inc)
 # For smaller hex file remove '-u _printf_float' below
 main.elf : $(OBJS)
 	$(LD) $(OBJS) $(LIBSPEC) -Os -u _printf_float -nostdlib -lnosys -lgcc -T ../Common/LDscripts/stm32l051xx.ld --cref -Map main.map -o main.elf
-	$(LD) $(OBJS) $(LIBSPEC) -Os -nostdlib -lnosys -lgcc -T ../Common/LDscripts/stm32l051xx.ld --cref -Map main.map -o main.elf
+#	$(LD) $(OBJS) $(LIBSPEC) -Os -nostdlib -lnosys -lgcc -T ../Common/LDscripts/stm32l051xx.ld --cref -Map main.map -o main.elf
 	arm-none-eabi-objcopy -O ihex main.elf main.hex
 	@echo Success!
 
