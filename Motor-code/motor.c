@@ -17,35 +17,12 @@
 //#define LEFT_MOTOR [pinout]
 //#define RIGHT_MOTOR [pinout]
 
-//we'll probably have to use turning speed (rpm?) as parameter
-//then use conditional statements in the main function to determine speeds n stuff???
-void stop (void) {
-   
-}
+/* UNTESTED - GL
+ * Function: adjusts motor 
+ * return: float - scaling factor
+*/
 
-void forward (void) {
-    
-}
-
-void reverse(void) {
-
-}
-
-void turnLeft () {
-
-}
-void turnRight () {
-
-}
-
-
-
-/* UNTESTED
- * return PWM which is the control signal to a motor
- * 
- * returns: void
- */
-/* Control Scheme based on joystic position
+/* Control Scheme based on joystick position
 * Diagram roughly to scale
 * 
 *       Left Wheel Power            Right wheel Power
@@ -53,7 +30,7 @@ void turnRight () {
 *        \     |     /                \     |     /
 *          \   |   /                    \   |   /
 *            \ | /                        \ | /
-*  -1  ------------------1        1 ------------------ -1
+*  -1  ------------------ 1       1 ------------------ -1
 *            / | \                        / | \
 *          /   |   \                    /   |   \
 *        /     |     \                /     |     \     
@@ -62,43 +39,67 @@ void turnRight () {
 * negative values = CCW motion
 * scale duty cycle based on power
 */
-void spinLeftMotor(float refAngle) {
+float LeftMotorAdjust_angle(float refAngle) {
     // https://components101.com/motors/servo-motor-basics-pinout-datasheet
     // PWM signal probably adjusts motor speed
     // direction of motor spin based on voltages applied to MOSFETs in the Hbridge
-    float angle = refAngle * 180 / PI;
+    float angle, PWM_adjust;
+    
+    angle = refAngle * 180.0 / PI;
     float PWM_adjust = 1;
 
     if (angle > 0 & angle <= 90) { 
         PWM_adjust = 1;
     }
     else if (angle > 90 & angle <= 180) {
-        PWM_adjust = -cos(2*refAngle);
+        PWM_adjust = -cos(2*refAngle); // this is just math
     }
     else if (angle <= 0 & angle > -90) {
-        PWM_adjust = cos(2*refAngle);
+        PWM_adjust = cos(2*refAngle); // this is just math
     }
     else {
         PWM_adjust = -1;
     }
+
+    return PWM_adjust;
 }
 
-void spinRightMotor(float refAngle) {
+float RightMotorAdjust_angle(float refAngle) {
     float angle = refAngle * 180 / PI;
     float PWM_adjust = 1;
 
     if (angle > 0 & angle <= 90) { 
-        PWM_adjust = -cos(2*refAngle);
+        PWM_adjust = -cos(2*refAngle); // this is just math
     }
     else if (angle > 90 & angle <= 180) {
-        PWM_adjust = 1
+        PWM_adjust = 1;
     }
     else if (angle <= 0 & angle > -90) {
         PWM_adjust = -1;
     }
     else {
-        PWM_adjust = cos(2*refAngle);
+        PWM_adjust = cos(2*refAngle); // this is just math
     }
+    
+    return PWM_adjust;
+}
+
+/*
+* Function: Turns on and off transistors based on power adjustment value
+* Param: PWM - 1 if positive, 0 if negative
+*/
+int LeftMotorDirection (float PWM) {
+    if (PWM >= 0)
+        return 1; /* ---- Keep/change after testing*/
+    else
+        return 0;    
+}
+
+int RightMotorDirection (float PWM) {
+    if (PWM >= 0)
+        return 1; /* ---- Keep/change after testing*/
+    else
+        return 0;    
 }
 
 int main (void) {
@@ -154,4 +155,6 @@ int main (void) {
     //  - apply scaling factor on the PWM duty cycle based on how far forward the joystick is being pushed
     // angle controls relative speed of each one
     // cases
+
+    
 }

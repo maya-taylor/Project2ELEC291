@@ -1,6 +1,10 @@
+// This code should read freq from oscillating circuit (pin 12) and transmit using jdy40
+// Not currently working bc floats won't print - tried to fix by uncommenting line in makefile but didn't work
+
 #include "../Common/Include/stm32l051xx.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "../Common/Include/serial.h"
 #include "UART2.h"
 
@@ -28,6 +32,7 @@
 //             ----------
 
 #define F_CPU 32000000L
+
 // Uses SysTick to delay <us> micro-seconds. 
 void Delay_us(unsigned char us)
 {
@@ -75,20 +80,79 @@ void SendATCommand (char * s)
 	printf("Response: %s", buff);
 }
 
+#define PIN_PERIOD (GPIOA->IDR&BIT6)
+
+// GetPeriod() seems to work fine for frequencies between 300Hz and 600kHz - EDIT THIS FUNC IF FREQ IS OUTSIDE RANGE
+// 'n' is used to measure the time of 'n' periods; this increases accuracy.
+long int GetPeriod (int n)
+{
+	int i;
+	unsigned int saved_TCNT1a, saved_TCNT1b;
+	
+	SysTick->LOAD = 0xffffff;  // 24-bit counter set to check for signal present
+	SysTick->VAL = 0xffffff; // load the SysTick counter
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	while (PIN_PERIOD!=0) // Wait for square wave to be 0
+	{
+		if(SysTick->CTRL & BIT16) return 0;
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+
+	SysTick->LOAD = 0xffffff;  // 24-bit counter set to check for signal present
+	SysTick->VAL = 0xffffff; // load the SysTick counter
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	while (PIN_PERIOD==0) // Wait for square wave to be 1
+	{
+		if(SysTick->CTRL & BIT16) return 0;
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+	
+	SysTick->LOAD = 0xffffff;  // 24-bit counter reset
+	SysTick->VAL = 0xffffff; // load the SysTick counter to initial value
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	for(i=0; i<n; i++) // Measure the time of 'n' periods
+	{
+		while (PIN_PERIOD!=0) // Wait for square wave to be 0
+		{
+			if(SysTick->CTRL & BIT16) return 0;
+		}
+		while (PIN_PERIOD==0) // Wait for square wave to be 1
+		{
+			if(SysTick->CTRL & BIT16) return 0;
+		}
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+
+	return 0xffffff-SysTick->VAL;
+}
+
 int main(void)
 {
 	char buff[80];
     int cnt=0;
+    long int count;
+	float T, f;
+	float tempf;
+	int tempi;
+	
+	RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A
+	
+	GPIOA->MODER &= ~(BIT12 | BIT13); // Make pin PA6 input
+	// Activate pull up for pin PA6:
+	GPIOA->PUPDR |= BIT12; 
+	GPIOA->PUPDR &= ~(BIT13); 
 
 	Hardware_Init();
 	initUART2(9600);
 	
 	waitms(1000); // Give putty some time to start.
 	printf("\r\nJDY-40 test\r\n");
+	printf("Period measurement using the Systick free running counter.\r\n"
+	      "Connect signal to PA6 (pin 12).\r\n");
 
 	// We should select an unique device ID.  The device ID can be a hex
 	// number from 0x0000 to 0xFFFF.  In this case is set to 0xABBA
-	SendATCommand("AT+DVIDABBA\r\n");  
+	SendATCommand("AT+DVIDBEEF\r\n");  
 
 	// To check configuration
 	SendATCommand("AT+VER\r\n");
@@ -104,18 +168,41 @@ int main(void)
 	cnt=0;
 	while(1)
 	{
-		if((GPIOA->IDR&BIT8)==0)
+		
+		count=GetPeriod(100);
+		
+		
+		//if((GPIOA->IDR&BIT8)==0)
+		//{
+		//	sprintf(buff, "JDY40 test %d\r\n", cnt++);
+		//	eputs2(buff);
+		//	printf(".\r\n");
+		//	waitms(200);
+		//}
+		
+		if(count>0)
 		{
-			sprintf(buff, "JDY40 test %d\n", cnt++);
+			tempi = count*5;
+			tempf = 3.0;
+			T= 1.0*count/(F_CPU*100.0); // Since we have the time of 100 periods, we need to divide by 100
+			f=1.0/T;
+			printf("tempi = %d, tempf = %.2f, T=%.2f sec, f=%.2f Hz, count=%d \r\n", tempi, tempf, T, f, count);
+			sprintf(buff,"f=%.2f Hz\r\n", f);
 			eputs2(buff);
-			eputc('.');
-			waitms(200);
+			
 		}
-		if(ReceivedBytes2()>0) // Something has arrived
-		{
-			egets2(buff, sizeof(buff)-1);
-			printf("RX: %s", buff);
-		}
+		//else
+		//{
+		//	printf("NO SIGNAL \r\n");
+		//	eputs2("NO SIGNAL \r\n");
+		//}
+		//fflush(stdout); // GCC printf wants a \n in order to send something.  If \n is not present, we fflush(stdout)
+		//if(ReceivedBytes2()>0) // Something has arrived
+		//{
+		//	egets2(buff, sizeof(buff)-1);
+		//	printf("RX: %s", buff);
+		//}
+		waitms(500);
 	}
 
 }
