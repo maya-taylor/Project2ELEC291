@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by C51
 ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
-; This file was generated Mon Mar 18 02:19:53 2024
+; This file was generated Tue Mar 19 21:39:19 2024
 ;--------------------------------------------------------
 $name JoystickTestCode
 $optc51 --model-small
@@ -1751,10 +1751,10 @@ __str_4:
 	db 'Code.c'
 	db 0x00
 __str_5:
-	db 'Mar 18 2024'
+	db 'Mar 19 2024'
 	db 0x00
 __str_6:
-	db '02:19:53'
+	db '21:39:18'
 	db 0x00
 __str_7:
 	db 'xvolts: %7.5f yvolts: %7.5f'

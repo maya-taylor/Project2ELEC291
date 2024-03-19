@@ -1,3 +1,7 @@
+// Takes voltage input from joystick and maps it approximately from -50 to 50, with 0 at the center
+// IRL, center is more like -1,-1 based on current hardcoded center values
+// Ask AL if there are qs about Map
+
 // ADC.c:  Shows how to use the 14-bit ADC.  This program
 // measures the voltage from some pins of the EFM8LB1 using the ADC.
 //
@@ -287,64 +291,69 @@ void LCDprint(char * string, unsigned char line, bit clear)
 	for(j=0; string[j]!=0; j++) WriteData(string[j]);// Write the message
 	if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
 }
-/* 
- * Function: Gets the xy position based on the joystick; prints information on one line to the serial port
- * Parameter: volts -- voltage readings for x and y
- * Parameter: pos -- contain the computed x and y positions 
- * Returns: void 
- * 
- * Author: HY
- * Date: 18/03/2024
- */
-void GetPosition(float volts[2], float pos[2])
-{
 
-    float zero_x, zero_y, max_x, max_y;
+float map2(float x, float in_min, float in_max, float out_min, float out_max)
+{
+	float tempa, tempb, tempc, tempd, tempe, tempf;
+	
+	tempa = (x - in_min);
+	printf("%f\r\n", tempa);
+	tempb = (out_max - out_min);
+	printf("%f\r\n", tempb);
+	tempc = tempa * tempb;
+	printf("%f\r\n", tempc);
+	tempd = (in_max - in_min);
+	printf("%f\r\n", tempd);
+	tempe = (float)tempc/(float)tempd;
+	printf("%f\r\n", tempe);
+	tempf = tempe+ out_min;
+	printf("%f\r\n", tempf);
+	
+
+	
+	//float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  return tempf;
+}
+
+void GetPosition2 (float volts[2], float pos[2]) {
+	//float zero_x, zero_y, max_x, max_y;
     float mov_x = 0.0;
     float mov_y = 0.0;
-    char buff_x[17];
-    char buff_y[17];
+	// approx values
+	float mid_x = 2.35759;
+	float mid_y = 2.42696;
 
-    //initial computations to help us find the zero
-    max_x = MAX_VOLTS * SQRT_2; //multiply by sqrt(2) to undo the rms 
-    max_y = MAX_VOLTS * SQRT_2;
+    xdata char buff_x[17];
+    xdata char buff_y[17];
 
-    zero_x = max_x / 2.0;
-    zero_y = max_y / 2.0;
+	float vx = volts[0];
+	float vy = volts[1];
 
-    if(volts[0] > zero_x) {
-        mov_x = (volts[0] - zero_x);
-        //printf("xgt zero %f\r\n", mov_x); //printf statements for debugging -- ignore unless needed
-    }
-    else if(volts[0] < zero_x) {
-        mov_x = -(zero_x - volts[0]);
-        //printf("xlt zero %f\r\n", mov_x);
+	if (pos[0] < mid_x) {
+		pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
+		printf("neg x\r\n");
 
-    }
-    else {
-        mov_x = 0.0;
-        //printf("xeq zero %f\r\n", mov_x);
+	}
+	else {
+		pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
+		printf("pos x\r\n");
+	}
 
-    }
+	if (pos[1] < mid_y) {
+		pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
+		printf("neg y\r\n");
+	}
+	else {
+		pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
+		printf("pos y\r\n");
+	}
+	// pos[0] = map2(vx, 0.0, 3.3, -50.0, 50.0);
+	// pos[1] = map2(vy, 0.0, 3.3, -50.0, 50.0);
 
-    if(volts[1] > zero_y) {
-        mov_y = (volts[1] - zero_y);
-        //printf("ygt zero %f\r\n", mov_y);
-    }
-    else if(volts[1] < zero_y) {
-        mov_y = -(zero_y - volts[1]);
-        //printf("ylt zero %f\r\n", mov_y);
-    }
-    else {
-        mov_y = 0.0;
-        //printf("yeq zero %f\r\n", mov_y);
-    }
+	mov_x = pos[0];
+	mov_y = pos[1];
 
-    //utilize that arrays are pointers so we don't have to use two different functions
-    pos[0] = mov_x;
-    pos[1] = mov_y;
-    //print to LCD
-    sprintf(buff_x, "%.4f", mov_x);
+	sprintf(buff_x, "%.4f", mov_x);
     LCDprint(buff_x, 1, 1);
     sprintf(buff_y, "%.4f", mov_y);
     LCDprint(buff_y, 2, 1);
@@ -352,6 +361,7 @@ void GetPosition(float volts[2], float pos[2])
     //print to serial
     printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
 }
+
 
 void main (void)
 {
@@ -406,15 +416,15 @@ void main (void)
 	while(1)
 	{		
 
-        v[0] = Volts_at_Pin(XPOS_PIN) * SQRT_2;
-	    v[1] = Volts_at_Pin(YPOS_PIN) * SQRT_2;
+        v[0] = Volts_at_Pin(XPOS_PIN) ;
+	    v[1] = Volts_at_Pin(YPOS_PIN) ;
 
        
 		// printf("xvolts: %7.5f yvolts: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN));
 		// ADC 
 		//printf("xadc: %7.5f yadc: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN))
         
-        GetPosition(v, xy_pos);
+        GetPosition2(v, xy_pos);
        
 		printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
         

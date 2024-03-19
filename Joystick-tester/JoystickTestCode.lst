@@ -1,7 +1,7 @@
 0000              1   ;--------------------------------------------------------
 0000              2   ; File Created by C51
 0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
-0000              4   ; This file was generated Mon Mar 18 02:19:53 2024
+0000              4   ; This file was generated Tue Mar 19 21:39:19 2024
 0000              5   ;--------------------------------------------------------
                   5   $name JoystickTestCode
                   6   $optc51 --model-small
@@ -610,7 +610,7 @@
 001E            610   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:71: while ((CLKSEL & 0x80) == 0);
 001E            611   L002001?:
 001E E5A9       612            mov     a,_CLKSEL
-0020 30E7A0     613            jnb     acc.7,L002001?
+0020 30E7A8     613            jnb     acc.7,L002001?
 0023            614   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:72: CLKSEL = 0x03;
 0023 75A903     615            mov     _CLKSEL,#0x03
 0026            616   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:73: CLKSEL = 0x03;
@@ -618,7 +618,7 @@
 0029            618   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:74: while ((CLKSEL & 0x80) == 0);
 0029            619   L002004?:
 0029 E5A9       620            mov     a,_CLKSEL
-002B 30E720     621            jnb     acc.7,L002004?
+002B 30E728     621            jnb     acc.7,L002004?
 002E            622   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:79: P0MDOUT |= 0x10; // Enable UART0 TX as push-pull output
 002E 43A410     623            orl     _P0MDOUT,#0x10
 0031            624   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:80: XBR0     = 0x01; // Enable UART0 on P0.4(TX) and P0.5(RX)                     
@@ -704,7 +704,7 @@
 0086            704   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:152: while (!(TMR3CN0 & 0x80));  // Wait for overflow
 0086            705   L004001?:
 0086 E591       706            mov     a,_TMR3CN0
-0088 30E720     707            jnb     acc.7,L004001?
+0088 30E728     707            jnb     acc.7,L004001?
 008B            708   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:153: TMR3CN0 &= ~(0x80);         // Clear overflow indicator
 008B 53917F     709            anl     _TMR3CN0,#0x7F
 008E            710   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:150: for (i = 0; i < us; i++)       // Count <us> overflows
@@ -741,7 +741,7 @@
 00A4            741   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:163: for (k=0; k<4; k++) Timer3us(250);
 00A4 7E00       742            mov     r6,#0x00
 00A6            743   L005001?:
-00A6 BE0460     744            cjne    r6,#0x04,L005018?
+00A6 BE0468     744            cjne    r6,#0x04,L005018?
 00A9            745   L005018?:
 00A9 5000       746            jnc     L005007?
 00AB 7582FA     747            mov     dpl,#0xFA
@@ -761,7 +761,7 @@
 00C8            761   L005007?:
 00C8            762   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:162: for(j=0; j<ms; j++)
 00C8 0C         763            inc     r4
-00C9 BC00A0     764            cjne    r4,#0x00,L005005?
+00C9 BC00A8     764            cjne    r4,#0x00,L005005?
 00CC 0D         765            inc     r5
 00CD 8000       766            sjmp    L005005?
 00CF            767   L005009?:
@@ -780,26 +780,26 @@
 00D0            780   _InitPinADC:
 00D0 AA82       781            mov     r2,dpl
 00D2            782   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:172: mask=1<<pinno;
-00D2 8580F0     783            mov     b,_InitPinADC_PARM_2
+00D2 8588F0     783            mov     b,_InitPinADC_PARM_2
 00D5 05F0       784            inc     b
 00D7 7401       785            mov     a,#0x01
 00D9 8000       786            sjmp    L006013?
 00DB            787   L006011?:
 00DB 25E0       788            add     a,acc
 00DD            789   L006013?:
-00DD D5F060     790            djnz    b,L006011?
+00DD D5F068     790            djnz    b,L006011?
 00E0 FB         791            mov     r3,a
 00E1            792   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:174: SFRPAGE = 0x20;
 00E1 75A720     793            mov     _SFRPAGE,#0x20
 00E4            794   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:175: switch (portno)
-00E4 BA00A0     795            cjne    r2,#0x00,L006014?
+00E4 BA00A8     795            cjne    r2,#0x00,L006014?
 00E7 8000       796            sjmp    L006001?
 00E9            797   L006014?:
-00E9 BA0120     798            cjne    r2,#0x01,L006015?
+00E9 BA0128     798            cjne    r2,#0x01,L006015?
 00EC 8000       799            sjmp    L006002?
 00EE            800   L006015?:
 00EE            801   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:177: case 0:
-00EE BA02A0     802            cjne    r2,#0x02,L006005?
+00EE BA02A8     802            cjne    r2,#0x02,L006005?
 00F1 8000       803            sjmp    L006003?
 00F3            804   L006001?:
 00F3            805   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:178: P0MDIN &= (~mask); // Set pin as analog input
@@ -872,7 +872,7 @@
 0121 D2EC       872            setb    _ADBUSY
 0123            873   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:207: while (!ADINT); // Wait for conversion to complete
 0123            874   L008001?:
-0123 30ED20     875            jnb     _ADINT,L008001?
+0123 30ED28     875            jnb     _ADINT,L008001?
 0126            876   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:208: return (ADC0);
 0126 85BD82     877            mov     dpl,_ADC0
 0129 85BE83     878            mov     dph,(_ADC0 >> 8)
@@ -892,7 +892,7 @@
 012F D2EC       892            setb    _ADBUSY
 0131            893   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:215: while (!ADINT); // Wait for conversion to complete
 0131            894   L009001?:
-0131 30ED60     895            jnb     _ADINT,L009001?
+0131 30ED68     895            jnb     _ADINT,L009001?
 0134            896   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:216: return (ADC0);
 0134 85BD82     897            mov     dpl,_ADC0
 0137 85BE83     898            mov     dph,(_ADC0 >> 8)
@@ -1109,7 +1109,7 @@
 022B ACF0      1109            mov     r4,b
 022D           1110   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:285: WriteCommand(line==2?0xc0:0x80);
 022D 7402      1111            mov     a,#0x02
-022F B5C0A0    1112            cjne    a,_LCDprint_PARM_2,L016013?
+022F B5C8A8    1112            cjne    a,_LCDprint_PARM_2,L016013?
 0232 7DC0      1113            mov     r5,#0xC0
 0234 8000      1114            sjmp    L016014?
 0236           1115   L016013?:
@@ -1156,12 +1156,12 @@
 027C D003      1156            pop     ar3
 027E D002      1157            pop     ar2
 0280 0D        1158            inc     r5
-0281 BD0020    1159            cjne    r5,#0x00,L016003?
+0281 BD0028    1159            cjne    r5,#0x00,L016003?
 0284 0E        1160            inc     r6
 0285 8000      1161            sjmp    L016003?
 0287           1162   L016006?:
 0287           1163   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:288: if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
-0287 3020E0    1164            jnb     _LCDprint_PARM_3,L016011?
+0287 3028E8    1164            jnb     _LCDprint_PARM_3,L016011?
 028A 8D02      1165            mov     ar2,r5
 028C 8E03      1166            mov     ar3,r6
 028E           1167   L016007?:
@@ -1179,7 +1179,7 @@
 02A3 D003      1179            pop     ar3
 02A5 D002      1180            pop     ar2
 02A7 0A        1181            inc     r2
-02A8 BA0020    1182            cjne    r2,#0x00,L016007?
+02A8 BA0028    1182            cjne    r2,#0x00,L016007?
 02AB 0B        1183            inc     r3
 02AC 8000      1184            sjmp    L016007?
 02AE           1185   L016011?:
@@ -1205,20 +1205,20 @@
 02AF           1205   ;        -----------------------------------------
 02AF           1206   _GetPosition:
 02AF           1207   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:315: if(volts[0] > zero_x) {
-02AF 858210    1208            mov     _GetPosition_volts_1_74,dpl
-02B2 858311    1209            mov     (_GetPosition_volts_1_74 + 1),dph
-02B5 85F012    1210            mov     (_GetPosition_volts_1_74 + 2),b
+02AF 858218    1208            mov     _GetPosition_volts_1_74,dpl
+02B2 858319    1209            mov     (_GetPosition_volts_1_74 + 1),dph
+02B5 85F01A    1210            mov     (_GetPosition_volts_1_74 + 2),b
 02B8 120000    1211            lcall   __gptrget
-02BB F550      1212            mov     _GetPosition_sloc0_1_0,a
+02BB F558      1212            mov     _GetPosition_sloc0_1_0,a
 02BD A3        1213            inc     dptr
 02BE 120000    1214            lcall   __gptrget
-02C1 F551      1215            mov     (_GetPosition_sloc0_1_0 + 1),a
+02C1 F559      1215            mov     (_GetPosition_sloc0_1_0 + 1),a
 02C3 A3        1216            inc     dptr
 02C4 120000    1217            lcall   __gptrget
-02C7 F552      1218            mov     (_GetPosition_sloc0_1_0 + 2),a
+02C7 F55A      1218            mov     (_GetPosition_sloc0_1_0 + 2),a
 02C9 A3        1219            inc     dptr
 02CA 120000    1220            lcall   __gptrget
-02CD F553      1221            mov     (_GetPosition_sloc0_1_0 + 3),a
+02CD F55B      1221            mov     (_GetPosition_sloc0_1_0 + 3),a
 02CF 740A      1222            mov     a,#0x0A
 02D1 C0E0      1223            push    acc
 02D3 7458      1224            mov     a,#0x58
@@ -1227,10 +1227,10 @@
 02D9 C0E0      1227            push    acc
 02DB 7440      1228            mov     a,#0x40
 02DD C0E0      1229            push    acc
-02DF 855082    1230            mov     dpl,_GetPosition_sloc0_1_0
-02E2 855183    1231            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-02E5 8552F0    1232            mov     b,(_GetPosition_sloc0_1_0 + 2)
-02E8 E553      1233            mov     a,(_GetPosition_sloc0_1_0 + 3)
+02DF 855882    1230            mov     dpl,_GetPosition_sloc0_1_0
+02E2 855983    1231            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+02E5 855AF0    1232            mov     b,(_GetPosition_sloc0_1_0 + 2)
+02E8 E55B      1233            mov     a,(_GetPosition_sloc0_1_0 + 3)
 02EA 120000    1234            lcall   ___fsgt
 02ED A982      1235            mov     r1,dpl
 02EF E581      1236            mov     a,sp
@@ -1247,15 +1247,15 @@
 0302 C0E0      1247            push    acc
 0304 7440      1248            mov     a,#0x40
 0306 C0E0      1249            push    acc
-0308 855082    1250            mov     dpl,_GetPosition_sloc0_1_0
-030B 855183    1251            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-030E 8552F0    1252            mov     b,(_GetPosition_sloc0_1_0 + 2)
-0311 E553      1253            mov     a,(_GetPosition_sloc0_1_0 + 3)
+0308 855882    1250            mov     dpl,_GetPosition_sloc0_1_0
+030B 855983    1251            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+030E 855AF0    1252            mov     b,(_GetPosition_sloc0_1_0 + 2)
+0311 E55B      1253            mov     a,(_GetPosition_sloc0_1_0 + 3)
 0313 120000    1254            lcall   ___fssub
-0316 858260    1255            mov     _GetPosition_mov_x_1_75,dpl
-0319 858361    1256            mov     (_GetPosition_mov_x_1_75 + 1),dph
-031C 85F062    1257            mov     (_GetPosition_mov_x_1_75 + 2),b
-031F F563      1258            mov     (_GetPosition_mov_x_1_75 + 3),a
+0316 858268    1255            mov     _GetPosition_mov_x_1_75,dpl
+0319 858369    1256            mov     (_GetPosition_mov_x_1_75 + 1),dph
+031C 85F06A    1257            mov     (_GetPosition_mov_x_1_75 + 2),b
+031F F56B      1258            mov     (_GetPosition_mov_x_1_75 + 3),a
 0321 E581      1259            mov     a,sp
 0323 24FC      1260            add     a,#0xfc
 0325 F581      1261            mov     sp,a
@@ -1270,10 +1270,10 @@
 0333 C0E0      1270            push    acc
 0335 7440      1271            mov     a,#0x40
 0337 C0E0      1272            push    acc
-0339 855082    1273            mov     dpl,_GetPosition_sloc0_1_0
-033C 855183    1274            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-033F 8552F0    1275            mov     b,(_GetPosition_sloc0_1_0 + 2)
-0342 E553      1276            mov     a,(_GetPosition_sloc0_1_0 + 3)
+0339 855882    1273            mov     dpl,_GetPosition_sloc0_1_0
+033C 855983    1274            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+033F 855AF0    1275            mov     b,(_GetPosition_sloc0_1_0 + 2)
+0342 E55B      1276            mov     a,(_GetPosition_sloc0_1_0 + 3)
 0344 120000    1277            lcall   ___fslt
 0347 AD82      1278            mov     r5,dpl
 0349 E581      1279            mov     a,sp
@@ -1282,10 +1282,10 @@
 034F ED        1282            mov     a,r5
 0350 6000      1283            jz      L017002?
 0352           1284   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:320: mov_x = -(zero_x - volts[0]);
-0352 C050      1285            push    _GetPosition_sloc0_1_0
-0354 C051      1286            push    (_GetPosition_sloc0_1_0 + 1)
-0356 C052      1287            push    (_GetPosition_sloc0_1_0 + 2)
-0358 C053      1288            push    (_GetPosition_sloc0_1_0 + 3)
+0352 C058      1285            push    _GetPosition_sloc0_1_0
+0354 C059      1286            push    (_GetPosition_sloc0_1_0 + 1)
+0356 C05A      1287            push    (_GetPosition_sloc0_1_0 + 2)
+0358 C05B      1288            push    (_GetPosition_sloc0_1_0 + 3)
 035A 90580A    1289            mov     dptr,#0x580A
 035D 75F009    1290            mov     b,#0x09
 0360 7440      1291            mov     a,#0x40
@@ -1297,42 +1297,42 @@
 036C E581      1297            mov     a,sp
 036E 24FC      1298            add     a,#0xfc
 0370 F581      1299            mov     sp,a
-0372 8D60      1300            mov     _GetPosition_mov_x_1_75,r5
-0374 8E61      1301            mov     (_GetPosition_mov_x_1_75 + 1),r6
-0376 8F62      1302            mov     (_GetPosition_mov_x_1_75 + 2),r7
+0372 8D68      1300            mov     _GetPosition_mov_x_1_75,r5
+0374 8E69      1301            mov     (_GetPosition_mov_x_1_75 + 1),r6
+0376 8F6A      1302            mov     (_GetPosition_mov_x_1_75 + 2),r7
 0378 E8        1303            mov     a,r0
 0379 B2E7      1304            cpl     acc.7
-037B F563      1305            mov     (_GetPosition_mov_x_1_75 + 3),a
+037B F56B      1305            mov     (_GetPosition_mov_x_1_75 + 3),a
 037D 8000      1306            sjmp    L017006?
 037F           1307   L017002?:
 037F           1308   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:325: mov_x = 0.0;
-037F 756000    1309            mov     _GetPosition_mov_x_1_75,#0x00
-0382 756100    1310            mov     (_GetPosition_mov_x_1_75 + 1),#0x00
-0385 756200    1311            mov     (_GetPosition_mov_x_1_75 + 2),#0x00
-0388 756300    1312            mov     (_GetPosition_mov_x_1_75 + 3),#0x00
+037F 756800    1309            mov     _GetPosition_mov_x_1_75,#0x00
+0382 756900    1310            mov     (_GetPosition_mov_x_1_75 + 1),#0x00
+0385 756A00    1311            mov     (_GetPosition_mov_x_1_75 + 2),#0x00
+0388 756B00    1312            mov     (_GetPosition_mov_x_1_75 + 3),#0x00
 038B           1313   L017006?:
 038B           1314   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:330: if(volts[1] > zero_y) {
 038B 7404      1315            mov     a,#0x04
-038D 2510      1316            add     a,_GetPosition_volts_1_74
+038D 2518      1316            add     a,_GetPosition_volts_1_74
 038F FD        1317            mov     r5,a
 0390 E4        1318            clr     a
-0391 3511      1319            addc    a,(_GetPosition_volts_1_74 + 1)
+0391 3519      1319            addc    a,(_GetPosition_volts_1_74 + 1)
 0393 FE        1320            mov     r6,a
-0394 AF12      1321            mov     r7,(_GetPosition_volts_1_74 + 2)
+0394 AF1A      1321            mov     r7,(_GetPosition_volts_1_74 + 2)
 0396 8D82      1322            mov     dpl,r5
 0398 8E83      1323            mov     dph,r6
 039A 8FF0      1324            mov     b,r7
 039C 120000    1325            lcall   __gptrget
-039F F550      1326            mov     _GetPosition_sloc0_1_0,a
+039F F558      1326            mov     _GetPosition_sloc0_1_0,a
 03A1 A3        1327            inc     dptr
 03A2 120000    1328            lcall   __gptrget
-03A5 F551      1329            mov     (_GetPosition_sloc0_1_0 + 1),a
+03A5 F559      1329            mov     (_GetPosition_sloc0_1_0 + 1),a
 03A7 A3        1330            inc     dptr
 03A8 120000    1331            lcall   __gptrget
-03AB F552      1332            mov     (_GetPosition_sloc0_1_0 + 2),a
+03AB F55A      1332            mov     (_GetPosition_sloc0_1_0 + 2),a
 03AD A3        1333            inc     dptr
 03AE 120000    1334            lcall   __gptrget
-03B1 F553      1335            mov     (_GetPosition_sloc0_1_0 + 3),a
+03B1 F55B      1335            mov     (_GetPosition_sloc0_1_0 + 3),a
 03B3 740A      1336            mov     a,#0x0A
 03B5 C0E0      1337            push    acc
 03B7 7458      1338            mov     a,#0x58
@@ -1341,10 +1341,10 @@
 03BD C0E0      1341            push    acc
 03BF 7440      1342            mov     a,#0x40
 03C1 C0E0      1343            push    acc
-03C3 855082    1344            mov     dpl,_GetPosition_sloc0_1_0
-03C6 855183    1345            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-03C9 8552F0    1346            mov     b,(_GetPosition_sloc0_1_0 + 2)
-03CC E553      1347            mov     a,(_GetPosition_sloc0_1_0 + 3)
+03C3 855882    1344            mov     dpl,_GetPosition_sloc0_1_0
+03C6 855983    1345            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+03C9 855AF0    1346            mov     b,(_GetPosition_sloc0_1_0 + 2)
+03CC E55B      1347            mov     a,(_GetPosition_sloc0_1_0 + 3)
 03CE 120000    1348            lcall   ___fsgt
 03D1 AA82      1349            mov     r2,dpl
 03D3 E581      1350            mov     a,sp
@@ -1361,10 +1361,10 @@
 03E6 C0E0      1361            push    acc
 03E8 7440      1362            mov     a,#0x40
 03EA C0E0      1363            push    acc
-03EC 855082    1364            mov     dpl,_GetPosition_sloc0_1_0
-03EF 855183    1365            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-03F2 8552F0    1366            mov     b,(_GetPosition_sloc0_1_0 + 2)
-03F5 E553      1367            mov     a,(_GetPosition_sloc0_1_0 + 3)
+03EC 855882    1364            mov     dpl,_GetPosition_sloc0_1_0
+03EF 855983    1365            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+03F2 855AF0    1366            mov     b,(_GetPosition_sloc0_1_0 + 2)
+03F5 E55B      1367            mov     a,(_GetPosition_sloc0_1_0 + 3)
 03F7 120000    1368            lcall   ___fssub
 03FA AA82      1369            mov     r2,dpl
 03FC AB83      1370            mov     r3,dph
@@ -1384,10 +1384,10 @@
 0413 C0E0      1384            push    acc
 0415 7440      1385            mov     a,#0x40
 0417 C0E0      1386            push    acc
-0419 855082    1387            mov     dpl,_GetPosition_sloc0_1_0
-041C 855183    1388            mov     dph,(_GetPosition_sloc0_1_0 + 1)
-041F 8552F0    1389            mov     b,(_GetPosition_sloc0_1_0 + 2)
-0422 E553      1390            mov     a,(_GetPosition_sloc0_1_0 + 3)
+0419 855882    1387            mov     dpl,_GetPosition_sloc0_1_0
+041C 855983    1388            mov     dph,(_GetPosition_sloc0_1_0 + 1)
+041F 855AF0    1389            mov     b,(_GetPosition_sloc0_1_0 + 2)
+0422 E55B      1390            mov     a,(_GetPosition_sloc0_1_0 + 3)
 0424 120000    1391            lcall   ___fslt
 0427 AD82      1392            mov     r5,dpl
 0429 E581      1393            mov     a,sp
@@ -1396,10 +1396,10 @@
 042F ED        1396            mov     a,r5
 0430 6000      1397            jz      L017008?
 0432           1398   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:335: mov_y = -(zero_y - volts[1]);
-0432 C050      1399            push    _GetPosition_sloc0_1_0
-0434 C051      1400            push    (_GetPosition_sloc0_1_0 + 1)
-0436 C052      1401            push    (_GetPosition_sloc0_1_0 + 2)
-0438 C053      1402            push    (_GetPosition_sloc0_1_0 + 3)
+0432 C058      1399            push    _GetPosition_sloc0_1_0
+0434 C059      1400            push    (_GetPosition_sloc0_1_0 + 1)
+0436 C05A      1401            push    (_GetPosition_sloc0_1_0 + 2)
+0438 C05B      1402            push    (_GetPosition_sloc0_1_0 + 3)
 043A 90580A    1403            mov     dptr,#0x580A
 043D 75F009    1404            mov     b,#0x09
 0440 7440      1405            mov     a,#0x40
@@ -1426,22 +1426,22 @@
 0464 7900      1426            mov     r1,#0x00
 0466           1427   L017012?:
 0466           1428   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:344: pos[0] = mov_x;
-0466 AD70      1429            mov     r5,_GetPosition_PARM_2
-0468 AE71      1430            mov     r6,(_GetPosition_PARM_2 + 1)
-046A AF72      1431            mov     r7,(_GetPosition_PARM_2 + 2)
+0466 AD78      1429            mov     r5,_GetPosition_PARM_2
+0468 AE79      1430            mov     r6,(_GetPosition_PARM_2 + 1)
+046A AF7A      1431            mov     r7,(_GetPosition_PARM_2 + 2)
 046C 8D82      1432            mov     dpl,r5
 046E 8E83      1433            mov     dph,r6
 0470 8FF0      1434            mov     b,r7
-0472 E560      1435            mov     a,_GetPosition_mov_x_1_75
+0472 E568      1435            mov     a,_GetPosition_mov_x_1_75
 0474 120000    1436            lcall   __gptrput
 0477 A3        1437            inc     dptr
-0478 E561      1438            mov     a,(_GetPosition_mov_x_1_75 + 1)
+0478 E569      1438            mov     a,(_GetPosition_mov_x_1_75 + 1)
 047A 120000    1439            lcall   __gptrput
 047D A3        1440            inc     dptr
-047E E562      1441            mov     a,(_GetPosition_mov_x_1_75 + 2)
+047E E56A      1441            mov     a,(_GetPosition_mov_x_1_75 + 2)
 0480 120000    1442            lcall   __gptrput
 0483 A3        1443            inc     dptr
-0484 E563      1444            mov     a,(_GetPosition_mov_x_1_75 + 3)
+0484 E56B      1444            mov     a,(_GetPosition_mov_x_1_75 + 3)
 0486 120000    1445            lcall   __gptrput
 0489           1446   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:345: pos[1] = mov_y;
 0489 7404      1447            mov     a,#0x04
@@ -1469,17 +1469,17 @@
 04AB C003      1469            push    ar3
 04AD C004      1470            push    ar4
 04AF C001      1471            push    ar1
-04B1 C060      1472            push    _GetPosition_mov_x_1_75
-04B3 C061      1473            push    (_GetPosition_mov_x_1_75 + 1)
-04B5 C062      1474            push    (_GetPosition_mov_x_1_75 + 2)
-04B7 C063      1475            push    (_GetPosition_mov_x_1_75 + 3)
+04B1 C068      1472            push    _GetPosition_mov_x_1_75
+04B3 C069      1473            push    (_GetPosition_mov_x_1_75 + 1)
+04B5 C06A      1474            push    (_GetPosition_mov_x_1_75 + 2)
+04B7 C06B      1475            push    (_GetPosition_mov_x_1_75 + 3)
 04B9 74E8      1476            mov     a,#__str_0
 04BB C0E0      1477            push    acc
 04BD 74BF      1478            mov     a,#(__str_0 >> 8)
 04BF C0E0      1479            push    acc
 04C1 7480      1480            mov     a,#0x80
 04C3 C0E0      1481            push    acc
-04C5 74B0      1482            mov     a,#_GetPosition_buff_x_1_75
+04C5 74B8      1482            mov     a,#_GetPosition_buff_x_1_75
 04C7 C0E0      1483            push    acc
 04C9 74B2      1484            mov     a,#(_GetPosition_buff_x_1_75 >> 8)
 04CB C0E0      1485            push    acc
@@ -1490,9 +1490,9 @@
 04D6 24F6      1490            add     a,#0xf6
 04D8 F581      1491            mov     sp,a
 04DA           1492   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:348: LCDprint(buff_x, 1, 1);
-04DA 75C001    1493            mov     _LCDprint_PARM_2,#0x01
-04DD D220      1494            setb    _LCDprint_PARM_3
-04DF 90B2B0    1495            mov     dptr,#_GetPosition_buff_x_1_75
+04DA 75C801    1493            mov     _LCDprint_PARM_2,#0x01
+04DD D228      1494            setb    _LCDprint_PARM_3
+04DF 90B2B8    1495            mov     dptr,#_GetPosition_buff_x_1_75
 04E2 75F040    1496            mov     b,#0x40
 04E5 120000    1497            lcall   _LCDprint
 04E8           1498   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:349: sprintf(buff_y, "%.4f", mov_y);
@@ -1502,7 +1502,7 @@
 04EE C0E0      1502            push    acc
 04F0 7480      1503            mov     a,#0x80
 04F2 C0E0      1504            push    acc
-04F4 7400      1505            mov     a,#_GetPosition_buff_y_1_75
+04F4 7408      1505            mov     a,#_GetPosition_buff_y_1_75
 04F6 C0E0      1506            push    acc
 04F8 74B3      1507            mov     a,#(_GetPosition_buff_y_1_75 >> 8)
 04FA C0E0      1508            push    acc
@@ -1513,19 +1513,19 @@
 0505 24F6      1513            add     a,#0xf6
 0507 F581      1514            mov     sp,a
 0509           1515   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:350: LCDprint(buff_y, 2, 1);
-0509 75C002    1516            mov     _LCDprint_PARM_2,#0x02
-050C D220      1517            setb    _LCDprint_PARM_3
-050E 90B300    1518            mov     dptr,#_GetPosition_buff_y_1_75
+0509 75C802    1516            mov     _LCDprint_PARM_2,#0x02
+050C D228      1517            setb    _LCDprint_PARM_3
+050E 90B308    1518            mov     dptr,#_GetPosition_buff_y_1_75
 0511 75F040    1519            mov     b,#0x40
 0514 120000    1520            lcall   _LCDprint
 0517           1521   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:353: printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
-0517 7400      1522            mov     a,#_GetPosition_buff_y_1_75
+0517 7408      1522            mov     a,#_GetPosition_buff_y_1_75
 0519 C0E0      1523            push    acc
 051B 74B3      1524            mov     a,#(_GetPosition_buff_y_1_75 >> 8)
 051D C0E0      1525            push    acc
 051F 7440      1526            mov     a,#0x40
 0521 C0E0      1527            push    acc
-0523 74B0      1528            mov     a,#_GetPosition_buff_x_1_75
+0523 74B8      1528            mov     a,#_GetPosition_buff_x_1_75
 0525 C0E0      1529            push    acc
 0527 74B2      1530            mov     a,#(_GetPosition_buff_x_1_75 >> 8)
 0529 C0E0      1531            push    acc
@@ -1603,11 +1603,11 @@
 059B 24F4      1603            add     a,#0xf4
 059D F581      1604            mov     sp,a
 059F           1605   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:376: InitPinADC(1, 4); // Configure P1.4 as analog input
-059F 758004    1606            mov     _InitPinADC_PARM_2,#0x04
+059F 758804    1606            mov     _InitPinADC_PARM_2,#0x04
 05A2 758201    1607            mov     dpl,#0x01
 05A5 120000    1608            lcall   _InitPinADC
 05A8           1609   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:377: InitPinADC(1, 5); // Configure P1.5 as analog input
-05A8 758005    1610            mov     _InitPinADC_PARM_2,#0x05
+05A8 758805    1610            mov     _InitPinADC_PARM_2,#0x05
 05AB 758201    1611            mov     dpl,#0x01
 05AE 120000    1612            lcall   _InitPinADC
 05B1           1613   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:378: InitADC();
@@ -1636,10 +1636,10 @@
 05DB E581      1636            mov     a,sp
 05DD 24FC      1637            add     a,#0xfc
 05DF F581      1638            mov     sp,a
-05E1 8A90      1639            mov     _main_v_1_83,r2
-05E3 8B91      1640            mov     (_main_v_1_83 + 1),r3
-05E5 8C92      1641            mov     (_main_v_1_83 + 2),r4
-05E7 8D93      1642            mov     (_main_v_1_83 + 3),r5
+05E1 8A98      1639            mov     _main_v_1_83,r2
+05E3 8B99      1640            mov     (_main_v_1_83 + 1),r3
+05E5 8C9A      1641            mov     (_main_v_1_83 + 2),r4
+05E7 8D9B      1642            mov     (_main_v_1_83 + 3),r5
 05E9           1643   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:410: v[1] = Volts_at_Pin(YPOS_PIN) * SQRT_2;
 05E9 75820B    1644            mov     dpl,#0x0B
 05EC 120000    1645            lcall   _Volts_at_Pin
@@ -1662,34 +1662,34 @@
 0610 E581      1662            mov     a,sp
 0612 24FC      1663            add     a,#0xfc
 0614 F581      1664            mov     sp,a
-0616 8A94      1665            mov     (_main_v_1_83 + 0x0004),r2
-0618 8B95      1666            mov     ((_main_v_1_83 + 0x0004) + 1),r3
-061A 8C96      1667            mov     ((_main_v_1_83 + 0x0004) + 2),r4
-061C 8D97      1668            mov     ((_main_v_1_83 + 0x0004) + 3),r5
+0616 8A9C      1665            mov     (_main_v_1_83 + 0x0004),r2
+0618 8B9D      1666            mov     ((_main_v_1_83 + 0x0004) + 1),r3
+061A 8C9E      1667            mov     ((_main_v_1_83 + 0x0004) + 2),r4
+061C 8D9F      1668            mov     ((_main_v_1_83 + 0x0004) + 3),r5
 061E           1669   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:417: GetPosition(v, xy_pos);
-061E 7570E0    1670            mov     _GetPosition_PARM_2,#_main_xy_pos_1_83
-0621 757100    1671            mov     (_GetPosition_PARM_2 + 1),#0x00
-0624 757240    1672            mov     (_GetPosition_PARM_2 + 2),#0x40
-0627 90B390    1673            mov     dptr,#_main_v_1_83
+061E 7578E8    1670            mov     _GetPosition_PARM_2,#_main_xy_pos_1_83
+0621 757900    1671            mov     (_GetPosition_PARM_2 + 1),#0x00
+0624 757A40    1672            mov     (_GetPosition_PARM_2 + 2),#0x40
+0627 90B398    1673            mov     dptr,#_main_v_1_83
 062A 75F040    1674            mov     b,#0x40
 062D 120000    1675            lcall   _GetPosition
 0630           1676   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\JoystickTestCode.c:419: printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
 0630 75820B    1677            mov     dpl,#0x0B
 0633 120000    1678            lcall   _Volts_at_Pin
-0636 858220    1679            mov     _main_sloc0_1_0,dpl
-0639 858321    1680            mov     (_main_sloc0_1_0 + 1),dph
-063C 85F022    1681            mov     (_main_sloc0_1_0 + 2),b
-063F F523      1682            mov     (_main_sloc0_1_0 + 3),a
+0636 858228    1679            mov     _main_sloc0_1_0,dpl
+0639 858329    1680            mov     (_main_sloc0_1_0 + 1),dph
+063C 85F02A    1681            mov     (_main_sloc0_1_0 + 2),b
+063F F52B      1682            mov     (_main_sloc0_1_0 + 3),a
 0641 75820A    1683            mov     dpl,#0x0A
 0644 120000    1684            lcall   _Volts_at_Pin
 0647 AE82      1685            mov     r6,dpl
 0649 AF83      1686            mov     r7,dph
 064B AAF0      1687            mov     r2,b
 064D FB        1688            mov     r3,a
-064E C020      1689            push    _main_sloc0_1_0
-0650 C021      1690            push    (_main_sloc0_1_0 + 1)
-0652 C022      1691            push    (_main_sloc0_1_0 + 2)
-0654 C023      1692            push    (_main_sloc0_1_0 + 3)
+064E C028      1689            push    _main_sloc0_1_0
+0650 C029      1690            push    (_main_sloc0_1_0 + 1)
+0652 C02A      1691            push    (_main_sloc0_1_0 + 2)
+0654 C02B      1692            push    (_main_sloc0_1_0 + 3)
 0656 C006      1693            push    ar6
 0658 C007      1694            push    ar7
 065A C002      1695            push    ar2
@@ -1773,13 +1773,13 @@
      2E63
 008D 00        1752            db 0x00
 008E           1753   __str_5:
-008E 4D617220  1754            db 'Mar 18 2024'
-     31382032
+008E 4D617220  1754            db 'Mar 19 2024'
+     31392032
      303234
 0099 00        1755            db 0x00
 009A           1756   __str_6:
-009A 30323A31  1757            db '02:19:53'
-     393A3533
+009A 32313A33  1757            db '21:39:18'
+     393A3138
 00A2 00        1758            db 0x00
 00A3           1759   __str_7:
 00A3 78766F6C  1760            db 'xvolts: %7.5f yvolts: %7.5f'
