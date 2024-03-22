@@ -56,6 +56,10 @@ void TIM2_Handler(void)
 	{
 		PWM_Counter=0;
 		GPIOA->ODR |= (BIT11|BIT12);
+
+		// P1_1
+		// P1_2 = P1_1
+		// P1_1 = 0
 	}   
 }
 

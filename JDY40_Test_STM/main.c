@@ -132,8 +132,6 @@ int main(void)
     int cnt=0;
     long int count;
 	float T, f;
-	float tempf;
-	int tempi;
 	
 	RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A
 	
@@ -182,14 +180,11 @@ int main(void)
 		
 		if(count>0)
 		{
-			tempi = count*5;
-			tempf = 3.0;
 			T= 1.0*count/(F_CPU*100.0); // Since we have the time of 100 periods, we need to divide by 100
 			f=1.0/T;
-			printf("tempi = %d, tempf = %.2f, T=%.2f sec, f=%.2f Hz, count=%d \r\n", tempi, tempf, T, f, count);
+			printf("T=%.2f sec, f=%.2f Hz, count=%d \r\n", T, f, count);
 			sprintf(buff,"f=%.2f Hz\r\n", f);
 			eputs2(buff);
-			
 		}
 		//else
 		//{
