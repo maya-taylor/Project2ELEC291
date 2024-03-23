@@ -1,5 +1,4 @@
 // This code should read freq from oscillating circuit (pin 12) and transmit using jdy40
-// Not currently working bc floats won't print - tried to fix by uncommenting line in makefile but didn't work
 
 #include "../Common/Include/stm32l051xx.h"
 #include <stdio.h>
@@ -129,7 +128,7 @@ long int GetPeriod (int n)
 int main(void)
 {
 	char buff[80];
-    int cnt=0;
+    //int cnt=0;
     long int count;
 	float T, f;
 	
@@ -163,41 +162,35 @@ int main(void)
 	
 	printf("\r\nPress and hold a push-button attached to PA8 (pin 18) to transmit.\r\n");
 	
-	cnt=0;
+	//cnt=0;
 	while(1)
 	{
 		
 		count=GetPeriod(100);
 		
-		
-		//if((GPIOA->IDR&BIT8)==0)
-		//{
-		//	sprintf(buff, "JDY40 test %d\r\n", cnt++);
-		//	eputs2(buff);
-		//	printf(".\r\n");
-		//	waitms(200);
-		//}
-		
 		if(count>0)
 		{
 			T= 1.0*count/(F_CPU*100.0); // Since we have the time of 100 periods, we need to divide by 100
 			f=1.0/T;
-			printf("T=%.2f sec, f=%.2f Hz, count=%d \r\n", T, f, count);
-			sprintf(buff,"f=%.2f Hz\r\n", f);
+			sprintf(buff, "%.2f\r\n", f);
 			eputs2(buff);
+			printf("f= %.2f Hz\r\n",f);
+			
 		}
-		//else
-		//{
-		//	printf("NO SIGNAL \r\n");
-		//	eputs2("NO SIGNAL \r\n");
-		//}
-		//fflush(stdout); // GCC printf wants a \n in order to send something.  If \n is not present, we fflush(stdout)
-		//if(ReceivedBytes2()>0) // Something has arrived
-		//{
-		//	egets2(buff, sizeof(buff)-1);
-		//	printf("RX: %s", buff);
-		//}
+		else
+		{
+			printf("nope\r\n");
+			eputs2("nope\r\n");
+		}
+		
+		
+		if(ReceivedBytes2()>0) // Something has arrived
+		{
+			egets2(buff, sizeof(buff)-1);
+			printf("RX: %s", buff);
+		}
 		waitms(500);
 	}
 
 }
+              
