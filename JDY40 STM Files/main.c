@@ -1,4 +1,5 @@
 // This code should read freq from oscillating circuit (pin 12) and transmit using jdy40
+// Not currently working bc floats won't print - tried to fix by uncommenting line in makefile but didn't work
 
 #include "../Common/Include/stm32l051xx.h"
 #include <stdio.h>
@@ -166,11 +167,11 @@ int main(void)
 	while(1)
 	{
 		
-		count=GetPeriod(100);
+		count=GetPeriod(200);
 		
 		if(count>0)
 		{
-			T= 1.0*count/(F_CPU*100.0); // Since we have the time of 100 periods, we need to divide by 100
+			T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
 			f=1.0/T;
 			sprintf(buff, "%.2f\r\n", f);
 			eputs2(buff);
