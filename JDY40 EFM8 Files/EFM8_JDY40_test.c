@@ -53,7 +53,7 @@ char _c51_external_startup (void)
 		CLKSEL = 0x03;
 		while ((CLKSEL & 0x80) == 0);
 	#else
-		#error SYSCLK must be either 12250000L, 24500000L, 48000000L, or 72000000L
+	#error SYSCLK must be either 12250000L, 24500000L, 48000000L, or 72000000L
 	#endif
 	
 	P0MDOUT |= 0x11; // Enable UART0 TX (P0.4) and UART1 TX (P0.0) as push-pull outputs
@@ -174,6 +174,7 @@ char getchar1_with_timeout (void)
 	return (c);
 }
 
+
 void getstr1 (char * s)
 {
 	char c;
@@ -230,6 +231,7 @@ void SendATCommand (char * s)
 void main (void)
 {
 	unsigned int cnt;
+	float extract_num = 0.0;
 	
 	waitms(500);
 	printf("\r\nJDY-40 test\r\n");
@@ -260,22 +262,28 @@ void main (void)
 	SendATCommand("AT+POWE\r\n");
 	SendATCommand("AT+CLSS\r\n");
 	
-	printf("\rPress and hold the BOOT button to transmit.\r\n");
+	printf("\r\Press and hold the BOOT button to transmit.\r\n");
 	
 	cnt=0;
 	while(1)
 	{
 		if(P3_7==0)
 		{
-			sprintf(buff, "JDY40 test %d\r\n", cnt++);
+			sprintf(buff, "JDY40 test EFM8 %d\r\n", cnt++);
 			sendstr1(buff);
 			putchar('.');
-			waitms_or_RI1(200);
+			waitms_or_RI1(500);
 		}
 		if(RXU1())
 		{
 			getstr1(buff);
 			printf("RX: %s\r\n", buff);
+			//this is where we print the received info
+			//need to take a section of the string
+			extract_num = atof(buff);
+			printf("Number received: %.2f\r\n", extract_num);
+			
 		}
+		//waitms_or_RI1(300);
 	}
 }
