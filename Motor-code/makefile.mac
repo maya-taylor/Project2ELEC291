@@ -10,16 +10,17 @@ LIBPATH1=$(subst \libgcc.a,,$(shell dir /s /b "$(GCCPATH)*libgcc.a" | find "v6-m
 LIBPATH2=$(subst \libc_nano.a,,$(shell dir /s /b "$(GCCPATH)*libc_nano.a" | find "v6-m"))
 LIBSPEC=-L"$(LIBPATH1)" -L"$(LIBPATH2)"
 
-OBJS=main.o startup.o serial.o newlib_stubs.o
+OBJS=motor.o startup.o serial.o newlib_stubs.o
+
 
 # Notice that floating point is enabled with printf (-u _printf_float)
-main.hex: $(OBJS)
-	$(LD) $(OBJS) $(LIBSPEC) -Os -u _printf_float -nostdlib -lnosys -lgcc -T ..\STM32L051-Sample-Codes\Common\LDscripts\stm32l051xx.ld --cref -Map main.map -o main.elf
-	arm-none-eabi-objcopy -O ihex main.elf main.hex
+motor.hex: $(OBJS)
+	$(LD) $(OBJS) $(LIBSPEC) -Os -u _printf_float -nostdlib -lnosys -lgcc -T ..\STM32L051-Sample-Codes\Common\LDscripts\stm32l051xx.ld --cref -Map motor.map -o motor.elf
+	arm-none-eabi-objcopy -O ihex motor.elf motor.hex
 	@echo Success!
 
-main.o: main.c
-	$(CC) -c $(CCFLAGS) main.c -o main.o
+motor.o: motor.c
+	$(CC) -c $(CCFLAGS) motor.c -o motor.o
 
 startup.o: ..\STM32L051-Sample-Codes\Common\Source\startup.c
 	$(CC) -c $(CCFLAGS) -DUSE_USART1 ..\STM32L051-Sample-Codes\Common\Source\startup.c -o startup.o
@@ -32,11 +33,11 @@ newlib_stubs.o: ..\STM32L051-Sample-Codes\Common\Source\newlib_stubs.c
 
 clean: 
 	@del $(OBJS) 2>NUL
-	@del main.elf main.hex main.map 2>NUL
+	@del motor.elf motor.hex motor.map 2>NUL
 
-Load_Flash: main.hex
+Load_Flash: motor.hex
 	@taskkill /f /im putty.exe /t /fi "status eq running" > NUL
-	@echo ..\STM32L051-Sample-Codes\stm32flash\stm32flash -w main.hex -v -g 0x0 ^^>loadf.bat
+	@echo ..\STM32L051-Sample-Codes\stm32flash\stm32flash -w motor.hex -v -g 0x0 ^^>loadf.bat
 	@..\STM32L051-Sample-Codes\stm32flash\BO230\BO230 -b >>loadf.bat
 	@loadf
 	@echo cmd /c start putty.exe -sercfg 115200,8,n,1,N -serial ^^>sputty.bat
@@ -52,6 +53,5 @@ putty:
 explorer:
 	cmd /c start explorer .
 
-dummy: main.map main.hex
+dummy: motor.map motor.hex
 	@echo Hello from 'dummy' target...
-

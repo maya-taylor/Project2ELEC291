@@ -5,9 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../Common/Include/stm32l051xx.h"
+#include "..\STM32L051-Sample-Codes\Common\Include\stm32l051xx.h"
 
 #define F_CPU 32000000L
+
+// AL
+#define statquo_freq_upper_bound 177600 // approximate
+#define max_detectable 179000 
+
+
 
 void delay(int dly)
 {
@@ -94,11 +100,51 @@ long int GetPeriod (int n)
 //       PB1 -|15      18|- PA8  (Measure the period at this pin)
 //       VSS -|16      17|- VDD
 //             ----------
+float mapped(float x, float in_min, float in_max, float out_min, float out_max)
+{
+	float tempa, tempb, tempc, tempd, tempe, tempf;
+	
+	tempa = (x - in_min);
+	printf("%f\r\n", tempa);
+	tempb = (out_max - out_min);
+	printf("%f\r\n", tempb);
+	tempc = tempa * tempb;
+	printf("%f\r\n", tempc);
+	tempd = (in_max - in_min);
+	printf("%f\r\n", tempd);
+	tempe = (float)tempc/(float)tempd;
+	printf("%f\r\n", tempe);
+	tempf = tempe+ out_min;
+	printf("%f\r\n", tempf);
+	return tempf;
+}
+int metal_strength(int frequency) {
+	int strength = 11;
+	float difference = 0;
+
+	if (frequency > statquo_freq_upper_bound) {
+		printf("higher than normal\r\n");
+		if (frequency > max_detectable) {
+			printf("max strength detected\r\n");
+			strength = 10;
+		}
+		else {
+			difference = abs(frequency - statquo_freq_upper_bound);
+			strength = mapped (difference, statquo_freq_upper_bound, max_detectable, 0.0, 10.0);
+		}
+	}
+	else {
+		printf("error. finding metal strength but no metal should be detected.\r\n");
+	}
+
+	return strength;
+}
 
 void main(void)
 {
 	long int count;
 	float T, f;
+	int metal_strength_val = 0;
 	
 	RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A
 	
@@ -120,7 +166,24 @@ void main(void)
 			T=count/(F_CPU*100.0); // Since we have the time of 100 periods, we need to divide by 100
 			f=1.0/T;
 			printf("f=%.2fHz, count=%d            \r", f, count);
-			//
+
+			if (f > statquo_freq_upper_bound) {
+				//printf("Mine some metal!\r\n");
+				// Determine the strength of the metal detected - map function to 1-10
+				metal_strength_val = metal_strength(f);
+				if (metal_strength_val > 10) {
+					printf("error in function\r\n");
+				}
+				else {
+					printf("Metal Strength (1-10): %i\r\n", metal_strength_val);
+				}
+				
+			}
+			else {
+				printf("Nothing Detected.\r\n"); 
+				metal_strength_val = 0;
+			}
+
 		}
 		else
 		{
@@ -128,5 +191,8 @@ void main(void)
 		}
 		fflush(stdout); // GCC printf wants a \n in order to send something.  If \n is not present, we fflush(stdout)
 		waitms(200);
+
+	
 	}
 }
+

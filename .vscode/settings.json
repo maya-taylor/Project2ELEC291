@@ -1,6 +1,7 @@
 {
   "files.associations": {
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "stm32l051xx.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
