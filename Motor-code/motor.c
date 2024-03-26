@@ -259,6 +259,8 @@ int main (void) {
      * Out: right_PWM    -- PWM on right motor
      */
     float t = 0;
+    float left_PWM;
+    float right_PWM;
 
     Hardware_Init();
     delayms(500); // Give putty a chance to start before we send characters with printf()
@@ -268,7 +270,7 @@ int main (void) {
 	
     while (t < 2*PI) {
 
-
+        /*
         x = 50.0 * cos (t); // setting imaginary x joystick input
         y = 50.0 * sin (t); // setting imaginary y joystick input
 
@@ -284,14 +286,15 @@ int main (void) {
 
         turnLeftMotor (left_PWM, left_adjust);
         turnRightMotor(right_PWM, right_adjust);
-        
+        */
         //integrated from /Servo_PWM/main.c
         /*printf("PWM1 (60 to 255): ");
     	fflush(stdout);
     	egets_echo(buf, 31); // wait here until data is received
   		printf("\r\n");
 	    npwm=atoi(buf);*/
-
+        left_PWM = 100;
+        right_PWM = 70;
 	    if(left_PWM!=0)
 	    {
 		    if(left_PWM>100) left_PWM=100;
@@ -307,7 +310,7 @@ int main (void) {
         }
 
 
-        printf("%f, %f, %f, %f, %f, %f\n", t, x, y, angle, left_adjust, right_adjust);
-        printf("%f, %f\n",left_PWM, right_PWM);
+        //printf("%f, %f, %f, %f, %f, %f\n", t, x, y, angle, left_adjust, right_adjust);
+        printf("Right:%f\n, Left:%f\r\n",left_PWM, right_PWM);
     }
 }
