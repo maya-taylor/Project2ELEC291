@@ -1,9 +1,9 @@
 // This code should read freq from oscillating circuit (pin 12) and transmit using jdy40
-// Not currently working bc floats won't print - tried to fix by uncommenting line in makefile but didn't work
 
 #include "../Common/Include/stm32l051xx.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "../Common/Include/serial.h"
 #include "UART2.h"
@@ -167,30 +167,58 @@ int main(void)
 	while(1)
 	{
 		
-		count=GetPeriod(200);
-		
-		if(count>0)
+		//count=GetPeriod(200);
+		//if(count>0)
+		//{
+		//	T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
+		//	f=1.0/T;
+		//	sprintf(buff, "%.2f\r\n", f);
+		//	eputs2(buff);
+		//	printf("f= %.2f Hz\r\n",f);
+		//	
+		//}
+		//else
+		//{
+		//	printf("nope\r\n");
+		//	eputs2("nope\r\n");
+		//}
+		//
+		//
+		//if(ReceivedBytes2()>0) // Something has arrived
+		//{
+		//	egets2(buff, sizeof(buff)-1);
+		//	printf("RX: %s", buff);
+		//}
+		//waitms(500);
+
+		if (ReceivedBytes2()>0)
 		{
-			T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
-			f=1.0/T;
-			sprintf(buff, "%.2f\r\n", f);
-			eputs2(buff);
-			printf("f= %.2f Hz\r\n",f);
+			//printf("stuck5\r\n");
+			egets2(buff, sizeof(buff)-1);
+			//printf("stuck1\r\n");
+			
+			printf("RX: %s", buff);
+			//printf("len: %d", strlen(buff));
+			if (buff[0]=='M' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) // remote wants metal detector status (&& strlen(buff)==3)
+			{
+				if (strlen(buff)==2) printf("\r");
+				if (strlen(buff)==1) printf("\r\n");
+				count=GetPeriod(200);
+				T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
+				f=1.0/T;
+				waitms(5);
+				//printf("stuck2\r\n");
+			
+				printf("f=%.2f\r\n",f);
+				sprintf(buff,"%.2f\r\n",f);
+				eputs2(buff);
+				//printf("stuck3\r\n");
+			
+			}
+			//printf("stuck4\r\n");
 			
 		}
-		else
-		{
-			printf("nope\r\n");
-			eputs2("nope\r\n");
-		}
-		
-		
-		if(ReceivedBytes2()>0) // Something has arrived
-		{
-			egets2(buff, sizeof(buff)-1);
-			printf("RX: %s", buff);
-		}
-		waitms(500);
+		//waitms(100);
 	}
 
 }
