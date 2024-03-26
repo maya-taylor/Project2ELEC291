@@ -320,7 +320,7 @@ void main(void)
 		//	printf("%d\r\n", mapped_num);
 		//}
 		    waitms_or_RI1(100);
-			sendstr1("M\r\n");
+			sendstr1("RSVP\r\n");
 			putchar('.');
 			
 			timeout_cnt = 0;
