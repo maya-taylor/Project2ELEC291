@@ -3,6 +3,17 @@
 #include "../Common/Include/bits.h"
 #include <stdio.h>
 
+#define PI 3.141592654
+#define MAX_VELOCITY 50.00
+#define MIN_PWM 65.00
+#define RIGHT_MOTOR_ADJUST 1.0000
+#define F_CPU 32000000L
+#define DEF_F 100000L // 10us tick
+
+//global constants
+volatile int PWM_Counter = 0;
+volatile unsigned char pwm1=100, pwm2=100;
+
 // LQFP32 pinout
 //             ----------
 //       VDD -|1       32|- VSS

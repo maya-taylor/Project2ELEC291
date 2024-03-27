@@ -52,7 +52,7 @@ void TIM2_Handler(void)
 		GPIOA->ODR &= ~BIT12;
 	}
 	
-	if (PWM_Counter > 2000) // THe period is 20ms
+	if (PWM_Counter > 100) // THe period is 1ms
 	{
 		PWM_Counter=0;
 		GPIOA->ODR |= (BIT11|BIT12);
@@ -119,7 +119,7 @@ int main(void)
 	
 	while (1)
 	{
-    	printf("PWM1 (60 to 255): ");
+    	printf("PWM1 (0 to 100): ");
     	fflush(stdout);
     	egets_echo(buf, 31); // wait here until data is received
   		printf("\r\n");
@@ -127,12 +127,12 @@ int main(void)
 
 	    if(npwm!=0)
 	    {
-		    if(npwm>255) npwm=255;
-		    if(npwm<60) npwm=60;
+		    if(npwm>100) npwm=100;
+		    if(npwm<0) npwm=0;
 		    pwm1=npwm;
 	    }
 	    
-    	printf("PWM2 (60 to 255): ");
+    	printf("PWM2 (0 to 100): ");
     	fflush(stdout);
     	egets_echo(buf, 31); // wait here until data is received
  		printf("\r\n");
@@ -140,8 +140,8 @@ int main(void)
 	    npwm=atoi(buf);
 	    if(npwm!=0)
 	    {
-		    if(npwm>255) npwm=255;
-		    if(npwm<60) npwm=60;
+		    if(npwm>100) npwm=100;
+		    if(npwm<0) npwm=0;
 		    pwm2=npwm;
 		}
 	}

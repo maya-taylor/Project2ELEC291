@@ -167,30 +167,45 @@ int main(void)
 	while(1)
 	{
 		
-		count=GetPeriod(200);
+		//count=GetPeriod(200);
 		
-		if(count>0)
-		{
-			T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
-			f=1.0/T;
-			sprintf(buff, "%.2f\r\n", f);
-			eputs2(buff);
-			printf("f= %.2f Hz\r\n",f);
-			
-		}
-		else
-		{
-			printf("nope\r\n");
-			eputs2("nope\r\n");
-		}
+		//if(count>0)
+		//{
+		//	T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
+		//	f=1.0/T;
+		//	sprintf(buff, "%.2f\r\n", f);
+		//	eputs2(buff);
+		//	printf("f= %.2f Hz\r\n",f);
+		//	
+		//}
+		//else
+		//{
+		//	printf("nope\r\n");
+		//	eputs2("nope\r\n");
+		//}
+		//
+		//
+		//if(ReceivedBytes2()>0) // Something has arrived
+		//{
+		//	egets2(buff, sizeof(buff)-1);
+		//	printf("RX: %s", buff);
+		//}
+		//waitms(500);
 		
-		
-		if(ReceivedBytes2()>0) // Something has arrived
+		if (ReceivedBytes2()>0)
 		{
 			egets2(buff, sizeof(buff)-1);
 			printf("RX: %s", buff);
+			if (buff[0]=='M') // remote wants metal detector status
+			{
+				count=GetPeriod(200);
+				T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
+				f=1.0/T;
+				waitms(5);
+				sprintf(buff,"%.2f\r\n",f);
+				eputs2(buff);
+			}
 		}
-		waitms(500);
 	}
 
 }

@@ -10,7 +10,7 @@ LIBPATH1=$(subst \libgcc.a,,$(shell dir /s /b "$(GCCPATH)*libgcc.a" | find "v6-m
 LIBPATH2=$(subst \libc_nano.a,,$(shell dir /s /b "$(GCCPATH)*libc_nano.a" | find "v6-m"))
 LIBSPEC=-L"$(LIBPATH1)" -L"$(LIBPATH2)"
 
-OBJS=tb_tb_motor.o startup.o serial.o newlib_stubs.o
+OBJS=tb_motor.o motor.o startup.o serial.o newlib_stubs.o
 
 
 # Notice that floating point is enabled with printf (-u _printf_float)
@@ -21,6 +21,9 @@ tb_motor.hex: $(OBJS)
 
 tb_motor.o: tb_motor.c
 	$(CC) -c $(CCFLAGS) tb_motor.c -o tb_motor.o
+
+motor.o: motor.c
+	$(CC) -c $(CCFLAGS) motor.c -o motor.o
 
 startup.o: ..\STM32L051-Sample-Codes\Common\Source\startup.c
 	$(CC) -c $(CCFLAGS) -DUSE_USART1 ..\STM32L051-Sample-Codes\Common\Source\startup.c -o startup.o
@@ -35,9 +38,9 @@ clean:
 	@del $(OBJS) 2>NUL
 	@del tb_motor.elf tb_motor.hex tb_motor.map 2>NUL
 
-Load_Flash: tb_motor.hex
+Load_Flash: motor.hex
 	@taskkill /f /im putty.exe /t /fi "status eq running" > NUL
-	@echo ..\STM32L051-Sample-Codes\stm32flash\stm32flash -w tb_motor.hex -v -g 0x0 ^^>loadf.bat
+	@echo ..\STM32L051-Sample-Codes\stm32flash\stm32flash -w motor.hex -v -g 0x0 ^^>loadf.bat
 	@..\STM32L051-Sample-Codes\stm32flash\BO230\BO230 -b >>loadf.bat
 	@loadf
 	@echo cmd /c start putty.exe -sercfg 115200,8,n,1,N -serial ^^>sputty.bat
@@ -53,5 +56,5 @@ putty:
 explorer:
 	cmd /c start explorer .
 
-dummy: tb_motor.map tb_motor.hex
+dummy: motor.map motor.hex
 	@echo Hello from 'dummy' target...

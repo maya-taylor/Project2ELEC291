@@ -238,7 +238,7 @@ void main (void)
 	float min_metal_detect = 170080.0; //frequency at which metal is detected
 	float mapped_range = 5.0; //1 to mapped_range+1
 	float extract_range = 800.0; //max range of beeping frequency
-	
+	int timeout_cnt = 0;
 	
 	waitms(500);
 	printf("\r\nJDY-40 test\r\n");
@@ -274,46 +274,65 @@ void main (void)
 	cnt=0;
 	while(1)
 	{
-		if(P3_7==0)
-		{
-			sprintf(buff, "JDY40 test EFM8 %d\r\n", cnt++);
-			sendstr1(buff);
-			putchar('.');
-			waitms_or_RI1(500);
-		}
-		if(RXU1())
-		{
-			prev_num = extract_num;
-			getstr1(buff);
-			printf("RX: %s\r\n", buff);
-			//this is where we print the received info
-			//need to take a section of the string
-			extract_num = atof(buff);
-			if(extract_num < 160000.0 || extract_num > 180000.0)
-			{
-				extract_num = prev_num;
-			}
-			printf("Number received: %.2f\r\n", extract_num);
-			
-			if(extract_num > min_metal_detect)
-			{
-				printf("BEEP\r\n");
-				//take extract_num - 170000 to get the frequency to use for mapping	
-				//range of beeping is 1-6 for this
-				mapped_num = (extract_num - min_metal_detect)*(mapped_range)/(extract_range)+1;
-				//note: due to truncation mapped_num will never be top of the map_range
-				// could not get round() function to work -- to try later?
-				if(mapped_num > mapped_range)
-					mapped_num = mapped_range;
-					
-			}
-			
-			else
-			{
-				mapped_num = 0;
-			}
-			printf("%d\r\n", mapped_num);
-		}
+		//if(P3_7==0)
+		//{
+		//	sprintf(buff, "JDY40 test EFM8 %d\r\n", cnt++);
+		//	sendstr1(buff);
+		//	putchar('.');
+		//	waitms_or_RI1(500);
+		//}
+		//if(RXU1())
+		//{
+		//	prev_num = extract_num;
+		//	getstr1(buff);
+		//	printf("RX: %s\r\n", buff);
+		//	//this is where we print the received info
+		//	//need to take a section of the string
+		//	extract_num = atof(buff);
+		//	if(extract_num < 160000.0 || extract_num > 180000.0)
+		//	{
+		//		extract_num = prev_num;
+		//	}
+		//	printf("Number received: %.2f\r\n", extract_num);
+		//	
+		//	if(extract_num > min_metal_detect)
+		//	{
+		//		printf("BEEP\r\n");
+		//		//take extract_num - 170000 to get the frequency to use for mapping	
+		//		//range of beeping is 1-6 for this
+		//		mapped_num = (extract_num - min_metal_detect)*(mapped_range)/(extract_range)+1;
+		//		//note: due to truncation mapped_num will never be top of the map_range
+		//		// could not get round() function to work -- to try later?
+		//		if(mapped_num > mapped_range)
+		//			mapped_num = mapped_range;
+		//			
+		//	}
+		//	
+		//	else
+		//	{
+		//		mapped_num = 0;
+		//	}
+		//	printf("%d\r\n", mapped_num);
+		//}
 		//waitms_or_RI1(300);
+
+		if (P3_7==0)
+		{
+			putchar1('M');
+
+			timeout_cnt = 0;
+			while (1) 
+			{
+				if (RXU1()) break;
+				Timer3us(100);
+				timeout_cnt++;
+				if (timeout_cnt>=1000) break;
+			}
+			if (RXU1()) 
+			{
+				getstr1(buff);
+				printf("RX: %s\r\n", buff);
+			}
+		}
 	}
 }
