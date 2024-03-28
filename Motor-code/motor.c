@@ -56,7 +56,7 @@ void TIM2_Handler(void)
 	TIM2->SR &= ~BIT0; // clear update interrupt flag
 	PWM_Counter++;
 	
-	if(pwm1>PWM_Counter)
+	if(pwm1>PW M_Counter)
 	{
 		GPIOA->ODR |= BIT11;
 	}
@@ -217,27 +217,23 @@ float get_PWM (float velocity, float PWM_adjust) {
 void turnLeftMotor (float PWM, float PWM_adjust) {
     // Clock wise rotation
     if (PWM_adjust >= 0) {
-        // LEFT_MOTOR = PWM; // turns when `LEFT_MOTOR` is HIGH
-        // LEFT_GROUND = 0;  // set to 0 when CW
+		pwm1 = PWM; 			// turns when `LEFT_MOTOR` is HIGH
+		GPIOA->MODER &= ~BIT10; // set to 0 when CW
     }
-    // One pin is set to 1
-    // CCW rotation 
     else { 
-        // LEFT_MOTOR = 100-PWM; // Inversed by 100 - PWM, turns when `LEFT_MOTOR` is LOW
-        // LEFT_GROUND = 1;      // set to 1 when CCW 
+        pwm1 = PWM = 100-PWM; // Inversed by 100 - PWM, turns when `LEFT_MOTOR` is LOW
+		GPIOA->MODER |= BIT10;// set to 1 when CCW
     }
 }
 
 int turnRightMotor (float PWM, float PWM_adjust) {
     if (PWM_adjust >= 0) {
-        // RIGHT_MOTOR = PWM;     // turns when `RIGHT_MOTOR` is HIGH
-        // LEFT_GROUND = 0;       // set to 0 when CW
+        pwm2 = PWM;     		 // turns when `RIGHT_MOTOR` is HIGH
+        GPIOA->MODER &= ~BIT11;  // set to 0 when CW
     }
-    // One pin is set to 1
-    // CW rotation
     else {
-        // RIGHT_MOTOR = 100-PWM    // Inversed by 100 - PWM, turns when `RIGHT_MOTOR` is LOW
-        // RIGHT_GROUND = 1;        // set to 1 when CCW
+        pwm2 = 100-PWM;    		 // Inversed by 100 - PWM, turns when `RIGHT_MOTOR` is LOW
+        GPIOA->MODER |= BIT11;   // set to 1 when CCW
     }
 }
 
