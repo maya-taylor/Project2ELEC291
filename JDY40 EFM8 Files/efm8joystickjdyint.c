@@ -570,7 +570,7 @@ void main(void)
 
         sprintf(temp_buff, "xpos: %d ypos: %d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
 		printf(temp_buff);
-		sprintf(temp_buff, "%3d, %3f\r\n")
+		sprintf(temp_buff, "%3d, %3d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
         sendstr1(temp_buff);
         
 		waitms(10);

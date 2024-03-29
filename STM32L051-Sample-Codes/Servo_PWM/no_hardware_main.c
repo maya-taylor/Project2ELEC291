@@ -139,9 +139,9 @@ void motorControlLoop (int x, int y) {
     // __mingw_printf("%f\n", angle/PI*180);
     // __mingw_printf("%d\n", velocity);
 	// printf("x:%d   y:%d  velocity:%d   left_PWM:%d   right_PWM:%d\n", x,y,velocity, left_PWM, right_PWM); 
-	printf("%d,%d,%f,%d,%d,%d,%f,%f\n", x,y,angle,velocity, left_PWM, right_PWM, left_adjust, right_adjust); 
+	printf("x=%d, y=%d, left_PWM = %d, right_PWM = %d, PWM1=%d, PWM2=%d, l_adj=%f, r_adj=%f\n", x, y, left_PWM, right_PWM, pwm1, pwm2, left_adjust, right_adjust); 
 }
-
+ 
 int main(void)
 {
     char buf[32];
@@ -150,8 +150,10 @@ int main(void)
     float t = 0;
 
     while (t < 2*PI) {
-        x = 50*cos(t);
-        y = 50*sin(t);
+        // x = 50*cos(t);
+        // y = 50*sin(t);
+        x = 0;
+        y = 50;
         motorControlLoop(x,y);
 
         t += 0.05;

@@ -11,9 +11,9 @@
 
 #define PI 3.141592654
 #define MAX_VELOCITY 50.00
-#define MIN_PWM 65.00
+#define MIN_PWM 0
 #define MAX_PWM 100.0
-#define RIGHT_MOTOR_ADJUST 1.0000 //what does this constant do?
+#define RIGHT_MOTOR_ADJUST 1.0000 //what does this constant do? -> Adjustment factors incase motors dont match
 #define F_CPU 32000000L
 
 // Global variables	
@@ -110,24 +110,24 @@ void turnLeftMotor (int PWM, float PWM_adjust) {
     // is done by bitmasking the ODR register, this sets those pins
     // to be 1 or 0 which then controlls CW or CCW rotation
     // Clock wise rotation
-    if (PWM_adjust >= 0) {
+    if (PWM_adjust < 0) {
         pwm1 = PWM;
         GPIOA->ODR &= ~BIT2;    // set left motor to 0 when CW
     }
     else { 
-        pwm1 = 100-PWM_adjust;  // Inversed by 100 - PWM, turns when `pwm1` is is LOW
+        pwm1 = 100-PWM;  		// Inversed by 100 - PWM, turns when `pwm1` is is LOW
         GPIOA->ODR |= BIT2;     // set left motor to 1 when CCW
     }
 }
 
 int turnRightMotor (int PWM, float PWM_adjust) {
-    if (PWM_adjust >= 0) {
+    if (PWM_adjust < 0) {
         pwm2 = PWM;
-        GPIOA->ODR &= ~BIT3;    // set rigth motor to 0 when CW
+        GPIOA->ODR &= ~BIT4;    // set right motor to 0 when CW
     }
     else {
         pwm2 = 100-PWM;         // Inversed by 100 - PWM, turns when `pwm2` is LOW
-        GPIOA->ODR |= BIT3;     // set right motor to 1 when CCW
+        GPIOA->ODR |= BIT4;     // set right motor to 1 when CCW
     }
 }
 
@@ -136,21 +136,29 @@ int turnRightMotor (int PWM, float PWM_adjust) {
 
 void motorControlLoop (int x, int y) {
 	// calculate angle
-	float angle = atan2f(x,y);
+	float angle = atan2f(y,x);
 	int velocity =  sqrt(pow(x,2) + pow(y,2));
 
 	// left motor control
 	float left_adjust = LeftMotorAdjust_angle(angle); 
 	int left_PWM = get_PWM(velocity, left_adjust);
-	turnLeftMotor(left_PWM, left_adjust);
+	turnLeftMotor(left_PWM, left_adjust); // set PWM1
 
 	// right motor control
 	float right_adjust = RightMotorAdjust_angle(angle); 
 	int right_PWM = get_PWM(velocity, right_adjust);
-	turnRightMotor(right_PWM, right_adjust);
+	turnRightMotor(right_PWM, right_adjust); // set PWM2
+
+	// Stop detection
+	// this turns both motors off
+	if (abs(x) < 5 & abs(y) < 5) {
+		pwm1 = 0;
+		pwm2 = 0;
+	}
 
 	// Debug Log/
-	printf("x:%d   y:%d  velocity:%d left_PWM:%d right_PWM%d\n", x,y,velocity, left_PWM, right_PWM); 
+	// printf("x:%d   y:%d left_PWM:%d right_PWM:%d  l_adj:%f, r_adj:%f\r\n", x,y, pwm1, pwm2, left_adjust, right_adjust); 
+	printf("x=%d, y=%d, left_PWM = %d, right_PWM = %d, PWM1=%d, PWM2=%d, l_adj=%.2f, r_adj=%.2f\r\n", x, y, left_PWM, right_PWM, pwm1, pwm2, left_adjust, right_adjust); 
 
 }
 // seconds - number of seconds to run the test case
@@ -186,26 +194,26 @@ void TIM2_Handler(void)
 	
 	if(pwm1>PWM_Counter)
 	{
-		GPIOA->ODR |= BIT11;
+		GPIOA->ODR |= BIT3;
 	}
 	else
 	{
-		GPIOA->ODR &= ~BIT11;
+		GPIOA->ODR &= ~BIT3;
 	}
 	
 	if(pwm2>PWM_Counter)
 	{
-		GPIOA->ODR |= BIT12;
+		GPIOA->ODR |= BIT5;
 	}
 	else
 	{
-		GPIOA->ODR &= ~BIT12;
+		GPIOA->ODR &= ~BIT5;
 	}
 	
 	if (PWM_Counter > 100) // THe period is 1ms
 	{
 		PWM_Counter=0;
-		GPIOA->ODR |= (BIT11|BIT12);
+		GPIOA->ODR |= (BIT3|BIT5);
 	}   
 }
 
@@ -268,6 +276,11 @@ int main(void)
     printf("(outputs are PA11 and PA12, pins 21 and 22).\r\n");
     printf("Based on Servo PWM Code in Samples\r\n\r\n");
 
+	// // Parsing string to an integer
+	// char str[] = "10,20,30,40,50";
+	// char *token = strtok(str, ",");
+	// parse for x and y data
+	
 
 	timerCount_10us = 0; // increments by 1 every 10us (for tb only)
 	timerCount_ms = 0;   // (for tb only)
@@ -286,53 +299,55 @@ int main(void)
 	*/
 
 	// Stop for 3s
-	x = 0;
-	y = 0;
-	motor_testHandler(x,y,3); 
+	while (1) {
+		x = 0;
+		y = 0;
+		motor_testHandler(x,y,3); 
 
-	// Forward max speed for 10s
-	x = 0;
-	y = 50;
-	motor_testHandler(x,y,10);
+		// Forward max speed for 10s
+		x = 0;
+		y = 50;
+		motor_testHandler(x,y,10);
 
-	// clockwise rotation on one spot for 10s
-	x = 50;
-	y = 0;
-	motor_testHandler(x,y,10);
+		// clockwise rotation on one spot for 10s
+		x = 50;
+		y = 0;
+		motor_testHandler(x,y,10);
 
-	// large right turn for 20s
-	x = 16;
-	y = 47.371;
-	motor_testHandler(x,y,20);
+		// more aggressive right turn for 10s
+		x = 40;
+		y = 30;
+		motor_testHandler(x,y,20);
 
-	// more aggressive right turn for 10s
-	x = 40;
-	y = 30;
-	motor_testHandler(x,y,20);
-
-	// backwards max speed for 10s
-	x = 0;
-	y = -50;
-	motor_testHandler(x,y,10);
-
-	// counter-clockwise rotation on one spot for 10s
-	x = -50;
-	y = 0;
-	motor_testHandler(x,y,10);
-
-	// large left turn for 20s
-	x = -16;
-	y = 47.371;
-	motor_testHandler(x,y,20);
-
-	// large left turn for 20s
-	x = -40;
-	y = 30;
-	motor_testHandler(x,y,20);
+		// large right turn for 20s
+		x = 16;
+		y = 47.371;
+		motor_testHandler(x,y,20);
 
 
-	x = 0;
-	y = 0;
-	// Stop to 5s
-	motor_testHandler(x,y,5);
+		// backwards max speed for 10s
+		x = 0;
+		y = -50;
+		motor_testHandler(x,y,10);
+
+		// counter-clockwise rotation on one spot for 10s
+		x = -50;
+		y = 0;
+		motor_testHandler(x,y,10);
+
+		// sharp left turn for 20s
+		x = -40;
+		y = 30;
+		motor_testHandler(x,y,10);
+
+		// large left turn for 20s
+		x = -16;
+		y = 47.371;
+		motor_testHandler(x,y,20);
+
+		x = 0;
+		y = 0;
+		// Stop to 5s
+		motor_testHandler(x,y,10);
+	}
 }
