@@ -6,6 +6,7 @@
 
 #define SYSCLK 72000000
 #define BAUDRATE 115200L
+#define TIMER_0_FREQ 2000L // For a 0.5ms tick
 
 idata char buff[20];
 
@@ -96,6 +97,13 @@ void Timer3us(unsigned char us)
 		TMR3CN0 &= ~(0x80);         // Clear overflow indicator
 	}
 	TMR3CN0 = 0 ;                   // Stop Timer3 and clear overflow flag
+}
+
+void TIMER0_Init(void)
+{
+TMOD&=0b_1111_0000; // Set the bits of Timer/Counter 0 to zero
+TMOD|=0b_0000_0101; // Timer/Counter 0 used as a 16-bit counter
+TR0=0; // Stop Timer/Counter 0
 }
 
 void waitms (unsigned int ms)
@@ -229,7 +237,6 @@ void SendATCommand (char * s)
 	printf("Response: %s\r\n", buff);
 }
 
-
 void main(void)
 {
 	unsigned int cnt;
@@ -248,6 +255,7 @@ void main(void)
 	waitms(500);
 	printf("\r\nJDY-40 test\r\n");
 	UART1_Init(9600);
+	TIMER0_Init();
 
 	// To configure the device (shown here using default values).
 	// For some changes to take effect, the JDY-40 needs to be power cycled.

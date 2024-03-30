@@ -313,8 +313,8 @@ void GetPosition2 (float volts[2], float pos[2]) {
     float mov_x = 0.0;
     float mov_y = 0.0;
 	// approx values
-	float mid_x = 2.3096;
-	float mid_y = 2.38421;
+	float mid_x = 2.17;
+	float mid_y = 2.25;
 
 
 	float vx = volts[0];
@@ -483,8 +483,8 @@ void main(void)
 	float extract_range = 800.0; //max range of beeping frequency
 	int timeout_cnt = 0;
 	int sum_count = 0; //count to keep track of first 10 vals
-	int sum_freq = 0; //where I am adding the frequencies into
-	int baseline_freq = 0;
+	float sum_freq = 0.0; //where I am adding the frequencies into
+	float baseline_freq = 0.0;
 	
 	float v[2];
     float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
@@ -541,7 +541,7 @@ void main(void)
 	//cnt=0;
 	while(1)
 	{
-		waitms(100);
+		waitms(50);
 
             
         v[0] = Volts_at_Pin(XPOS_PIN) ;
@@ -559,18 +559,18 @@ void main(void)
 	    sprintf(buff_y, "y=%.4f", xy_pos[1]);
     	LCDprint(buff_y, 2, 1);
        
-		printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
+		//printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
 
-		if (abs(xy_pos[0]) < 2) xy_pos[0]=0;
-		if (abs(xy_pos[1]) < 2) xy_pos[1]=0;
+		if (abs(xy_pos[0]) < 5) xy_pos[0]=0;
+		if (abs(xy_pos[1]) < 5) xy_pos[1]=0;
 		if (xy_pos[0] > 50) xy_pos[0]=50;
 		if (xy_pos[1] > 50) xy_pos[1]=50;
 		if (xy_pos[0] < -50) xy_pos[0]=-50;
 		if (xy_pos[1] < -50) xy_pos[1]=-50;
 
-        sprintf(temp_buff, "xpos: %d ypos: %d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
-		printf(temp_buff);
-		sprintf(temp_buff, "%3d, %3d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
+        //sprintf(temp_buff, "xpos: %d ypos: %d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
+		//printf(temp_buff);
+		sprintf(temp_buff, "%3d,%3d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
         sendstr1(temp_buff);
         
 		waitms(10);
@@ -593,18 +593,23 @@ void main(void)
 		if (RXU1()) 
 		{
 			getstr1(buff);
-			if(strlen(buff)== 10)
+			if(strlen(buff) == 10)
 			{
 				//need to test sum_count part still but should work
 				printf("RX: %s\r\n", buff);
 				extract_num = atof(buff);
+				printf("extracted: %f\r\n", extract_num);
 				if(sum_count < 10)
 				{
-					sum_freq += extract_num;
+					sum_freq = extract_num + sum_freq;
 					sum_count++;
 				}
 				if(sum_count == 10)
-					baseline_freq = sum_freq/10;
+				{
+					baseline_freq = sum_freq/10.0;
+					printf("baseline freq :%f\r\n", baseline_freq);
+					sum_count++;
+				}	
 				if(sum_count > 10)
 				{
 					//now we can start detecting

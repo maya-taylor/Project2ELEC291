@@ -10,6 +10,7 @@
 
 #define SYSCLK 32000000L
 #define DEF_F 15000L
+#define F_CPU 32000000L
 
 // LQFP32 pinout
 //             ----------
@@ -31,7 +32,6 @@
 //       VSS -|16      17|- VDD
 //             ----------
 
-#define F_CPU 32000000L
 
 // Uses SysTick to delay <us> micro-seconds. 
 void Delay_us(unsigned char us)
@@ -132,6 +132,8 @@ int main(void)
     //int cnt=0;
     long int count;
 	float T, f;
+	int xpos;
+	int ypos;
 	
 	RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A
 	
@@ -193,29 +195,29 @@ int main(void)
 
 		if (ReceivedBytes2()>0)
 		{
-			//printf("stuck5\r\n");
 			egets2(buff, sizeof(buff)-1);
-			//printf("stuck1\r\n");
 			
 			printf("RX: %s", buff);
 			//printf("len: %d", strlen(buff));
-			if (buff[0]=='M' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) // remote wants metal detector status (&& strlen(buff)==3)
+			//if (buff[0]=='M' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) // remote wants metal detector status (&& strlen(buff)==3)
+			//changing if statement to receive position instead of M being sent
+			if (strlen(buff) == 9) // remote wants metal detector status (&& strlen(buff)==3)
 			{
-				if (strlen(buff)==2) printf("\r");
-				if (strlen(buff)==1) printf("\r\n");
+				//if (strlen(buff)==2) printf("\r");
+				//if (strlen(buff)==1) printf("\r\n");
+				xpos = atoi(buff[0:2]);
+				ypos = atoi(buff[4:6]);
+				printf("xpos = %d, ypos = %d\r\n", xpos, ypos);
 				count=GetPeriod(200);
-				T= 1.0*count/(F_CPU*200.0); // Since we have the time of 100 periods, we need to divide by 100
+				T= 1.0*count/(F_CPU*200.0); // Since we have the time of 200 periods, we need to divide by 200
 				f=1.0/T;
 				waitms(5);
-				//printf("stuck2\r\n");
 			
 				printf("f=%.2f\r\n",f);
 				sprintf(buff,"%.2f\r\n",f);
 				eputs2(buff);
-				//printf("stuck3\r\n");
 			
 			}
-			//printf("stuck4\r\n");
 			
 		}
 		//waitms(100);

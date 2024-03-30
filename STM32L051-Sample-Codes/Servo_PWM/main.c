@@ -2,23 +2,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "../Common/Include/serial.h"
+#include "UART2.h"
 
 #define F_CPU 32000000L
 #define DEF_F 100000L // 10us tick
 //from motor.#include <stdio.h> 
-#include <stdlib.h>
+// #include <stdlib.h>
 
 #define PI 3.141592654
 #define MAX_VELOCITY 50.00
 #define MIN_PWM 0
 #define MAX_PWM 100.0
-#define RIGHT_MOTOR_ADJUST 1.0000 //what does this constant do? -> Adjustment factors incase motors dont match
+#define MOTOR_ADJUST  	 0.93 //value between 0 and 1, multiply PWM of faster motor by this value 
+#define FORWARD_VELOCITY 20.0  // cm/s -- measured value for x = 0, y = 50
+#define CW_VELOCITY      100.0 // angular velocity in degrees/s CW -- measured value for x = 50, y = 0
+#define CCW_VELOCITY     100.0 // angular velocity in degrees/s CCW -- measured value for x = -50, y = 0
 #define F_CPU 32000000L
 
 // Global variables	
 volatile int PWM_Counter = 0;
-volatile unsigned char pwm1=100, pwm2=100;
+volatile unsigned char pwm1 = 0, pwm2 =0;
 
 // Global timer variables (for tb only)
 volatile int timerCount_10us = 0;
@@ -35,12 +40,35 @@ void wait_1ms(void)
 	SysTick->CTRL = 0x00; // Disable Systick counter
 }
 
+
 void delayms(int len)
 {
 	while(len--) wait_1ms();
 }
-// following chunk of code from motor testbench
-float LeftMotorAdjust_angle(float refAngle) {
+
+/* 
+* Function: adjusts motor 
+* Output: Set 4 pins to either `0, 1, or LEFT_PWM, right_PWM
+*/
+
+/* Control Scheme based on joystick position
+* Diagram roughly to scale
+* 
+*       Right Wheel Power            Left wheel Power
+*       0      1      1              1      1      0
+*        \     |     /                \     |     /
+*          \   |   /                    \   |   /
+*            \ | /                        \ | /
+*  -1  ------------------ 1       1 ------------------ -1
+*            / | \                        / | \
+*          /   |   \                    /   |   \
+*        /     |     \                /     |     \     
+*     -1      -1      0             0      -1      -1 
+* 
+* negative values = CCW motion
+* scale duty cycle based on power
+*/
+float RightMotorAdjust_angle(float refAngle) {
     // https://components101.com/motors/servo-motor-basics-pinout-datasheet
     // PWM signal probably adjusts motor speed
     // direction of motor spin based on voltages applied to MOSFETs in the Hbridge
@@ -65,7 +93,7 @@ float LeftMotorAdjust_angle(float refAngle) {
     return PWM_adjust;
 }
 
-float RightMotorAdjust_angle(float refAngle) { 
+float LeftMotorAdjust_angle(float refAngle) { 
     float angle = refAngle * 180 / PI;
     float PWM_adjust = 1;
 
@@ -105,56 +133,79 @@ float get_PWM (int velocity, float PWM_adjust) {
 *   Param: PWM - between 
 *   Return: High/Low value to turn off or on transistors in the h bridge 
 */
-void turnLeftMotor (int PWM, float PWM_adjust) {
+
+//THIS IS ACTUALLY THE RIGHT MOTOR
+
+void turnLeftMotor (int PWM, float PWM_adjust) { 
     // controlling outputs on PA2 (left motor), and PA3(right motor)
     // is done by bitmasking the ODR register, this sets those pins
     // to be 1 or 0 which then controlls CW or CCW rotation
     // Clock wise rotation
     if (PWM_adjust < 0) {
-        pwm1 = PWM;
+        pwm1 = PWM*MOTOR_ADJUST;
         GPIOA->ODR &= ~BIT2;    // set left motor to 0 when CW
     }
     else { 
-        pwm1 = 100-PWM;  		// Inversed by 100 - PWM, turns when `pwm1` is is LOW
+        pwm1 = (100-PWM*MOTOR_ADJUST);  		// Inversed by 100 - PWM, turns when `pwm1` is is LOW
         GPIOA->ODR |= BIT2;     // set left motor to 1 when CCW
     }
 }
 
-int turnRightMotor (int PWM, float PWM_adjust) {
+// THIS IS ACTUALLY THE LEFT MOTOR
+int turnRightMotor (int PWM, float PWM_adjust) { 
     if (PWM_adjust < 0) {
         pwm2 = PWM;
         GPIOA->ODR &= ~BIT4;    // set right motor to 0 when CW
     }
     else {
-        pwm2 = 100-PWM;         // Inversed by 100 - PWM, turns when `pwm2` is LOW
+        pwm2 = (100-PWM);         // Inversed by 100 - PWM, turns when `pwm2` is LOW
         GPIOA->ODR |= BIT4;     // set right motor to 1 when CCW
     }
 }
 
 // Motor control loop
-// Function: edits global variables pwm1 and pwm2
-
+// Function: edits global variables pwm1 and pwm2 then exits, non-blocking
 void motorControlLoop (int x, int y) {
+
 	// calculate angle
-	float angle = atan2f(y,x);
-	int velocity =  sqrt(pow(x,2) + pow(y,2));
+	float angle;
+	int velocity;
+	float left_adjust;
+	int left_PWM;
+	float right_adjust;
+	int right_PWM;
 
-	// left motor control
-	float left_adjust = LeftMotorAdjust_angle(angle); 
-	int left_PWM = get_PWM(velocity, left_adjust);
-	turnLeftMotor(left_PWM, left_adjust); // set PWM1
+	velocity =  sqrt(pow(x,2) + pow(y,2));
 
-	// right motor control
-	float right_adjust = RightMotorAdjust_angle(angle); 
-	int right_PWM = get_PWM(velocity, right_adjust);
-	turnRightMotor(right_PWM, right_adjust); // set PWM2
 
-	// Stop detection
-	// this turns both motors off
-	if (abs(x) < 5 & abs(y) < 5) {
+	//Added this to stop assigning a undeclared value to angle
+	if ((x || y) == 0) {
+		angle = 0;
 		pwm1 = 0;
 		pwm2 = 0;
 	}
+	else {
+		angle = atan2f(y,x);
+
+		// left motor control
+		left_adjust = LeftMotorAdjust_angle(angle); 
+		left_PWM = get_PWM(velocity, left_adjust);
+		turnLeftMotor(left_PWM, left_adjust); // set PWM1
+
+		// right motor control
+		right_adjust = RightMotorAdjust_angle(angle); 
+		right_PWM = get_PWM(velocity, right_adjust);
+		turnRightMotor(right_PWM, right_adjust); // set PWM2
+	}
+
+
+	// Rohan added this if to not enter PWM adjusts if we dont want to move
+	// if (abs(x) > 5 || abs(y) > 5) {
+	// }
+	// // Stop detection
+	// // this turns both motors off
+	// else  {
+	// }
 
 	// Debug Log/
 	// printf("x:%d   y:%d left_PWM:%d right_PWM:%d  l_adj:%f, r_adj:%f\r\n", x,y, pwm1, pwm2, left_adjust, right_adjust); 
@@ -169,6 +220,80 @@ void motor_testHandler(int x, int y, int seconds) {
 	while (timerCount_s < seconds) {
 		motorControlLoop(x,y); 
 	}
+}
+
+void stop (int seconds) {
+	int x = 0;
+	int y = 0;
+	motor_testHandler(x,y,seconds); 
+}
+
+void forward (int cm) {
+	int x = 0;
+	int y = 50;
+	int seconds = cm / FORWARD_VELOCITY; 
+	motor_testHandler(x,y,seconds); 
+}
+
+void backward (int cm) {
+	int x = 0;
+	int y = -50;
+	int seconds = cm / FORWARD_VELOCITY; // assume forward velocity = backward velocity
+	motor_testHandler(x,y,seconds);
+}
+
+void CW_turn(int degrees) {
+	int x = 50;
+	int y = 0;
+	int seconds = degrees / CW_VELOCITY;
+	motor_testHandler(x,y,seconds);
+}
+
+void CCW_turn (int degrees) { 
+	int x = -50;
+	int y = 0;
+	int seconds = degrees / CCW_VELOCITY;
+	motor_testHandler(x,y,seconds);
+}
+
+// Preset functions - buttons 
+// Square Pattern
+void CW_square_turn (int cm) {
+	for (int i = 0; i < 4; i++) {
+		forward(cm);
+		CW_turn (90); // if we can get a sharp turn
+	}
+
+}
+// For 'I' shape
+void forward_backward (int cm) {
+	forward(cm);
+	backward(cm);
+}
+// Draw a figure 8
+void figure8 (int seconds) { // radius of 8
+	CW_turn(360);
+	CCW_turn(360);
+}
+
+void testCases (void) {
+	forward(100);
+	CW_turn(360); // 360 degrees turn
+
+	// large right turn for 10s 
+	x = 16;
+	y = 47.371;
+	motor_testHandler(x,y,10);
+
+	backward(100);
+	CCW_turn(360);
+	
+	// large left turn for 20s
+	x = -16;
+	y = 47.371;
+	motor_testHandler(x,y,20);
+
+	stop(5); // stop for 5 seconds
 }
 
 // Interrupt service routines are the same as normal
@@ -258,8 +383,68 @@ void Hardware_Init(void)
 	TIM2->CR1 |= BIT7;      // ARPE enable    
 	TIM2->DIER |= BIT0;     // enable update event (reload event) interrupt 
 	TIM2->CR1 |= BIT0;      // enable counting    
+
+	//from JDY40
+	GPIOA->OSPEEDR=0xffffffff; // All pins of port A configured for very high speed! Page 201 of RM0451
+
+	RCC->IOPENR |= BIT0; // peripheral clock enable for port A
+
+    GPIOA->MODER = (GPIOA->MODER & ~(BIT27|BIT26)) | BIT26; // Make pin PA13 output (page 200 of RM0451, two bits used to configure: bit0=1, bit1=0))
+	GPIOA->ODR |= BIT13; // 'set' pin to 1 is normal operation mode.
+
+	GPIOA->MODER &= ~(BIT16 | BIT17); // Make pin PA8 input
+	// Activate pull up for pin PA8:
+	GPIOA->PUPDR |= BIT16; 
+	GPIOA->PUPDR &= ~(BIT17);
+
 	
 	__enable_irq();
+}
+
+#define PIN_PERIOD (GPIOA->IDR&BIT6)
+
+// GetPeriod() seems to work fine for frequencies between 300Hz and 600kHz - EDIT THIS FUNC IF FREQ IS OUTSIDE RANGE
+// 'n' is used to measure the time of 'n' periods; this increases accuracy.
+long int GetPeriod (int n)
+{
+	int i;
+	unsigned int saved_TCNT1a, saved_TCNT1b;
+	
+	SysTick->LOAD = 0xffffff;  // 24-bit counter set to check for signal present
+	SysTick->VAL = 0xffffff; // load the SysTick counter
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	while (PIN_PERIOD!=0) // Wait for square wave to be 0
+	{
+		if(SysTick->CTRL & BIT16) return 0;
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+
+	SysTick->LOAD = 0xffffff;  // 24-bit counter set to check for signal present
+	SysTick->VAL = 0xffffff; // load the SysTick counter
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	while (PIN_PERIOD==0) // Wait for square wave to be 1
+	{
+		if(SysTick->CTRL & BIT16) return 0;
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+	
+	SysTick->LOAD = 0xffffff;  // 24-bit counter reset
+	SysTick->VAL = 0xffffff; // load the SysTick counter to initial value
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer */
+	for(i=0; i<n; i++) // Measure the time of 'n' periods
+	{
+		while (PIN_PERIOD!=0) // Wait for square wave to be 0
+		{
+			if(SysTick->CTRL & BIT16) return 0;
+		}
+		while (PIN_PERIOD==0) // Wait for square wave to be 1
+		{
+			if(SysTick->CTRL & BIT16) return 0;
+		}
+	}
+	SysTick->CTRL = 0x00; // Disable Systick counter
+
+	return 0xffffff-SysTick->VAL;
 }
 
 int main(void)
@@ -269,12 +454,28 @@ int main(void)
 	int x, y;
 	
 	Hardware_Init();
+	initUART2(9600); //from radio
 	
 	delayms(500); // Give putty a chance to start before we send characters with printf()
 	
     printf("Run Servo Motor\r\n");
     printf("(outputs are PA11 and PA12, pins 21 and 22).\r\n");
     printf("Based on Servo PWM Code in Samples\r\n\r\n");
+
+	// We should select an unique device ID.  The device ID can be a hex
+	// number from 0x0000 to 0xFFFF.  In this case is set to 0xABBA
+	SendATCommand("AT+DVIDBEEF\r\n");  
+
+	// To check configuration
+	SendATCommand("AT+VER\r\n");
+	SendATCommand("AT+BAUD\r\n");
+	SendATCommand("AT+RFID\r\n");
+	SendATCommand("AT+DVID\r\n");
+	SendATCommand("AT+RFC\r\n");
+	SendATCommand("AT+POWE\r\n");
+	SendATCommand("AT+CLSS\r\n");
+	
+	printf("\r\nPress and hold a push-button attached to PA8 (pin 18) to transmit.\r\n");
 
 	// // Parsing string to an integer
 	// char str[] = "10,20,30,40,50";
@@ -298,56 +499,38 @@ int main(void)
 	* 10. Stop for 5s
 	*/
 
-	// Stop for 3s
+	//use motorControlLoop(x,y)
 	while (1) {
-		x = 0;
-		y = 0;
-		motor_testHandler(x,y,3); 
-
-		// Forward max speed for 10s
-		x = 0;
-		y = 50;
-		motor_testHandler(x,y,10);
-
-		// clockwise rotation on one spot for 10s
-		x = 50;
-		y = 0;
-		motor_testHandler(x,y,10);
-
-		// more aggressive right turn for 10s
-		x = 40;
-		y = 30;
-		motor_testHandler(x,y,20);
-
-		// large right turn for 20s
-		x = 16;
-		y = 47.371;
-		motor_testHandler(x,y,20);
-
-
-		// backwards max speed for 10s
-		x = 0;
-		y = -50;
-		motor_testHandler(x,y,10);
-
-		// counter-clockwise rotation on one spot for 10s
-		x = -50;
-		y = 0;
-		motor_testHandler(x,y,10);
-
-		// sharp left turn for 20s
-		x = -40;
-		y = 30;
-		motor_testHandler(x,y,10);
-
-		// large left turn for 20s
-		x = -16;
-		y = 47.371;
-		motor_testHandler(x,y,20);
-
-		x = 0;
-		y = 0;
-		// Stop to 5s
-		motor_testHandler(x,y,10);
+		// insert joystick reading 
+		
+		if (ReceivedBytes2()>0)
+		{
+			egets2(buff, sizeof(buff)-1);
+			
+			printf("RX: %s", buff);
+			//printf("len: %d", strlen(buff));
+			//if (buff[0]=='M' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) // remote wants metal detector status (&& strlen(buff)==3)
+			//changing if statement to receive position instead of M being sent
+			if (strlen(buff) == 9) // remote wants metal detector status (&& strlen(buff)==3)
+			{
+				//if (strlen(buff)==2) printf("\r");
+				//if (strlen(buff)==1) printf("\r\n");
+				x = atoi(buff[0:2]);
+				y = atoi(buff[4:6]);
+				printf("xpos = %d, ypos = %d\r\n", xpos, ypos);
+				motorControlLoop(x, y);
+				
+				count=GetPeriod(200);
+				T= 1.0*count/(F_CPU*200.0); // Since we have the time of 200 periods, we need to divide by 200
+				f=1.0/T;
+				waitms(5);
+			
+				printf("f=%.2f\r\n",f);
+				sprintf(buff,"%.2f\r\n",f);
+				eputs2(buff);
+			
+			}
+			
+		}
 	}
 }
