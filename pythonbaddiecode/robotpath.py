@@ -3,12 +3,13 @@ import time
 import matplotlib.pyplot as plt
 
 #velocity at full is 0.8 second per breadboard
-#1.25 breadboards per second
+#0.5 breadboards per second
 # Global variables for joystick position
 xpos_data, ypos_data = [], []
-
+dis_trav = 0.0
 # Function to update joystick position
 def update_joystick_position(xpos, ypos):
+    global dis_trav
     xpos_data.append(xpos/50)
     ypos_data.append(ypos/50)
     # Limit data to last 100 points for better visualization
@@ -33,11 +34,11 @@ def update_joystick_position(xpos, ypos):
     plt.plot([0, xpos/50], [0, ypos/50], color='red')
     
     # Add label showing the y value in the upper right corner with box
-    plt.text(0.8, 0.8, f"Velocity in Breadboards Per Second: {ypos/50*1.25}", fontsize=10, ha='right', va='top', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
+    plt.text(0.8, 0.8, f"Velocity in Breadboards Per Second: {round((ypos/50)*1.25,2)}", fontsize=10, ha='right', va='top', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
     
     # Add label showing the x value in the lower left corner with box
-    plt.text(-0.8, -0.8, f"Angular Velocity Factor: {xpos/10}", fontsize=10, ha='left', va='bottom', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
-    
+    plt.text(-0.8, -0.8, f"Angular Velocity Factor: {xpos/10} \n Total Distance Travelled (Breadboards) = {round(dis_trav+ypos/50*1.25*0.3*0.6,2)}", fontsize=10, ha='left', va='bottom', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
+    dis_trav += abs(ypos/50*1.25*0.3*0.6)
     plt.draw()
     plt.pause(0.001)
 
