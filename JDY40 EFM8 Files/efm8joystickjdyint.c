@@ -32,7 +32,7 @@
 #define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
 
 // Buzzer sound
-#define BUZZER_OUT P2_4  // sets buzzer output to pin 1.1
+#define BUZZER_OUT P0_2  // sets buzzer output to pin 1.1
 #define DEFAULT_F 15500L // 
 
 // threshold values for many Hz above baseline frequency for different metal strengths
@@ -361,8 +361,8 @@ void GetPosition2 (float volts[2], float pos[2]) {
     float mov_x = 0.0;
     float mov_y = 0.0;
 	// approx values
-	float mid_x = 2.17;
-	float mid_y = 2.25;
+	float mid_x = 2.30;
+	float mid_y = 2.35;
 
 
 	float vx = volts[0];
@@ -522,7 +522,7 @@ void SendATCommand (char * s)
 // Turns on timer2 so that buzzer plays a sound `freq`
 // Param: freq -- frequency that timer2 will play at
 void loadTimer2(unsigned long int freq) {
-	unsigned long int x=(SYSCLK/(2L*f));
+	unsigned long int x=(SYSCLK/(2L*freq));
 
 	TR2=0; // Stop timer 2
 	TMR2RL=0x10000L-x; // Change reload value for new frequency
@@ -543,26 +543,40 @@ void loadTimer2(unsigned long int freq) {
 
 
 */
-void playBuzzerSound (float detectedFreq, float min_metal_detect, float baselinefreq) {
+void playBuzzerSound (float extract_num, float min_metal_detect, float baseline_freq) {
 
 	// minimum frequency
-	if (extract_num > min_metal_detect + baseline_freq) {
-		loadTimer2(min_freq);
-	else if (extract_num > metalLevel_1 + baseline_freq)
-		loadTimer2(level1_freq);
-	else if (extract_num > metalLevel_2 + baseline_freq)
-		loadTimer2(level2_freq);
-	else if (extract_num > metalLevel_3 + baseline_freq)
-		loadTimer2(level3_freq);
-	else if (extract_num > metalLevel_4 + baseline_freq)
-		loadTimer2(level4_freq);
-	else if (extract_num > metalLevel_5 + baseline_freq)
-		loadTimer2(level5_freq);
+ 	if (extract_num > min_metal_detect + baseline_freq){
+ 		loadTimer2((extract_num - baseline_freq-min_metal_detect)*3 +400);
+		printf("BEEP\r\n");
+	}	
+// 	else if (extract_num > metalLevel_4 + baseline_freq){
+// 		loadTimer2(level4_freq);
+// 		printf("BEEP 4\r\n");
+// 	}
+// 	else if (extract_num > metalLevel_3 + baseline_freq){
+// 		loadTimer2(level3_freq);
+// 		printf("BEEP 3\r\n");
+// 	}
+// 	else if (extract_num > metalLevel_2 + baseline_freq){
+// 		loadTimer2(level2_freq);
+// 		printf("BEEP 2\r\n");
+// 	}
+// 	else if (extract_num > metalLevel_1 + baseline_freq){
+// 		loadTimer2(level1_freq);
+// 		printf("BEEP 1\r\n");
+// 	}
+// 	else if (extract_num > min_metal_detect + baseline_freq){
+// 		loadTimer2(min_freq);
+// 		printf("BEEP\r\n");
+// 	}
 	else {
 		TR2 = 0; 		// Stop timer 2
-		BUZZER_OUT = 0; // turn off buzzer sound
-	}
+ 		BUZZER_OUT = 0; // turn off buzzer sound
+ 		}
+// }
 }
+
 
 // Initialization is done externally by c51? - GL
 void main(void)
