@@ -32,8 +32,11 @@
 #define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
 
 // Buzzer sound
-#define BUZZER_OUT P0_2  // sets buzzer output to pin 1.1
-#define DEFAULT_F 15500L // 
+#define BUZZER_OUT   P0_3  // sets buzzer output to pin 0.2
+#define TR5_OUT_TEST P0_2 // 
+//#define DEFAULT_F 15500L // 
+#define DEFAULT_F 2000L
+#define TIMER5_FREQ 1000L
 
 // threshold values for many Hz above baseline frequency for different metal strengths
 #define metalLevel_min 200
@@ -51,9 +54,13 @@
 #define level4_freq    1500
 #define level5_freq    2000
 
+
+
 unsigned char overflow_count;
 
 idata char buff[20];
+
+volatile long int count_ms = 0;
 
 char _c51_external_startup (void)
 {
@@ -123,12 +130,23 @@ char _c51_external_startup (void)
 
 	
 	// Initialize timer 2 for periodic interrupts
+	SFRPAGE=0x10;
 	TMR2CN0=0x00;   // Stop Timer2; Clear TF2;
-	CKCON0|=0b_0001_0000;
+	CKCON0|=0b_0001_0000; 
 	TMR2RL=(-(SYSCLK/(2*DEFAULT_F))); // Initialize reload value
 	TMR2=0xffff;   // Set to reload immediately
 	ET2=1;         // Enable Timer2 interrupts
 	TR2=1;         // Start Timer2
+
+	// Initializer timer5
+	SFRPAGE=0x10;
+	TMR5CN0=0x00;   // Stop Timer5; Clear TF5; WARNING: lives in SFR page 0x10
+	CKCON1|=0b_0000_0100; // Timer 5 uses the system clock
+	TMR5RL=(0x10000L-(SYSCLK/(2*TIMER5_FREQ))); // Initialize reload value
+	TMR5=0xffff;   // Set to reload immediately
+	EIE2|=0b_0000_1000; // Enable Timer5 interrupts
+	TR5=1;         // Start Timer5 (TMR5CN0 is bit addressable)
+
 	EA=1; // Global interrupt enable
   	
 	return 0;
@@ -136,8 +154,57 @@ char _c51_external_startup (void)
 
 void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 {
+	SFRPAGE=0x10;
 	TF2H = 0; // Clear Timer2 interrupt flag
 	BUZZER_OUT=!BUZZER_OUT; // complements the value of BUZZER_OUT to generate a square wave
+}
+// Timer 5 controls the output of timer2
+void Timer5_ISR (void) interrupt INTERRUPT_TIMER5
+{
+	// int lengthBeeps;
+	SFRPAGE=0x10;
+	TF5H = 0;
+	TR5_OUT_TEST =! TR5_OUT_TEST; // generates a continuous 1kHz wave. -- Debug to verify that ISR5 is running
+
+	// depending on metal strength level, do a beep with a particular frequency
+	
+	count_ms++;
+
+	if (extract_num > metalLevel_5 + baseline_freq){
+ 		lengthBeeps = 100; // highest frequency and longest period for length of beeps
+		printf("BEEP 5\r\n");
+	}	
+	else if (extract_num > metalLevel_4 + baseline_freq){
+ 		lengthBeeps = 200;
+		printf("BEEP 4\r\n");
+	}
+	else if (extract_num > metalLevel_3 + baseline_freq){
+		lengthBeeps = 400;
+		printf("BEEP 3\r\n");
+	}
+	else if (extract_num > metalLevel_2 + baseline_freq){
+		lengthBeeps = 600;
+		printf("BEEP 2\r\n");
+	}
+	else if (extract_num > metalLevel_1 + baseline_freq){
+		lengthBeeps = 800;
+		printf("BEEP 1\r\n");
+	}
+	else if (extract_num > min_metal_detect + baseline_freq){
+		lengthBeeps = 1000;
+		printf("BEEP\r\n");
+	}
+	lengthBeeps = 500;
+
+	if (count_ms >= 100) {
+		if (TR2 == 0)
+			TR2 = 1; // Enable / disable timer2 interrupts
+		else
+			TR2 = 0;
+
+		count_ms = 0;		
+	}
+	
 }
 
 
@@ -175,7 +242,7 @@ void InitADC (void)
 	
 	ADC0CN2 =
 		(0x0 << 7) | // PACEN. 0x0: The ADC accumulator is over-written.  0x1: The ADC accumulator adds to results.
-		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: TIMER4, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
+		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: Timer5, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
 
 	ADEN=1; // Enable ADC
 }
@@ -349,8 +416,6 @@ float map2(float x, float in_min, float in_max, float out_min, float out_max)
 	//printf("%f\r\n", tempe);
 	//tempf = tempe+ out_min;
 	//printf("%f\r\n", tempf);
-	
-
 	
 	float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     return value;
@@ -543,39 +608,40 @@ void loadTimer2(unsigned long int freq) {
 
 
 */
-void playBuzzerSound (float extract_num, float min_metal_detect, float baseline_freq) {
-
-	// minimum frequency
- 	if (extract_num > min_metal_detect + baseline_freq){
- 		loadTimer2((extract_num - baseline_freq-min_metal_detect)*3 +400);
-		printf("BEEP\r\n");
-	}	
-// 	else if (extract_num > metalLevel_4 + baseline_freq){
-// 		loadTimer2(level4_freq);
-// 		printf("BEEP 4\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_3 + baseline_freq){
-// 		loadTimer2(level3_freq);
-// 		printf("BEEP 3\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_2 + baseline_freq){
-// 		loadTimer2(level2_freq);
-// 		printf("BEEP 2\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_1 + baseline_freq){
-// 		loadTimer2(level1_freq);
-// 		printf("BEEP 1\r\n");
-// 	}
-// 	else if (extract_num > min_metal_detect + baseline_freq){
-// 		loadTimer2(min_freq);
-// 		printf("BEEP\r\n");
-// 	}
-	else {
-		TR2 = 0; 		// Stop timer 2
- 		BUZZER_OUT = 0; // turn off buzzer sound
- 		}
+// void playBuzzerSound (float extract_num, float min_metal_detect, float baseline_freq) {
+// 	return;
+// 	// minimum frequency
+//  	// if (extract_num > min_metal_detect + baseline_freq){
+//  	// 	loadTimer2((extract_num - baseline_freq-min_metal_detect)*3 +400);
+// 	// 	printf("BEEP\r\n");
+// 	// }	
+// 	// else if (extract_num > metalLevel_4 + baseline_freq){
+// 	// 	loadTimer2(level4_freq);
+// 	// 	printf("BEEP 4\r\n");
+// 	// }
+// 	// else if (extract_num > metalLevel_3 + baseline_freq){
+// 	// 	loadTimer2(level3_freq);
+// 	// 	printf("BEEP 3\r\n");
+// 	// }
+// 	// else if (extract_num > metalLevel_2 + baseline_freq){
+// 	// 	loadTimer2(level2_freq);
+// 	// 	printf("BEEP 2\r\n");
+// 	// }
+// 	// else if (extract_num > metalLevel_1 + baseline_freq){
+// 	// 	loadTimer2(level1_freq);
+// 	// 	printf("BEEP 1\r\n");
+// 	// }
+// 	// else if (extract_num > min_metal_detect + baseline_freq){
+// 	// 	loadTimer2(min_freq);
+// 	// 	printf("BEEP\r\n");
+// 	// }
+// 	// 
+// 	// else {
+// 	//	TR2 = 0; 		// Stop timer 2
+//  	//	BUZZER_OUT = 0; // turn off buzzer sound
+//  	//	}
+// // }
 // }
-}
 
 
 // Initialization is done externally by c51? - GL
@@ -600,7 +666,7 @@ void main(void)
 	xdata char temp_buff[80];
 
 	//float adc[2]
-	// TIMER0_Init(); commented out since I'll be using TIMER2 ISR - GL
+	// TIMER0_Init();
 	LCD_4BIT();
 	
 	waitms(500);
@@ -689,6 +755,7 @@ void main(void)
 		timeout_cnt = 0;
 		while (1) 
 		{
+			TR5_OUT_TEST != TR5_OUT_TEST;
 			if (RXU1()) break;
 			waitms_or_RI1(1);
 			timeout_cnt++;
@@ -720,7 +787,7 @@ void main(void)
 				if(sum_count > 10)
 				{
 					// //now we can start detecting
-					playBuzzerSound(extract_num, min_metal_detect, baseline_freq);
+					// playBuzzerSound(extract_num, min_metal_detect, baseline_freq);
 				}
 				
 			}

@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": ".",
-      "program": "build/Debug/outDebug",
+      "cwd": "c:/Users/flipa/OneDrive - UBC/University/Course Materials/2nd year - Term 2/ELEC 291 - Electrical Engineering Design Studio/Project2ELEC291/JDY40 EFM8 Files",
+      "program": "c:/Users/flipa/OneDrive - UBC/University/Course Materials/2nd year - Term 2/ELEC 291 - Electrical Engineering Design Studio/Project2ELEC291/JDY40 EFM8 Files/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

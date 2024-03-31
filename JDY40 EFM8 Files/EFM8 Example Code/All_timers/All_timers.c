@@ -1,9 +1,3 @@
-//  all_timers.c: Uses timer 0 to 5 overflow interrupts to generate a square
-//  wave at pins P2.0, P1_7, P1_6, P1_5, P1_4, and P1_3.  Also use the PCA with interrupts to
-//  generate square signals at pins P1.2, P1.1, P1.0, P0.7, and P0.6
-//
-//  Copyright (c) 2010-2018 Jesus Calvino-Fraga
-//
 //  ~C51~
 
 #include <EFM8LB1.h>
