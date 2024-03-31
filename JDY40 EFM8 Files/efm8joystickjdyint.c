@@ -1,3 +1,14 @@
+/* 	Function: Joystick Breadboard side Code
+	Hardware:
+	- Timer 0
+	- Timer 2 => ISR which generates buzzer sound. Output on P2_4
+
+	Global variables: 
+		overflow_count --
+		buff --
+
+*/
+
 #include <EFM8LB1.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,6 +30,26 @@
 #define CHARS_PER_LINE 16
 #define MAX_VOLTS 3.3049  //this should stay consistent but maybe requires calibration (HY)
 #define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
+
+// Buzzer sound
+#define BUZZER_OUT P2_4  // sets buzzer output to pin 1.1
+#define DEFAULT_F 15500L // 
+
+// threshold values for many Hz above baseline frequency for different metal strengths
+#define metalLevel_min 200
+#define metalLevel_1   300
+#define metalLevel_2   400
+#define metalLevel_3   500
+#define metalLevel_4   600
+#define metalLevel_5   700
+
+// buzzer frequencies for each strength level
+#define min_freq       500   
+#define level1_freq    800   
+#define level2_freq    100
+#define level3_freq    1200
+#define level4_freq    1500
+#define level5_freq    2000
 
 unsigned char overflow_count;
 
@@ -89,9 +120,26 @@ char _c51_external_startup (void)
 	TMOD |=  0x20;                       
 	TR1 = 1; // START Timer1
 	TI = 1;  // Indicate TX0 ready
+
+	
+	// Initialize timer 2 for periodic interrupts
+	TMR2CN0=0x00;   // Stop Timer2; Clear TF2;
+	CKCON0|=0b_0001_0000;
+	TMR2RL=(-(SYSCLK/(2*DEFAULT_F))); // Initialize reload value
+	TMR2=0xffff;   // Set to reload immediately
+	ET2=1;         // Enable Timer2 interrupts
+	TR2=1;         // Start Timer2
+	EA=1; // Global interrupt enable
   	
 	return 0;
 }
+
+void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
+{
+	TF2H = 0; // Clear Timer2 interrupt flag
+	BUZZER_OUT=!BUZZER_OUT; // complements the value of BUZZER_OUT to generate a square wave
+}
+
 
 void InitADC (void)
 {
@@ -471,7 +519,52 @@ void SendATCommand (char * s)
 	printf("Response: %s\r\n", buff);
 }
 
+// Turns on timer2 so that buzzer plays a sound `freq`
+// Param: freq -- frequency that timer2 will play at
+void loadTimer2(unsigned long int freq) {
+	unsigned long int x=(SYSCLK/(2L*f));
 
+	TR2=0; // Stop timer 2
+	TMR2RL=0x10000L-x; // Change reload value for new frequency
+	TR2=1; // Start timer 2
+}
+
+/*
+	Function:
+		If freq is above a threshold(baseline + min_metal_detect), play sound
+		Frequency of sound is dependent on amount above baseline
+		Different threshold levels are given by 
+		`metalLevel_x`which corresponds to `levelx_freq`
+
+	Params:
+		detectedFreq - measured frequency of circuit
+		min_metal_detect - minimum value above baseline for us to consider there's a coin
+		baselinefreq - measured baseline frequency
+
+
+*/
+void playBuzzerSound (float detectedFreq, float min_metal_detect, float baselinefreq) {
+
+	// minimum frequency
+	if (extract_num > min_metal_detect + baseline_freq) {
+		loadTimer2(min_freq);
+	else if (extract_num > metalLevel_1 + baseline_freq)
+		loadTimer2(level1_freq);
+	else if (extract_num > metalLevel_2 + baseline_freq)
+		loadTimer2(level2_freq);
+	else if (extract_num > metalLevel_3 + baseline_freq)
+		loadTimer2(level3_freq);
+	else if (extract_num > metalLevel_4 + baseline_freq)
+		loadTimer2(level4_freq);
+	else if (extract_num > metalLevel_5 + baseline_freq)
+		loadTimer2(level5_freq);
+	else {
+		TR2 = 0; 		// Stop timer 2
+		BUZZER_OUT = 0; // turn off buzzer sound
+	}
+}
+
+// Initialization is done externally by c51? - GL
 void main(void)
 {
 	//unsigned int cnt;
@@ -493,7 +586,7 @@ void main(void)
 	xdata char temp_buff[80];
 
 	//float adc[2]
-	TIMER0_Init();
+	// TIMER0_Init(); commented out since I'll be using TIMER2 ISR - GL
 	LCD_4BIT();
 	
 	waitms(500);
@@ -612,9 +705,8 @@ void main(void)
 				}	
 				if(sum_count > 10)
 				{
-					//now we can start detecting
-					if(extract_num > min_metal_detect + baseline_freq)
-						printf("Beep\r\n}");
+					// //now we can start detecting
+					playBuzzerSound(extract_num, min_metal_detect, baseline_freq);
 				}
 				
 			}

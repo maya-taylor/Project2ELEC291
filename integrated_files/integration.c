@@ -26,6 +26,11 @@
 #define BACKWARD_CW_ANGLE 		atan2f(-47,-16)
 #define F_CPU 32000000L
 
+#define S_MANUAL 				1
+#define S_SQUARE 				2
+#define S_FIGURE8 				3
+#define S_PATH   				4
+
 // Global variables	
 volatile int PWM_Counter = 0;
 volatile unsigned char pwm1 = 0, pwm2 = 0;
@@ -160,12 +165,10 @@ void turnLeftMotor (int PWM, float PWM_adjust) {
     if (PWM_adjust < 0) { // Backwards
         pwm1 = PWM;
         GPIOA->ODR &= ~BIT2;    // set left motor to 0 when CW
-		// leftDirection = 0;      // 0 if CW
     } 
     else { // Forwards
         pwm1 = (100-PWM*MOTOR_ADJUST);  		// Inversed by 100 - PWM, turns when `pwm1` is is LOW
         GPIOA->ODR |= BIT2;     // set left motor to 1 when CCW
-		// leftDirection = 1;      // 1 if CCW
     }
 }
 
@@ -174,12 +177,10 @@ int turnRightMotor (int PWM, float PWM_adjust) {
     if (PWM_adjust < 0) {
         pwm2 = PWM*MOTOR_ADJUST;
         GPIOA->ODR &= ~BIT4;     // set right motor to 0 when CCW
-		// rightDirection = 0;      // 0 if CCW
     }
     else {
         pwm2 = (100-PWM);         // Inversed by 100 - PWM, turns when `pwm2` is LOW
         GPIOA->ODR |= BIT4;     // set right motor to 1 when CCW
-		// rightDirection = 1;      // 1 if CCW
     }
 }
 
@@ -246,59 +247,89 @@ void stop (int seconds) {
 	motor_testHandler(x,y,seconds); 
 }
 
-void forward (int seconds) {
+void forward (int cm) {
 	int x = 0;
 	int y = 50;
+
+	int seconds = cm / FORWARD_VELOCITY;
 	motor_testHandler(x,y,seconds); 
 }
 
-void CW_turn(int seconds) {
-	
+void CW_turn(int degrees) {
+	int x = 50;
+	int y = 0;
+
+	int seconds = degrees/CW_VELOCITY;
+	motor_testHandler(x,y,seconds); 
+}
+
+void CCW_turn (int degrees) {
+	int x = -50;
+	int y = 0;
+
+	int seconds = degrees/CCW_VELOCITY;
+	motor_testHandler(x,y,seconds); 
+}
+
+// drive in square with side lengths passed as a param
+void square (int cm) { 
+}
+
+// Drives in a figrue 8 path
+void figure8(void) {
 
 }
 
-void CCW_turn (int seconds) {
-	
+
+// Follows a path that is created by drawing on a GUI in python
+void path(void) {
+
 }
 
 void testCases (void) {
 		// Forward max speed for 10s
-		int x = 0;
-		int y = 50;
-		motor_testHandler(x,y,10);
+		// int x = 0;
+		// int y = 50;
+		// motor_testHandler(x,y,10);
 
-		 // clockwise rotation on one spot for 10s // counter - all directions opposite
-		  x = 50;
-		  y = 0;
-		 motor_testHandler(x,y,10);
-	 // more aggressive right turn for 10s
-		 x = 40;
-		 y = 30;
-		 motor_testHandler(x,y,20);
-	 // large right turn for 20s 
-		 x = 16;
-		 y = 47.371;
-		 motor_testHandler(x,y,20);
-	 // backwards max speed for 10s
-		 x = 0;
-		 y = -50;
-		 motor_testHandler(x,y,10);
-	 // counter-clockwise rotation on one spot for 10s
-		 x = -50;
-		 y = 0;
-		 motor_testHandler(x,y,10);
-	 // sharp left turn for 20s
-		 x = -40;
-		 y = 30;
-		 motor_testHandler(x,y,10);
-	 // large left turn for 20s
-		 x = -16;
-		 y = 47.371;
-		 motor_testHandler(x,y,20);
-	 	x = 0;
-		 y = 0;
-		 // Stop to 5s
-		 motor_testHandler(x,y,10);
+		forward(100); // go forward 1m
+		stop(10);
+
+		CW_turn(360); // CW turn 360 degrees
+		stop(10);
+
+		CW_turn(360); // CCW turn 360 degrees
+		stop(10);
+}
+
+/* Robot Controller
+	NOTE: This FSM is blocking. 
+	This means that for non-manual states, the robot will not respond to any inputs, including emergency stop, 
+	until the action is finished.
+	
+	State 0 -- Default:
+		- runs motor control loop 
+*/
+void robot_control_FSM(int robot_state, int x, int y) {
+	
+	switch (robot_state) {
+		case S_MANUAL:
+			motorControlLoop (x,y);
+			break;
+		case S_SQUARE: 
+			square(50); // draws a 50cmx50cm square
+			break;
+		case S_FIGURE8: 
+			figure8();
+			break;
+		case S_PATH:
+			path(); 
+			break;
+		default:
+			motorControlLoop(x,y);
+
+		robot_state = S_MANUAL; // set back to default after exiting the FSM. 
+	}
 }
 
 // Interrupt service routines are the same as normal
@@ -494,6 +525,7 @@ int main(void)
 {
     char buff[80];
     int npwm;
+	int robot_state = S_MANUAL; // sets robot control mode to `MANUAL` which is the default. Joystick controlled  
 	int x, y;
 	long int count;
 	float T, f;
@@ -588,7 +620,8 @@ int main(void)
 				x = atoi(buff);
 				y = atoi(buff+4);
 				printf("xpos = %d, ypos = %d\r\n", x,y);
-				motorControlLoop(x, y);
+				// motorControlLoop(x, y); // Previous control. Automatically go into "Joy stick control mode"
+				robot_control_FSM(robot_state, x,y);
 			
 			}
 			

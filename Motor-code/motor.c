@@ -56,7 +56,7 @@ void TIM2_Handler(void)
 	TIM2->SR &= ~BIT0; // clear update interrupt flag
 	PWM_Counter++;
 	
-	if(pwm1>PW M_Counter)
+	if(pwm1>PWM_Counter)
 	{
 		GPIOA->ODR |= BIT11;
 	}
@@ -79,9 +79,6 @@ void TIM2_Handler(void)
 		PWM_Counter=0;
 		GPIOA->ODR |= (BIT11|BIT12);
 
-		// P1_1
-		// P1_2 = P1_1
-		// P1_1 = 0
 	}   
 }
 // LQFP32 pinout
