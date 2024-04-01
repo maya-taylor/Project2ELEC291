@@ -4,6 +4,8 @@
 
 import tkinter as tk
 import numpy as np
+import cmath # for vector math
+
 
 class PathDrawer:
     def __init__(self, master):
@@ -11,6 +13,9 @@ class PathDrawer:
         self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")
         self.canvas.pack()
         self.data_points = []
+        self.approx_points = []
+        self.vectors_list = []
+        self.phasors_list = []
 
         self.canvas.bind("<Button-1>", self.on_click)
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -55,40 +60,69 @@ class PathDrawer:
     # datapoints selected from points[] array (generated from on_drag or on_clikc events)
     # number of datapoints to use determined by num_segments, higher creates more
     def approximate_and_draw(self):
-        num_segments = int(self.num_segments_entry.get())
-        if len(self.data_points) >= 2 and num_segments > 0:
-            approx_points = self.approximate_path(self.data_points, num_segments)
-            self.canvas.delete("line")
-            for i in range(len(approx_points) - 1):
-                x0, y0 = approx_points[i]
-                x1, y1 = approx_points[i + 1]
-                self.canvas.create_line(x0, y0, x1, y1, tags="line")
-
-    def approximate_path(self, points, num_segments):
         approx_points = []
-        for i in range(num_segments):
-            start_idx = int(i * len(points) / num_segments)
-            end_idx = int((i + 1) * len(points) / num_segments)
-            segment_points = points[start_idx:end_idx+1]
-            if len(segment_points) > 1:
-                start_point = segment_points[0]
-                end_point = segment_points[-1]
-                approx_points.extend(self.interpolate_line(start_point, end_point, 10))
-        approx_points.append(points[-1])
-        return np.array(approx_points)
+        num_segments = int(self.num_segments_entry.get())
+        length_data = len(self.data_points)
 
-    def interpolate_line(self, start_point, end_point, num_points):
-        x0, y0 = start_point
-        x1, y1 = end_point
-        x_step = (x1 - x0) / num_points
-        y_step = (y1 - y0) / num_points
-        return [(int(x0 + i * x_step), int(y0 + i * y_step)) for i in range(num_points)]
-    
+        sampling_interval = int(length_data/num_segments)
+
+        # path approximation is done by linearly sampling self.data_points
+        # spaced evenly using the modulus operator then preserving end point
+        for i in range (0, length_data):
+            if (i % sampling_interval == 0):
+                approx_points.append(self.data_points[i])
+
+        # Due to the nature of sampling, if if `length_data` is k*num_segments, integer truncation doesn't happen
+        # Result is that don't take the last datapoint
+        if ((length_data) % num_segments == 0):
+            approx_points.append(self.data_points[length_data-1])
+
+        self.canvas.delete("line") # delete previous path on the canvas on press
+        self.approx_points = approx_points #save as attribute to self
+
+        # plot new approximated path
+        for i in range(len(approx_points) - 1):
+            x0, y0 = approx_points[i]
+            x1, y1 = approx_points[i + 1]
+            self.canvas.create_line(x0, y0, x1, y1, tags="line")
+
+        self.convert_to_vectors()
+        self.convert_to_phasors()
+
+    def convert_to_vectors(self):
+        self.vectors_list = []
+        prev_point = self.approx_points[0]
+        for point in self.approx_points[1:]:
+            dx = point[0] - prev_point[0]
+            dy = point[1] - prev_point[1]
+            magnitude = abs(complex(dx, -dy))       #tkinter has downwards as positive, flipped here for calculations
+            phase = cmath.phase(complex(dx, -dy))   #tkinter has downwards as positive, flipped here for calculations
+            self.vectors_list.append((int(magnitude), int(phase*180/np.pi)))
+            prev_point = point
+
+    def convert_to_phasors(self):
+        self.phasors_list = []
+        prev_vector = [0, 90]
+        for vector in self.vectors_list:
+            phase = prev_vector[1] - vector[1]
+            if (phase < 0):
+                phase = phase + 360 # negative angles is a CCW turn, convert to a CW turn by adding 360 degrees
+
+            self.phasors_list.append([vector[0], phase])
+            prev_vector = vector
+
     def send_data(self):
         approx_points = self.approximate_path(self.data_points, 1) # keep at 1, 2 generates too many datapoints
         print("Approximated points:")
-        for point in approx_points:
+        for point in self.approx_points:
             print(point)
+
+        print("Vectors:")
+        for vector in self.vectors_list:
+            print(vector)
+        print("Phasors:")
+        for phasor in self.phasors_list:
+            print(phasor)
 
     def draw_square(self):
         self.clear_canvas()
@@ -101,25 +135,6 @@ class PathDrawer:
         bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
         self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
         self.draw_lines()
-    
-    # def draw_i(self):
-    #     self.clear_canvas()
-    #     center_x = self.canvas.winfo_width() / 2
-    #     center_y = self.canvas.winfo_height() / 2
-    #     top = (center_x, center_y - 50)
-    #     bottom = (center_x, center_y + 50)
-    #     self.data_points = [top, bottom]
-    #     self.draw_lines()
-    
-    # def draw_figure_8(self):
-    #     self.clear_canvas()
-    #     center_x = self.canvas.winfo_width() / 2
-    #     center_y = self.canvas.winfo_height() / 2
-    #     radius = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 3
-    #     top_circle = [(int(center_x + radius * np.cos(theta)), int(center_y - radius * np.sin(theta))) for theta in np.linspace(0, np.pi, 50)]
-    #     bottom_circle = [(int(center_x + radius * np.cos(theta)), int(center_y + radius * np.sin(theta))) for theta in np.linspace(np.pi, 2 * np.pi, 50)]
-    #     self.data_points = top_circle + bottom_circle
-    #     self.draw_lines()
 
 
 root = tk.Tk()

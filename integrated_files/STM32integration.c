@@ -16,6 +16,7 @@
 #define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
 #define CW_VELOCITY      		112.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
 #define CCW_VELOCITY     		112.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
+#define DIAG_VELOCITY			100.0 // diagonal velocity for forward (not measured yet)
 #define F_CPU 32000000L
 #define AVG_NUM 5
 
@@ -98,8 +99,51 @@ void CCW_turn (int degrees) {
 	}
 }
 
-// drive in square with side lengths passed as a param
-void square (int cm) { 
+void diag_left (int degrees) {
+	timerCount_ms = 0;
+
+	int milliseconds = degrees/DIAG_VELOCITY*1000.0;
+	while (timerCount_ms < milliseconds) {
+			pwm2 = 30; 			 	// left forward slow
+			GPIOA->ODR |= BIT4;  	// pin is at 5V
+			pwm1 = 0; 		 		// right forward fast
+			GPIOA->ODR |= BIT2; 	// pin is 5V
+	}
+}
+
+void diag_right (int degrees) {
+	timerCount_ms = 0;
+
+	int milliseconds = degrees/DIAG_VELOCITY*1000.0;
+	while (timerCount_ms < milliseconds) {
+			pwm2 = 0; 			 	// left forward fast
+			GPIOA->ODR |= BIT4;  	// pin is at 5V
+			pwm1 = 30; 		 		// right forward slow
+			GPIOA->ODR |= BIT2; 	// pin is 5V
+	}
+}
+
+void emergency_stop () {
+	
+}
+
+void str_line () {
+	forward(100);
+}
+
+void circle () {
+	diag_left(360);
+}
+
+// drive in square - blocking!!
+void square () { 
+	for (int i = 0; i < 4; i++) {
+		forward(10);
+		stopCar_ms(10); 
+
+		CW_turn(90);
+		stopCar_ms(10); 
+	}
 }
 
 // Drives in a figrue 8 path
@@ -235,138 +279,92 @@ void SendATCommand (char * s)
 	printf("Response: %s", buff);
 }
 
-// A giant switch statement that maps compressed letters to x and y directions
-void setPWM(char letter, int *x, int *y) {
+// A giant switch statement that maps compressed letters to left wheel and right wheel pwms
+void setPWM(char letter) {
     switch (letter) {
         case 'A': // forward fast (lower is faster)
 			pwm1 = 0; // right forward 0;
 			pwm2 = 1; // left forward = 0; (lower is faster)
 			GPIOA->ODR |= BIT2; // pin is at 5V
 			GPIOA->ODR |= BIT4; // pin is at 5V
-			// *x = 0;
-			// *y = 50;
-
             break;
         case 'B': //forward mid
 			pwm1 = 30; // right forward 0;
 			pwm2 = 31; // left forward = 0;
 			GPIOA->ODR |= BIT2; // pin is at 5V
 			GPIOA->ODR |= BIT4; // pin is at 5V
-			// *x = 0;
-			// *y = 30;
             break;
         case 'C': //forward slow
 			pwm1 = 60; // right forward 0;
 			pwm2 = 61; // left forward = 0;
 			GPIOA->ODR |= BIT2; // pin is at 5V
 			GPIOA->ODR |= BIT4; // pin is at 5V
-			// *x = 0;
-			// *y = 10;
             break;
         case 'D': // backwards fast
-            // *x = 0;
-            // *y = -50;
-
 			pwm1 = 90; // right backwards
 			pwm2 = 87; // left backwards (higher is faster)
 			GPIOA->ODR &= ~BIT2; // pin is GND
 			GPIOA->ODR &= ~BIT4; // pin is GND
             break;
-
         case 'E': //backwards mid
-         	//   *x = 0;
-         	//    *y = -30;
-
 			pwm1 = 70; // right backwards
 			pwm2 = 67; // left backwards
 			GPIOA->ODR &= ~BIT2; // pin is GND (right motor)
 			GPIOA->ODR &= ~BIT4; // pin is GND (left motor)
             break;	
         case 'F': //backwards slow
-            //*x = 0;
-            //*y = -10;
 			pwm1 = 50; 				// right backwards
 			pwm2 = 47; 				// left backwards
 			GPIOA->ODR &= ~BIT2; 	// pin is GND
 			GPIOA->ODR &= ~BIT4; 	// pin is GND
-			
             break;
-		
         case 'G': // CW turn on the spot fast
-            //*x = 50;
-            //*y = 0;
-			
 			pwm2 = 20; 			 	// left forward (lower is faster)
 			GPIOA->ODR |= BIT4;  	// pin is at 5V
 			pwm1 = 80; 		 	// right backwards
 			GPIOA->ODR &= ~BIT2; 	// pin is GND
             break;
         case 'H': //CW turn on spot mid
-            //*x = 30;
-            //*y = 0;
-			
 			pwm2 = 40; 			 	// left forward (lower is faster)
 			GPIOA->ODR |= BIT4;  	// pin is at 5V
 			pwm1 = 60; 		 		// right backwards
 			GPIOA->ODR &= ~BIT2; 	// pin is GND
             break;
         case 'I': //CCW turn on spot  fast
-            //*x = -50;
-            //*y = 0;
-
 			pwm2 = 80; 				// left forward (lower is faster)
 			GPIOA->ODR &= ~BIT4; 	// pin is at 5V
 			pwm1 = 20; 				// right backwards
 			GPIOA->ODR |= BIT2; 	// pin is GND
             break;
         case 'J': //CCW turn on sport mid
-            //*x = -30;
-            //*y = 0;
-
 			pwm2 = 60; 		// left forward (lower is faster)
 			GPIOA->ODR &= ~BIT4; // pin is at 5V
 			pwm1 = 40; 	// right backwards
 			GPIOA->ODR |= BIT2; // pin is GND
-			// left backwards
-			// right forward
-            break;
-
-			
+            break;			
         case 'K': //diagonal NE 
-            //*x = 20;
-            //*y = 45;
-
 			pwm2 = 0;			// left forward fast (lower is faster)
 			GPIOA->ODR |= BIT4; // pin is at 5V
 			pwm1 = 30;          // right forward slow (lower is faster)
 			GPIOA->ODR |= BIT2; // pin is at 5V
             break;
         case 'L': //diagonal NW 
-            //*x = -20;
-            //*y = 45;
 			pwm2 = 30; 			 	// left forward slow
 			GPIOA->ODR |= BIT4;  	// pin is at 5V
 			pwm1 = 0; 		 		// right forward fast
 			GPIOA->ODR |= BIT2; 	// pin is 5V
-
             break;
         case 'M': //diagonal SE
 			pwm1 = 70; 			 // right backwards slow
 			GPIOA->ODR &= ~BIT2; // pin is at GND
 			pwm2 = 100; 		 // left backwards fast
 			GPIOA->ODR &= ~BIT4; // pin is at GND
-
             break;
         case 'N': //diagonal SW
-            //*x = -20;
-            //*y = -45;
 			pwm1 = 100; // right backwards fast
 			GPIOA->ODR &= ~BIT2; // pin is at GND
 			pwm2 = 70; // left backwards slow
 			GPIOA->ODR &= ~BIT4; // pin is at GND
-
-			// left backwards slow
-			// right backwards fast
             break;
         case 'Z': // stop car
 			pwm1 = 0;
@@ -652,6 +650,31 @@ void pathFindingDecoder (char letter) {
     }
 }
 
+void ButtonCommand (char letter){
+
+    switch(letter){
+        case '€':
+            emergency_stop();
+            break;
+        case 'ý':
+            str_line();
+            break;
+        case 'þ':
+            square();
+            break;
+        case '<':
+            circle();
+            break;
+        case '>':
+            figure8();
+            break;
+        default:
+            // Handle the default case if none of the expected characters are matched
+            break;
+    }   
+    return;
+}
+
 
 // LQFP32 pinout
 //		           ----------
@@ -783,22 +806,13 @@ char MapFrequency(int freq) {
 int main(void)
 {
     char buff[4];
-    int npwm;
 	int robot_state = S_MANUAL; // sets robot control mode to `MANUAL` which is the default. Joystick controlled  
-	int x, y;
 	long int count;
 	float T, f;
 	char dirc, freqc;
 	
-	//code for creating baseline frequency
-	float extract_num = 0.0;
-	//float prev_num = 0.1;
-	int mapped_num; //for the beeping
-	float min_metal_detect = 200; //frequency increase at which metal is detected
-	float mapped_range = 5.0; //1 to mapped_range+1
-	float extract_range = 800.0; //max range of beeping frequency
 	int sum_count = 0; //count to keep track of first 10 vals
-	int sum_freq = 0; //where I am adding the frequencies into
+	int sum_freq = 0; //sum of first 10 frequencies
 	int baseline_freq;
 	int pastfreqs[AVG_NUM];
 	int avg_sum = 0;
@@ -817,9 +831,7 @@ int main(void)
 	
 	waitms(500); // Give putty a chance to start before we send characters with printf()
 	
-    printf("Run Servo Motor\r\n");
-    printf("(outputs are PA11 and PA12, pins 21 and 22).\r\n");
-    printf("Based on Servo PWM Code in Samples\r\n\r\n");
+    printf("Metal Detecting Robot\r\n");
 
 	// We should select an unique device ID.  The device ID can be a hex
 	// number from 0x0000 to 0xFFFF.  In this case is set to 0xABBA
@@ -833,36 +845,18 @@ int main(void)
 	SendATCommand("AT+RFC\r\n");
 	SendATCommand("AT+POWE\r\n");
 	SendATCommand("AT+CLSS\r\n");
-	
-	//printf("\r\nPress and hold a push-button attached to PA8 (pin 18) to transmit.\r\n");
 
-	// // Parsing string to an integer
-	// char str[] = "10,20,30,40,50";
-	// char *token = strtok(str, ",");
-	// parse for x and y data
-	
 
 	//timerCount_100us = 0; // increments by 1 every 10us (for tb only)
 	//timerCount_ms = 0;   // (for tb only)
-
-	/* Test Cases
-	* 1. Stop initially 3s
-	* 2. Forward max speed for 10s
-	* 3. CW rotation on one spot
-	* 4. smooth right turn for 20s
-	* 5. sharp right turn for 10s
-	* 6. backwards max speed for 10s
-	* 7. CCW rotation on one spot
-	* 8. smooth left turn for 20s
-	* 9. sharp left turn for 10s
-	* 10. Stop for 5s
-	*/
 
 	//use motorControlLoop(x,y)
 
 	// = = = = = = = = = Testing pathFindingDecoder with a series of characters = = = = = = = 
 	// angular velocity test
 
+	stopCar_ms(3000); // this process is blocking
+	diag_left(360);
 	stopCar_ms(3000); // this process is blocking
 	CW_turn(360);
 	stopCar_ms(3000); // this process is blocking
@@ -888,20 +882,17 @@ int main(void)
 			//character conversions
 
 
-
 			printf("RX: %s", buff);
 			//printf("len: %d", strlen(buff));
-			if (buff[0]=='m' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) {// remote wants metal detector status (&& strlen(buff)==3)
+			if (buff[0]=='m' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) {// remote wants metal detector status
 
 				count=GetPeriod(100);
-
-				
 				T= 1.0*count/(F_CPU*100.0); // Since we have the time of 200 periods, we need to divide by 200
 				f=1.0/T;
 				
 				waitms(1);
 				
-				printf("count = %d, f=%.2f\r\n",count, f);
+				//printf("count = %d, f=%.2f\r\n",count, f);
 				
 				if (count==0) {
 					eputs2("z\r\n");
@@ -945,19 +936,8 @@ int main(void)
 			//changing if statement to receive position instead of M being sent
 			else if (strlen(buff)==2) // remote sent pos data
 			{
-				//if (strlen(buff)==2) printf("\r");
-				//if (strlen(buff)==1) printf("\r\n");
 				dirc = buff[0];
-				setPWM(dirc,&x,&y); 		// use character `dirc` to directly set PWM values
-
-				// if joystick is not being used, it will send 'Z', then enter loop pathFinderDecoder
-				// if no character matches, early exit out of switch statements
-				// pathFindingDecoder(dirc);  
-				printf("%c, x=%d, y=%d\r\n", dirc,x,y);
-
-				// motorControlLoop(x,y); // moves motors based on x and y
-				// motorControlLoop(x, y); // Previous control. Automatically go into "Joy stick control mode"
-				// robot_control_FSM(robot_state, x,y);
+				setPWM(dirc); 		// use character `dirc` to directly set PWM values
 			
 			}
 			

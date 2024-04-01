@@ -337,22 +337,7 @@ void LCDprint(char * string, unsigned char line, bit clear)
 }
 
 float map2(float x, float in_min, float in_max, float out_min, float out_max)
-{
-	//float tempa, tempb, tempc, tempd, tempe, tempf;
-	
-	//tempa = (x - in_min);
-	//printf("%f\r\n", tempa);
-	//tempb = (out_max - out_min);
-	//printf("%f\r\n", tempb);
-	//tempc = tempa * tempb;
-	//printf("%f\r\n", tempc);
-	//tempd = (in_max - in_min);
-	//printf("%f\r\n", tempd);
-	//tempe = (float)tempc/(float)tempd;
-	//printf("%f\r\n", tempe);
-	//tempf = tempe+ out_min;
-	//printf("%f\r\n", tempf);
-	
+{	
 	float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     return value;
 }

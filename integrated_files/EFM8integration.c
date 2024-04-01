@@ -37,12 +37,11 @@
 #define metalLevel_5   700
 
 // buzzer frequencies for each strength level
-#define min_freq       500   
-#define level1_freq    800   
-#define level2_freq    100
-#define level3_freq    1200
+#define level1_freq    1200   
+#define level2_freq    1300
+#define level3_freq    1400
 #define level4_freq    1500
-#define level5_freq    2000
+#define level5_freq    1600
 
 // For normalizing joystick position 
 #define external_voltage_reference 1.7854  // in volts
@@ -330,22 +329,7 @@ void LCDprint(char * string, unsigned char line, bit clear)
 }
 
 float map2(float x, float in_min, float in_max, float out_min, float out_max)
-{
-	//float tempa, tempb, tempc, tempd, tempe, tempf;
-	
-	//tempa = (x - in_min);
-	//printf("%f\r\n", tempa);
-	//tempb = (out_max - out_min);
-	//printf("%f\r\n", tempb);
-	//tempc = tempa * tempb;
-	//printf("%f\r\n", tempc);
-	//tempd = (in_max - in_min);
-	//printf("%f\r\n", tempd);
-	//tempe = (float)tempc/(float)tempd;
-	//printf("%f\r\n", tempe);
-	//tempf = tempe+ out_min;
-	//printf("%f\r\n", tempf);
-	
+{	
 	float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     return value;
 }
@@ -388,21 +372,16 @@ void GetPosition2 (float volts[2], float pos[2]) {
 
 	if (pos[0] < mid_x) {
 		pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
-		//printf("neg x\r\n");
-
 	}
 	else {
 		pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
-		//printf("pos x\r\n");
 	}
 
 	if (pos[1] < mid_y) {
 		pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
-		//printf("neg y\r\n");
 	}
 	else {
 		pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
-		//printf("pos y\r\n");
 	}
 }
 
@@ -629,17 +608,7 @@ char matchRange(int x, int y) {
 // Initialization is done externally by c51? - GL
 void main(void)
 {
-	//unsigned int cnt;
-	float extract_num = 0.0;
-	float prev_num = 0.1;
-	//int mapped_num; //for the beeping
-	float min_metal_detect = 200; //frequency increase at which metal is detected
-	float mapped_range = 5.0; //1 to mapped_range+1
-	float extract_range = 800.0; //max range of beeping frequency
 	int timeout_cnt = 0;
-	int sum_count = 0; //count to keep track of first 10 vals
-	float sum_freq = 0.0; //where I am adding the frequencies into
-	float baseline_freq = 0.0;
 	int metal_lev = 0;
 	float v[2];
     float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
@@ -649,18 +618,17 @@ void main(void)
 	float mid[2];
     char mapped_dir;
 
-	//float adc[2]
 	// TIMER0_Init(); commented out since I'll be using TIMER2 ISR - GL
+	
 	LCD_4BIT();
 	
 	waitms(500);
 	printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
 	
-	printf("ADC test program\n"
+	printf("Metal Detecting Robot Controller\n"
 	        "File: %s\n"
 	        "Compiled: %s, %s\n\n",
 	        __FILE__, __DATE__, __TIME__);
-	printf("\r\nJDY-40 test\r\n");
 	UART1_Init(9600);
 
 	InitPinADC(1, 4); // Configure P1.4 as analog input
@@ -694,7 +662,6 @@ void main(void)
 	SendATCommand("AT+POWE\r\n");
 	SendATCommand("AT+CLSS\r\n");
 	
-	//printf("\r\nPress and hold the BOOT button to transmit.\r\n");
 	//mid[0] = Volts_at_Pin(XPOS_PIN);
 	//mid[1] = Volts_at_Pin(YPOS_PIN);
 
@@ -703,7 +670,6 @@ void main(void)
 
 	//LEDgetposition(mid);
 
-	//cnt=0;
 	while(1)
 	{
 		waitms(50);
@@ -711,17 +677,20 @@ void main(void)
             
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
-
-       
-		// printf("xvolts: %7.5f yvolts: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN));
-		// ADC 
-		// printf("xadc: %7.5f yadc: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN))
         
         GetPosition2(v, xy_pos);
 
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
+
+
+
+		//BUTTON MAPPINGS
+		// EMERGENCY STOP -. MAYBE MAP THIS TO THE JOYCON BUTTONé
+
 		
-		
+		// SQUARE
+		// FIGURE EIGHT
+		// 
 		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
     	LCDprint(buff_x, 1, 1);
 	    sprintf(buff_y, "y=%.2f,pos=%c", xy_pos[1], mapped_dir);
@@ -730,8 +699,14 @@ void main(void)
         sprintf(temp_buff, "%c\r\n", mapped_dir);
         sendstr1(temp_buff);
         
-		waitms(50);
+		//for Emergency Stop
+		if(P2_1 == 0)
+		{
+			//this is the emergency stop character
+			sendstr1("€\r\n");
+		}
 
+		waitms(50);
 
 		sendstr1("m\r\n");
 		putchar('.');
@@ -755,38 +730,35 @@ void main(void)
             {
             	if(buff[0] != 'z')
             	{
-            		if(buff[0] == 'a')
-            			loadTimer2(1222);
-            		else if(buff[0] == 'b')
-            			loadTimer2(1333);
-            		else if(buff[0] == 'c')
-            			loadTimer2(1444);
-            		else if(buff[0] == 'd')
-            			loadTimer2(1555);
-            		else if(buff[0] == 'e')
-            			loadTimer2(1666);
+            		if(buff[0] == 'a') {
+            			loadTimer2(metalLevel_1);
+						metal_lev = 1;
+					}
+            		else if(buff[0] == 'b') {
+            			loadTimer2(metalLevel_2);
+						metal_lev = 2;
+					}
+            		else if(buff[0] == 'c') {
+            			loadTimer2(metalLevel_3);
+						metal_lev = 3;
+					}
+            		else if(buff[0] == 'd') {
+            			loadTimer2(metalLevel_4);
+						metal_lev = 4;
+					}
+            		else if(buff[0] == 'e') {
+            			loadTimer2(metalLevel_5);
+						metal_lev = 5;
+					}
             	}
             	else
             	{
             		TR2 = 0; 		// Stop timer 2
  					BUZZER_OUT = 0;
+					metal_lev = 0;
             	}
             }
             
         }
-        
-        if(buff[0] == 'a')
-			metal_lev = 1;
-		if(buff[0] == 'b')
-			metal_lev = 2;
-		if(buff[0] == 'c')
-			metal_lev = 3;
-		if(buff[0] == 'd')
-			metal_lev = 4;
-		if(buff[0] == 'e')
-			metal_lev = 5;
-		if(buff[0] == 'z')
-			metal_lev = 0;
-	
 	}
 }
