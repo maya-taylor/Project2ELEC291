@@ -9,14 +9,13 @@
 #include "UART2.h"
 
 #define F_CPU 32000000L
-// #define DEF_F 100000L // 10us tick
 #define DEF_F 10000L // a 100us tick
 #define SYSCLK 32000000L
 
 #define PI 3.141592654
-#define FORWARD_VELOCITY 		2.0  // cm/s -- measured value for x = 0, y = 50
-#define CW_VELOCITY      		114.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
-#define CCW_VELOCITY     		114.0 // angular velocity in degrees/s CCW -- measured for forward
+#define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
+#define CW_VELOCITY      		112.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
+#define CCW_VELOCITY     		112.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
 #define F_CPU 32000000L
 #define AVG_NUM 5
 
@@ -64,10 +63,10 @@ void forward (int cm) {
 	timerCount_ms=0;
 
 	// motors go forward at max speed
-	int seconds_ms = cm / FORWARD_VELOCITY*1000.0; 
-	while (timerCount_ms < seconds_ms) {
-		pwm1 = 0;
-		pwm2 = 1;
+	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; 
+	while (timerCount_ms < milliSeconds) {
+		pwm1 = 1; // right motor
+		pwm2 = 0; // left motor
 		GPIOA->ODR |= BIT2; // pin is GND
 		GPIOA->ODR |= BIT4; // pin is GND
 	}
@@ -868,6 +867,7 @@ int main(void)
 	CW_turn(360);
 	stopCar_ms(3000); // this process is blocking
 	forward(100);
+	stopCar_ms(3000); // this process is blocking
 	
 	// char test_char = 'Þ';
 	// pathFindingDecoder(test_char);
