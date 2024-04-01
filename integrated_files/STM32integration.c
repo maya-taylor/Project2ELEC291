@@ -10,273 +10,93 @@
 
 #define F_CPU 32000000L
 // #define DEF_F 100000L // 10us tick
-// #define DEF_F 100000000L // a tick of an unknown period 10ms tick???
-#define DEF_F 10000L // a tick of an unknown period
+#define DEF_F 10000L // a 100us tick
 #define SYSCLK 32000000L
 
 #define PI 3.141592654
-#define MAX_VELOCITY 50.00
-#define MIN_PWM 0
-#define MAX_PWM 100.0
-#define MOTOR_ADJUST  0.93 //value between 0 and 1, multiply PWM of faster motor by this value 
-#define FORWARD_VELOCITY 		20.0  // cm/s -- measured value for x = 0, y = 50
-#define CW_VELOCITY      		100.0 // angular velocity in degrees/s CW -- measured value for x = 50, y = 0
-#define CCW_VELOCITY     		100.0 // angular velocity in degrees/s CCW -- measured value for x = -50, y = 0
-#define WIDE_LEFT_TURN_ANGLE_F 	atan2f(47,-16)
-#define BACKWARD_CCW_ANGLE 		atan2f(-47,16)
-#define WIDE_RIGHT_TURN_ANGLE_F atan2f(47,16)
-#define BACKWARD_CW_ANGLE 		atan2f(-47,-16)
+#define FORWARD_VELOCITY 		2.0  // cm/s -- measured value for x = 0, y = 50
+#define CW_VELOCITY      		114.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
+#define CCW_VELOCITY     		114.0 // angular velocity in degrees/s CCW -- measured for forward
 #define F_CPU 32000000L
+#define AVG_NUM 5
 
-#define S_MANUAL 				1
+#define S_MANUAL 				1 // maybe keep
 #define S_SQUARE 				2
 #define S_FIGURE8 				3
 #define S_PATH   				4
 
-#define metalLevel_1   225
-#define metalLevel_2   300
-#define metalLevel_3   400
-#define metalLevel_4   500
-#define metalLevel_5   700
+#define metalLevel_1   			225
+#define metalLevel_2   			300
+#define metalLevel_3   			400
+#define metalLevel_4   			500
+#define metalLevel_5   			700
 
 // Global variables	
 volatile int PWM_Counter = 0;
 volatile unsigned char pwm1 = 0, pwm2 = 0;
-volatile int leftDirection = 0;   // 0 if CW, 1 if CCW
-volatile int rightDirection = 0;  // 0 if CW, 1 if CCW
 
 // Global timer variables
-volatile int timerCount_10us = 0;
+volatile int timerCount_100us = 0;
 volatile int timerCount_ms = 0;
-volatile int timerCount_s = 0;
+// volatile int timerCount_s = 0;
 
-
-/* 
-* Function: adjusts motor 
-* Output: Set 4 pins to either `0, 1, or LEFT_PWM, right_PWM
-*/
-
-/* Control Scheme based on joystick position
-* Diagram roughly to scale
-* 
-*       Right Wheel Power            Left wheel Power
-*       0      1      1              1      1      0
-*        \     |     /                \     |     /
-*          \   |   /                    \   |   /
-*            \ | /                        \ | /
-*  -1  ------------------ 1       1 ------------------ -1
-*            / | \                        / | \
-*          /   |   \                    /   |   \
-*        /     |     \                /     |     \     
-*     -1      -1      0             0      -1      -1 
-* 
-* negative values = CCW motion
-* scale duty cycle based on power
-*/
-float RightMotorAdjust_angle(float refAngle) {
-    // https://components101.com/motors/servo-motor-basics-pinout-datasheet
-    // PWM signal probably adjusts motor speed
-    // direction of motor spin based on voltages applied to MOSFETs in the Hbridge
-    float angle;
-    
-    angle = refAngle * 180.0 / PI;
-    float PWM_adjust = 1;
-
-    if (angle > 0 & angle <= 90) { 
-        PWM_adjust = 1;
-    }
-    else if (angle > 90 & angle <= 180) {
-        PWM_adjust = -cos(2*refAngle); // this is just math
-
-		// hard coded for wide turns
-		if (angle < 50 && angle > 40)
-			PWM_adjust = -cos(2*WIDE_LEFT_TURN_ANGLE_F);
-		if (angle < 140 && angle > 130)
-			PWM_adjust = -cos(2*WIDE_RIGHT_TURN_ANGLE_F);
-    }
-    else if (angle <= 0 & angle > -90) {
-        PWM_adjust = cos(2*refAngle); // this is just math
-
-		if (angle > -50 & angle < -40)
-			PWM_adjust = cos(2*BACKWARD_CCW_ANGLE);
-		if (angle > -140 & angle < -130)
-			PWM_adjust = cos(2*BACKWARD_CW_ANGLE);
-    }
-    else {
-        PWM_adjust = -1;
-    }
-
-
-    return PWM_adjust;
+void stopMotors (void) {
+	pwm1 = 0;
+	pwm2 = 0;
+	GPIOA->ODR &= ~BIT2; // pin is GND
+	GPIOA->ODR &= ~BIT4; // pin is GND
 }
+// This process is blocking
+void stopCar_ms (int milliSeconds) {
 
-float LeftMotorAdjust_angle(float refAngle) { 
-    float angle = refAngle * 180 / PI;
-    float PWM_adjust = 1;
-
-    if (angle > 0 & angle <= 90) { 
-        PWM_adjust = -cos(2*refAngle); // this is just math
-
-		// hard coded for wide turns
-		if (angle < 50 && angle > 40)
-			PWM_adjust = -cos(2*WIDE_LEFT_TURN_ANGLE_F);
-		if (angle < 140 && angle > 130)
-			PWM_adjust = -cos(2*WIDE_RIGHT_TURN_ANGLE_F);
-    }
-    else if (angle > 90 & angle <= 180) {
-        PWM_adjust = 1;
-    }
-    else if (angle <= 0 & angle > -90) {
-        PWM_adjust = -1;
-
-		if (angle > -50 & angle < -40)
-			PWM_adjust = cos(2*BACKWARD_CCW_ANGLE);
-    }
-    else {
-        PWM_adjust = cos(2*refAngle); // this is just math
-
-		if (angle > -140 & angle < -130)
-			PWM_adjust = cos(2*BACKWARD_CW_ANGLE);
-    }
-    
-    return PWM_adjust;
-}
-
-/*  
- *  Function: Returns a PWM value between 65 - 100 based on joy stick position
- *  Note: Joystick already returns values between 65 - 100
- *  Param: velocity -- 
- *  Param: PWM_adjust -- value adjustment to PWM based on angle, between -1 and 1
- */
-float get_PWM (int velocity, float PWM_adjust) {
-    float PWM;
-    float adjust = velocity * fabsf(PWM_adjust) / MAX_VELOCITY; // returns a value between 0 and 1
-    
-    // map 0 to 1 to MIN_PWM - 100
-    PWM = MIN_PWM + (100.00 - MIN_PWM) * adjust; // linear mapping function from x,y to PWM value
-    return PWM;
-}
-
-/*
-*   Function: Turns on and off transistors based on power adjustment value
-*   Param: PWM - between 
-*   Return: High/Low value to turn off or on transistors in the h bridge 
-*/
-
-//THIS IS ACTUALLY THE RIGHT MOTOR
-
-void turnLeftMotor (int PWM, float PWM_adjust) { 
-    // controlling outputs on PA2 (left motor), and PA3(right motor)
-    // is done by bitmasking the ODR register, this sets those pins
-    // to be 1 or 0 which then controlls CW or CCW rotation
-    // Clock wise rotation
-    if (PWM_adjust < 0) { // Backwards
-        pwm1 = PWM; // right motor PWM
-        GPIOA->ODR &= ~BIT2;    // set left motor to 0 when CW
-    } 
-    else { // Forwards
-        pwm1 = (100-PWM*MOTOR_ADJUST);  		// Inversed by 100 - PWM, turns when `pwm1` is is LOW
-        GPIOA->ODR |= BIT2;     // set left motor to 1 when CCW
-    }
-}
-
-// THIS IS ACTUALLY THE LEFT MOTOR
-int turnRightMotor (int PWM, float PWM_adjust) { 
-    if (PWM_adjust < 0) {
-        pwm2 = PWM*MOTOR_ADJUST; // left motor PWM
-        GPIOA->ODR &= ~BIT4;     // set right motor to 0 when CCW
-    }
-    else {
-        pwm2 = (100-PWM);         // Inversed by 100 - PWM, turns when `pwm2` is LOW
-        GPIOA->ODR |= BIT4;       // set right motor to 1 when CCW
-    }
-}
-
-// Motor control loop
-// Function: edits global variables pwm1 and pwm2 then exits, non-blocking
-void motorControlLoop (int x, int y) {
-
-	// calculate angle
-	float angle;
-	int velocity;
-	float left_adjust;
-	int left_PWM;
-	float right_adjust;
-	int right_PWM;
-
-	velocity =  sqrt(pow(x,2) + pow(y,2));
-
-	if (velocity > 50) // error handling if velocity is greater than 50
-		velocity = 50; 
-
-
-	//Added this to stop assigning a undeclared value to angle
-	// stop both motors when x and y are zero
-	if ((x||y) == 0) {
-		pwm1 = 0;    
-		GPIOA->ODR &= ~BIT2;
+	timerCount_ms = 0;
+	// then turn off motors
+	while (timerCount_ms < (milliSeconds)) {
+		// printf("millis passed %d\n", timerCount_ms); // debug for testing purposes
+		pwm1 = 0;
 		pwm2 = 0;
-		GPIOA->ODR &= ~BIT4;
-
+		GPIOA->ODR &= ~BIT2; // pin is GND
+		GPIOA->ODR &= ~BIT4; // pin is GND
 	}
-	else {
-		angle = atan2f(y,x);
-
-		// left motor control
-		left_adjust = LeftMotorAdjust_angle(angle); 
-		left_PWM = get_PWM(velocity, left_adjust);
-		turnLeftMotor(left_PWM, left_adjust); // set PWM1
-
-		// right motor control
-		right_adjust = RightMotorAdjust_angle(angle); 
-		right_PWM = get_PWM(velocity, right_adjust);
-		turnRightMotor(right_PWM, right_adjust); // set PWM2
-	}
-
-
-	// Debug Log/
-	// printf("x:%d   y:%d left_PWM:%d right_PWM:%d  l_adj:%f, r_adj:%f\r\n", x,y, pwm1, pwm2, left_adjust, right_adjust); 
-	//printf("x=%d, y=%d, left_PWM = %d, right_PWM = %d, PWM1=%d, PWM2=%d, l_adj=%.2f, r_adj=%.2f\r\n", x, y, left_PWM, right_PWM, pwm1, pwm2, left_adjust, right_adjust); 
-
-}
-// seconds - number of seconds to run the test case
-void motor_testHandler(int x, int y, int seconds) {
-	timerCount_s = 0;
-	
-	// runs the motor control loop for a certain amount of seconds
-	while (timerCount_s < seconds) {
-		motorControlLoop(x,y); 
-	}
-}
-
-void stop (int seconds) {
-	int x = 0;
-	int y = 0;
-	motor_testHandler(x,y,seconds); 
 }
 
 void forward (int cm) {
-	int x = 0;
-	int y = 50;
+	timerCount_ms=0;
 
-	int seconds = cm / FORWARD_VELOCITY;
-	motor_testHandler(x,y,seconds); 
+	// motors go forward at max speed
+	int seconds_ms = cm / FORWARD_VELOCITY*1000.0; 
+	while (timerCount_ms < seconds_ms) {
+		pwm1 = 0;
+		pwm2 = 1;
+		GPIOA->ODR |= BIT2; // pin is GND
+		GPIOA->ODR |= BIT4; // pin is GND
+	}
+
+	stopMotors();
 }
 
 void CW_turn(int degrees) {
-	int x = 50;
-	int y = 0;
+	timerCount_ms=0;
 
-	int seconds = degrees/CW_VELOCITY;
-	motor_testHandler(x,y,seconds); 
+	int milliseconds = degrees/CW_VELOCITY*1000.0;
+	while (timerCount_ms < milliseconds) {
+		pwm2 = 20; 			 	// left forward (lower is faster)
+		GPIOA->ODR |= BIT4;  	// pin is at 5V
+		pwm1 = 80; 		 		// right backwards
+		GPIOA->ODR &= ~BIT2; 	// pin is GND
+	}
 }
 
 void CCW_turn (int degrees) {
-	int x = -50;
-	int y = 0;
-
-	int seconds = degrees/CCW_VELOCITY;
-	motor_testHandler(x,y,seconds); 
+	timerCount_ms = 0;
+	
+	int milliseconds = degrees/CCW_VELOCITY*1000.0;
+	while (timerCount_ms < milliseconds) {
+		pwm2 = 80; 				// left forward (lower is faster)
+		GPIOA->ODR &= ~BIT4; 	// pin is at 5V
+		pwm1 = 20; 				// right backwards
+		GPIOA->ODR |= BIT2; 	// pin is GND
+	}
 }
 
 // drive in square with side lengths passed as a param
@@ -294,21 +114,21 @@ void path(void) {
 
 }
 
-void testCases (void) {
-		// Forward max speed for 10s
-		// int x = 0;
-		// int y = 50;
-		// motor_testHandler(x,y,10);
+// void testCases (void) {
+// 		// Forward max speed for 10s
+// 		// int x = 0;
+// 		// int y = 50;
+// 		// motor_testHandler(x,y,10);
 
-		forward(100); // go forward 1m
-		stop(10);
+// 		forward(100); // go forward 1m
+// 		stop(10);
 
-		CW_turn(360); // CW turn 360 degrees
-		stop(10);
+// 		CW_turn(360); // CW turn 360 degrees
+// 		stop(10);
 
-		CW_turn(360); // CCW turn 360 degrees
-		stop(10);
-}
+// 		CW_turn(360); // CCW turn 360 degrees
+// 		stop();
+// }
 
 /* Robot Controller
 	NOTE: This FSM is blocking. 
@@ -318,31 +138,31 @@ void testCases (void) {
 	State 0 -- Default:
 		- runs motor control loop 
 */
-void robot_control_FSM(int robot_state, int x, int y) {
+// void robot_control_FSM(int robot_state, int x, int y) {
 	
-	switch (robot_state) {
-		case S_MANUAL:
-			motorControlLoop (x,y);
-			break;
-		case S_SQUARE: 
-			square(50); // draws a 50cmx50cm square
-			break;
-		case S_FIGURE8: 
-			figure8();
-			break;
-		case S_PATH:
-			path(); 
-			break;
-		default:
-			motorControlLoop(x,y);
+// 	switch (robot_state) {
+// 		case S_MANUAL:
+// 			motorControlLoop (x,y);
+// 			break;
+// 		case S_SQUARE: 
+// 			square(50); // draws a 50cmx50cm square
+// 			break;
+// 		case S_FIGURE8: 
+// 			figure8();
+// 			break;
+// 		case S_PATH:
+// 			path(); 
+// 			break;
+// 		default:
+// 			motorControlLoop(x,y);
 
-		robot_state = S_MANUAL; // set back to default after exiting the FSM. 
-	}
-}
+// 		robot_state = S_MANUAL; // set back to default after exiting the FSM. 
+// 	}
+// }
 
 // Interrupt service routines are the same as normal
 // subroutines (or C funtions) in Cortex-M microcontrollers.
-// The following should happen at a rate of 100kHz. 
+// The following should happen at a rate of 100Hz. 
 // The following function is associated with the TIM2 interrupt 
 // via the interrupt vector table defined in startup.c
 void TIM2_Handler(void) 
@@ -350,19 +170,15 @@ void TIM2_Handler(void)
 	TIM2->SR &= ~BIT0; // clear update interrupt flag
 
 	PWM_Counter++;
-			// -- Debug -- Keep this code commented out so see if this is what is causing the ISR issues
-			// timerCount_10us++; // Global time elapsed counter (for tb only)
+	// -- Debug -- Keep this code commented out so see if this is what is causing the ISR issues
+	timerCount_100us++; // Global time elapsed counter (for tb only)
 
-			// update global timer (for tb only)
-			// if (timerCount_10us >= 100) {
-			// 	timerCount_10us = 0;
-			// 	timerCount_ms++;
-			// }
-			// if (timerCount_ms >= 1000) {
-			// 	timerCount_ms = 0;
-			// 	timerCount_s++;
-			// }
-	
+	// update global timer (for tb only)
+	if (timerCount_100us >= 10) {
+		timerCount_100us = 0;
+		timerCount_ms++;
+	}
+
 	if(pwm1>PWM_Counter)
 	{
 		GPIOA->ODR |= BIT3;
@@ -421,78 +237,144 @@ void SendATCommand (char * s)
 }
 
 // A giant switch statement that maps compressed letters to x and y directions
-void setCoordinates(char letter, int *x, int *y) {
+void setPWM(char letter, int *x, int *y) {
     switch (letter) {
-        case 'A': // forward fast
-			// pwm1 = 0;
-			// pwm2 = 0;
-			// GPIOA->ODR |= ~BIT2; // pin is at 5V
-			// GPIOA->ODR |= ~BIT4; // pin is at 5V
-			*x = 0;
-			*y = 50;
+        case 'A': // forward fast (lower is faster)
+			pwm1 = 0; // right forward 0;
+			pwm2 = 1; // left forward = 0; (lower is faster)
+			GPIOA->ODR |= BIT2; // pin is at 5V
+			GPIOA->ODR |= BIT4; // pin is at 5V
+			// *x = 0;
+			// *y = 50;
 
             break;
         case 'B': //forward mid
-            *x = 0;
-            *y = 30;
+			pwm1 = 30; // right forward 0;
+			pwm2 = 31; // left forward = 0;
+			GPIOA->ODR |= BIT2; // pin is at 5V
+			GPIOA->ODR |= BIT4; // pin is at 5V
+			// *x = 0;
+			// *y = 30;
             break;
         case 'C': //forward slow
-            *x = 0;
-            *y = 20;
+			pwm1 = 60; // right forward 0;
+			pwm2 = 61; // left forward = 0;
+			GPIOA->ODR |= BIT2; // pin is at 5V
+			GPIOA->ODR |= BIT4; // pin is at 5V
+			// *x = 0;
+			// *y = 10;
             break;
         case 'D': // backwards fast
-            *x = 0;
-            *y = -50;
+            // *x = 0;
+            // *y = -50;
 
-			// pwm1 = 100;
-			// pwm2 = 100;
-			// GPIOA->ODR &= ~BIT2; // pin is GND
-			// GPIOA->ODR &= ~BIT4; // pin is GND
+			pwm1 = 90; // right backwards
+			pwm2 = 87; // left backwards (higher is faster)
+			GPIOA->ODR &= ~BIT2; // pin is GND
+			GPIOA->ODR &= ~BIT4; // pin is GND
             break;
+
         case 'E': //backwards mid
-            *x = 0;
-            *y = -30;
-            break;
+         	//   *x = 0;
+         	//    *y = -30;
+
+			pwm1 = 70; // right backwards
+			pwm2 = 67; // left backwards
+			GPIOA->ODR &= ~BIT2; // pin is GND (right motor)
+			GPIOA->ODR &= ~BIT4; // pin is GND (left motor)
+            break;	
         case 'F': //backwards slow
-            *x = 0;
-            *y = -10;
+            //*x = 0;
+            //*y = -10;
+			pwm1 = 50; 				// right backwards
+			pwm2 = 47; 				// left backwards
+			GPIOA->ODR &= ~BIT2; 	// pin is GND
+			GPIOA->ODR &= ~BIT4; 	// pin is GND
+			
             break;
+		
         case 'G': // CW turn on the spot fast
-            *x = 50;
-            *y = 0;
+            //*x = 50;
+            //*y = 0;
+			
+			pwm2 = 20; 			 	// left forward (lower is faster)
+			GPIOA->ODR |= BIT4;  	// pin is at 5V
+			pwm1 = 80; 		 	// right backwards
+			GPIOA->ODR &= ~BIT2; 	// pin is GND
             break;
         case 'H': //CW turn on spot mid
-            *x = 30;
-            *y = 0;
+            //*x = 30;
+            //*y = 0;
+			
+			pwm2 = 40; 			 	// left forward (lower is faster)
+			GPIOA->ODR |= BIT4;  	// pin is at 5V
+			pwm1 = 60; 		 		// right backwards
+			GPIOA->ODR &= ~BIT2; 	// pin is GND
             break;
         case 'I': //CCW turn on spot  fast
-            *x = -50;
-            *y = 0;
+            //*x = -50;
+            //*y = 0;
+
+			pwm2 = 80; 				// left forward (lower is faster)
+			GPIOA->ODR &= ~BIT4; 	// pin is at 5V
+			pwm1 = 20; 				// right backwards
+			GPIOA->ODR |= BIT2; 	// pin is GND
             break;
         case 'J': //CCW turn on sport mid
-            *x = -30;
-            *y = 0;
+            //*x = -30;
+            //*y = 0;
+
+			pwm2 = 60; 		// left forward (lower is faster)
+			GPIOA->ODR &= ~BIT4; // pin is at 5V
+			pwm1 = 40; 	// right backwards
+			GPIOA->ODR |= BIT2; // pin is GND
+			// left backwards
+			// right forward
             break;
+
+			
         case 'K': //diagonal NE 
-            *x = 20;
-            *y = 45;
+            //*x = 20;
+            //*y = 45;
+
+			pwm2 = 0;			// left forward fast (lower is faster)
+			GPIOA->ODR |= BIT4; // pin is at 5V
+			pwm1 = 30;          // right forward slow (lower is faster)
+			GPIOA->ODR |= BIT2; // pin is at 5V
             break;
         case 'L': //diagonal NW 
-            *x = -20;
-            *y = 45;
+            //*x = -20;
+            //*y = 45;
+			pwm2 = 30; 			 	// left forward slow
+			GPIOA->ODR |= BIT4;  	// pin is at 5V
+			pwm1 = 0; 		 		// right forward fast
+			GPIOA->ODR |= BIT2; 	// pin is 5V
+
             break;
         case 'M': //diagonal SE
-            *x = 20;
-            *y = -45;
+			pwm1 = 70; 			 // right backwards slow
+			GPIOA->ODR &= ~BIT2; // pin is at GND
+			pwm2 = 100; 		 // left backwards fast
+			GPIOA->ODR &= ~BIT4; // pin is at GND
+
             break;
         case 'N': //diagonal SW
-            *x = -20;
-            *y = -45;
+            //*x = -20;
+            //*y = -45;
+			pwm1 = 100; // right backwards fast
+			GPIOA->ODR &= ~BIT2; // pin is at GND
+			pwm2 = 70; // left backwards slow
+			GPIOA->ODR &= ~BIT4; // pin is at GND
+
+			// left backwards slow
+			// right backwards fast
             break;
         case 'Z': // stop car
+			pwm1 = 0;
+			pwm2 = 0;
+			GPIOA->ODR &= ~BIT2; // pin is GND
+			GPIOA->ODR &= ~BIT4; // pin is GND
         default:
-            *x = 0;
-            *y = 0;
             break;
     }
 }
@@ -506,268 +388,268 @@ void pathFindingDecoder (char letter) {
 
 	// Group A control
 	if (ASCII_num >= 48 & ASCII_num <= 57) {
-		forward(10);
 		CW_turn(15*(ASCII_num-48)); // based on ASCII number, turn amount is in increments of 15 degrees
+		forward(10);
 	}
 
 	// Group B control
 	if (ASCII_num >=102 & ASCII_num <=108) {
-		forward(10);
 		CW_turn(15*(ASCII_num-102)); // based on ASCII number, turn amount is in increments of 15 degrees
+		forward(10);
 	}
 	if (ASCII_num >=110 & ASCII_num <=116) {
-		forward(10);
 		CW_turn(15*(ASCII_num-110)); // based on ASCII number, turn amount is in increments of 15 degrees
+		forward(10);
 	}
 	if (ASCII_num >=117 & ASCII_num <=121) {
-		forward(25);
 		CW_turn(15*(ASCII_num-117)); // based on ASCII number, turn amount is in increments of 15 degrees
+		forward(25);
 	}
 
 	// Group C control
 	if (ASCII_num >=161 & ASCII_num <= 244) {
 		if (ASCII_num >= 221) {
 			// 221 to 244
-			forward(125);
 			CW_turn(15*(ASCII_num-221));
+			forward(125);
 		}
 		else if (ASCII_num >= 197) {
 			// 197 to 220
-			forward(100);
 			CW_turn(15*(ASCII_num-197));
+			forward(100);
 			
 		}
 		else if (ASCII_num >= 173) {
 			// 173 to 196
-			forward(75);
 			CW_turn(15*(ASCII_num-173));
+			forward(75);
 
 		}
 		else {
 			// 161 to 172
-			forward(50);
 			CW_turn(15*(ASCII_num-161)+180);
+			forward(50);
 		}
 	}
 
 	// Hardcoded switch statement range
 	// If input character does not match with anything, then this will exit without calling anything
 	switch (letter) {
-        case '`':
-            forward(25);
-            CW_turn(75);
-            break;
-        case '~':
-            forward(25);
-            CW_turn(90);
-            break;
-        case '!':
-            forward(25);
-            CW_turn(105);
-            break;
-        case '@':
-            forward(25);
-            CW_turn(120);
-            break;
-        case '#':
-            forward(25);
-            CW_turn(135);
-            break;
-        case '$':
-            forward(25);
-            CW_turn(150);
-            break;
-        case '%':
-            forward(25);
-            CW_turn(165);
-            break;
-        case '^':
-            forward(25);
-            CW_turn(180);
-            break;
-        case '&':
-            forward(25);
-            CW_turn(195);
-            break;
-        case '*':
-            forward(25);
-            CW_turn(210);
-            break;
-        case '(':
-            forward(25);
-            CW_turn(225);
-            break;
-        case ')':
-            forward(25);
-            CW_turn(240);
-            break;
-        case '-':
-            forward(25);
-            CW_turn(255);
-            break;
-        case '_':
-            forward(25);
-            CW_turn(270);
-            break;
-        case '+':
-            forward(25);
-            CW_turn(285);
-            break;
-        case '=':
-            forward(25);
-            CW_turn(300);
-            break;
-        case '{':
-            forward(25);
-            CW_turn(315);
-            break;
-        case '}':
-            forward(35);
-            CW_turn(0);
-            break;
-        case '[':
-            forward(35);
-            CW_turn(15);
-            break;
-        case '|':
-            forward(35);
-            CW_turn(30);
-            break;
-        case '\\':
-            forward(35);
-            CW_turn(45);
-            break;
-        case ';':
-            forward(35);
-            CW_turn(60);
-            break;
-        case ':':
-            forward(35);
-            CW_turn(75);
-            break;
-        case '"':
-            forward(35);
-            CW_turn(90);
-            break;
-        case '\'':
-            forward(35);
-            CW_turn(105);
-            break;
-        case '/':
-            forward(35);
-            CW_turn(120);
-            break;
-        case '?':
-            forward(35);
-            CW_turn(135);
-            break;
-        case '‚': // ignore this error
-            forward(35);
-            CW_turn(150);
-            break;
-        case 'ƒ':
-            forward(35);
-            CW_turn(165);
-            break;
-        case '„':
-            forward(35);
-            CW_turn(180);
-            break;
-        case '…':
-            forward(35);
-            CW_turn(195);
-            break;
-        case '†':
-            forward(35);
-            CW_turn(210);
-            break;
-        case '‡':
-            forward(35);
-            CW_turn(225);
-            break;
-        case 'ˆ': // ignore this error
-            forward(35);
-            CW_turn(240);
-            break;
-        case '‰':
-            forward(35);
-            CW_turn(255);
-            break;
-        case 'Š':
-            forward(35);
-            CW_turn(270);
-            break;
-        case '‹': // ignore this error
-            forward(35);
-            CW_turn(285);
-            break;
-        case 'Œ':
-            forward(35);
-            CW_turn(300);
-            break;
-        case 'Ž':
-            forward(35);
-            CW_turn(315);
-            break;
-        case '‘': // ignore this error
-            forward(35);
-            CW_turn(330);
-            break;
-        case '’': // ignore this error
-            forward(35);
-            CW_turn(345);
-            break;
-        case '“':
-            forward(50);
-            CW_turn(0);
-            break;
-        case '”':
-            forward(50);
-            CW_turn(15);
-            break;
-        case '•':
-            forward(50);
-            CW_turn(30);
-            break;
-        case '–': // ignore this error
-            forward(50);
-            CW_turn(45);
-            break;
-        case '—':
-            forward(50);
-            CW_turn(60);
-            break;
-        case '˜': // ignore this error
-            forward(50);
-            CW_turn(75);
-            break;
-        case '™':
-            forward(50);
-            CW_turn(90);
-            break;
-        case 'š':
-            forward(50);
-            CW_turn(105);
-            break;
-        case '›': // ignore this error
-            forward(50);
-            CW_turn(120);
-            break;
-        case 'œ':
-            forward(50);
-            CW_turn(135);
-            break;
-        case 'ž':
-            forward(50);
-            CW_turn(150);
-            break;
-        case 'Ÿ':
-            forward(50);
-            CW_turn(165);
-            break;
-        default:
-            // Handle unknown characters or default case
-            break; // This will make it so that the robot doesn't do anything. 
+		case '`':
+			CW_turn(75);
+			forward(25);
+			break;
+		case '~':
+			CW_turn(90);
+			forward(25);
+			break;
+		case '!':
+			CW_turn(105);
+			forward(25);
+			break;
+		case '@':
+			CW_turn(120);
+			forward(25);
+			break;
+		case '#':
+			CW_turn(135);
+			forward(25);
+			break;
+		case '$':
+			CW_turn(150);
+			forward(25);
+			break;
+		case '%':
+			CW_turn(165);
+			forward(25);
+			break;
+		case '^':
+			CW_turn(180);
+			forward(25);
+			break;
+		case '&':
+			CW_turn(195);
+			forward(25);
+			break;
+		case '*':
+			CW_turn(210);
+			forward(25);
+			break;
+		case '(':
+			CW_turn(225);
+			forward(25);
+			break;
+		case ')':
+			CW_turn(240);
+			forward(25);
+			break;
+		case '-':
+			CW_turn(255);
+			forward(25);
+			break;
+		case '_':
+			CW_turn(270);
+			forward(25);
+			break;
+		case '+':
+			CW_turn(285);
+			forward(25);
+			break;
+		case '=':
+			CW_turn(300);
+			forward(25);
+			break;
+		case '{':
+			CW_turn(315);
+			forward(25);
+			break;
+		case '}':
+			CW_turn(0);
+			forward(35);
+			break;
+		case '[':
+			CW_turn(15);
+			forward(35);
+			break;
+		case '|':
+			CW_turn(30);
+			forward(35);
+			break;
+		case '\\':
+			CW_turn(45);
+			forward(35);
+			break;
+		case ';':
+			CW_turn(60);
+			forward(35);
+			break;
+		case ':':
+			CW_turn(75);
+			forward(35);
+			break;
+		case '"':
+			CW_turn(90);
+			forward(35);
+			break;
+		case '\'':
+			CW_turn(105);
+			forward(35);
+			break;
+		case '/':
+			CW_turn(120);
+			forward(35);
+			break;
+		case '?':
+			CW_turn(135);
+			forward(35);
+			break;
+		case '‚': // ignore this error
+			CW_turn(150);
+			forward(35);
+			break;
+		case 'ƒ':
+			CW_turn(165);
+			forward(35);
+			break;
+		case '„':
+			CW_turn(180);
+			forward(35);
+			break;
+		case '…':
+			CW_turn(195);
+			forward(35);
+			break;
+		case '†':
+			CW_turn(210);
+			forward(35);
+			break;
+		case '‡':
+			CW_turn(225);
+			forward(35);
+			break;
+		case 'ˆ': // ignore this error
+			CW_turn(240);
+			forward(35);
+			break;
+		case '‰':
+			CW_turn(255);
+			forward(35);
+			break;
+		case 'Š':
+			CW_turn(270);
+			forward(35);
+			break;
+		case '‹': // ignore this error
+			CW_turn(285);
+			forward(35);
+			break;
+		case 'Œ':
+			CW_turn(300);
+			forward(35);
+			break;
+		case 'Ž':
+			CW_turn(315);
+			forward(35);
+			break;
+		case '‘': // ignore this error
+			CW_turn(330);
+			forward(35);
+			break;
+		case '’': // ignore this error
+			CW_turn(345);
+			forward(35);
+			break;
+		case '“':
+			CW_turn(0);
+			forward(50);
+			break;
+		case '”':
+			CW_turn(15);
+			forward(50);
+			break;
+		case '•':
+			CW_turn(30);
+			forward(50);
+			break;
+		case '–': // ignore this error
+			CW_turn(45);
+			forward(50);
+			break;
+		case '—':
+			CW_turn(60);
+			forward(50);
+			break;
+		case '˜': // ignore this error
+			CW_turn(75);
+			forward(50);
+			break;
+		case '™':
+			CW_turn(90);
+			forward(50);
+			break;
+		case 'š':
+			CW_turn(105);
+			forward(50);
+			break;
+		case '›': // ignore this error
+			CW_turn(120);
+			forward(50);
+			break;
+		case 'œ':
+			CW_turn(135);
+			forward(50);
+			break;
+		case 'ž':
+			CW_turn(150);
+			forward(50);
+			break;
+		case 'Ÿ':
+			CW_turn(165);
+			forward(50);
+			break;
+		default:
+			// Handle unknown characters or default case
+			break; // This will make it so that the robot doesn't do anything. 
     }
 }
 
@@ -919,7 +801,10 @@ int main(void)
 	int sum_count = 0; //count to keep track of first 10 vals
 	int sum_freq = 0; //where I am adding the frequencies into
 	int baseline_freq;
-	int pastfreqs[];
+	int pastfreqs[AVG_NUM];
+	int avg_sum = 0;
+	int avg_freq = 0;
+	int i = 0;
 
     RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A Rohan wants to delete this, already declared in hardware init
 
@@ -958,7 +843,7 @@ int main(void)
 	// parse for x and y data
 	
 
-	//timerCount_10us = 0; // increments by 1 every 10us (for tb only)
+	//timerCount_100us = 0; // increments by 1 every 10us (for tb only)
 	//timerCount_ms = 0;   // (for tb only)
 
 	/* Test Cases
@@ -975,6 +860,24 @@ int main(void)
 	*/
 
 	//use motorControlLoop(x,y)
+
+	// = = = = = = = = = Testing pathFindingDecoder with a series of characters = = = = = = = 
+	// angular velocity test
+
+	stopCar_ms(3000); // this process is blocking
+	CW_turn(360);
+	stopCar_ms(3000); // this process is blocking
+	forward(100);
+	
+	// char test_char = 'Þ';
+	// pathFindingDecoder(test_char);
+	// char test_char = 'ó';
+	// pathFindingDecoder(test_char);
+	// char test_char = '›';
+	// pathFindingDecoder(test_char);
+	// stopCar_ms(5000);
+
+
 	while (1) {
 		// insert joystick reading 
 		
@@ -1010,17 +913,29 @@ int main(void)
 						sum_freq += f;
 						sum_count++;
 						freqc = 'z';
+						if (sum_count > 10-AVG_NUM) {
+							avg_sum += f;
+							pastfreqs[i] = f;
+							i++;
+						}
 					}
 					if(sum_count == 10)
 					{
 						baseline_freq = sum_freq/10;
 						sum_count++;
-						freqc = 'z';
+						freqc = 'z';						
 					}
 					if(sum_count > 10)
 					{
 						//this is where we start sending our baseline
-						freqc = MapFrequency((int) (f-baseline_freq));
+						avg_sum-=pastfreqs[i%AVG_NUM];
+						pastfreqs[i%AVG_NUM]=f;
+						avg_sum+=f;
+						avg_freq=avg_sum/AVG_NUM;
+						i++;
+						//printf("sum = %d, avg = %d\r\n", avg_sum, avg_freq);
+						freqc = MapFrequency((int) (avg_freq-baseline_freq));
+
 					}
 					sprintf(buff,"%c\r\n",freqc);
 					printf(buff);
@@ -1033,10 +948,14 @@ int main(void)
 				//if (strlen(buff)==2) printf("\r");
 				//if (strlen(buff)==1) printf("\r\n");
 				dirc = buff[0];
-				setCoordinates(dirc,&x,&y); // use character `c` to convert to x and y values
+				setPWM(dirc,&x,&y); 		// use character `dirc` to directly set PWM values
+
+				// if joystick is not being used, it will send 'Z', then enter loop pathFinderDecoder
+				// if no character matches, early exit out of switch statements
+				// pathFindingDecoder(dirc);  
 				printf("%c, x=%d, y=%d\r\n", dirc,x,y);
 
-				motorControlLoop(x,y); // moves motors based on x and y
+				// motorControlLoop(x,y); // moves motors based on x and y
 				// motorControlLoop(x, y); // Previous control. Automatically go into "Joy stick control mode"
 				// robot_control_FSM(robot_state, x,y);
 			
@@ -1044,4 +963,5 @@ int main(void)
 			
 		}
 	}
+
 }

@@ -379,8 +379,8 @@ void GetPosition2 (float volts[2], float pos[2]) {
     float mov_x = 0.0;
     float mov_y = 0.0;
 	// approx values
-	float mid_x = 2.30;
-	float mid_y = 2.35;
+	float mid_x = 2.15;
+	float mid_y = 2.25;
 
 
 	float vx = volts[0];
@@ -553,39 +553,6 @@ void loadTimer2(unsigned long int freq) {
 
 
 */
-void playBuzzerSound (float extract_num, float min_metal_detect, float baseline_freq) {
-
-	// minimum frequency
- 	if (extract_num > min_metal_detect + baseline_freq){
- 		loadTimer2((extract_num - baseline_freq-min_metal_detect)*0.25+500);
-		//rintf("BEEP\r\n");
-	}	
-// 	else if (extract_num > metalLevel_4 + baseline_freq){
-// 		loadTimer2(level4_freq);
-// 		printf("BEEP 4\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_3 + baseline_freq){
-// 		loadTimer2(level3_freq);
-// 		printf("BEEP 3\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_2 + baseline_freq){
-// 		loadTimer2(level2_freq);
-// 		printf("BEEP 2\r\n");
-// 	}
-// 	else if (extract_num > metalLevel_1 + baseline_freq){
-// 		loadTimer2(level1_freq);
-// 		printf("BEEP 1\r\n");
-// 	}
-// 	else if (extract_num > min_metal_detect + baseline_freq){
-// 		loadTimer2(min_freq);
-// 		printf("BEEP\r\n");
-// 	}
-	else {
-		TR2 = 0; 		// Stop timer 2
- 		BUZZER_OUT = 0; // turn off buzzer sound
- 		}
-// }
-}
 char matchRange(int x, int y) {
    char result;
 
@@ -759,20 +726,6 @@ void main(void)
     	LCDprint(buff_x, 1, 1);
 	    sprintf(buff_y, "y=%.2f,pos=%c", xy_pos[1], mapped_dir);
     	LCDprint(buff_y, 2, 1);
-
-        //printf("x=%.2f y=%.4f pos=%c\r\n", xy_pos[0], xy_pos[1], mapped_dir);
-       
-		//printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
-
-		//if (abs(xy_pos[0]) < 5) xy_pos[0]=0;
-		//if (abs(xy_pos[1]) < 5) xy_pos[1]=0;
-		//if (xy_pos[0] > 50) xy_pos[0]=50;
-		//if (xy_pos[1] > 50) xy_pos[1]=50;
-		//if (xy_pos[0] < -50) xy_pos[0]=-50;
-		//if (xy_pos[1] < -50) xy_pos[1]=-50;
-
-        //sprintf(temp_buff, "xpos: %d ypos: %d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
-		//printf(temp_buff);
 		
         sprintf(temp_buff, "%c\r\n", mapped_dir);
         sendstr1(temp_buff);
@@ -834,30 +787,6 @@ void main(void)
 			metal_lev = 5;
 		if(buff[0] == 'z')
 			metal_lev = 0;
-		//	if(strlen(buff) == 10)
-		//	{
-		//		//need to test sum_count part still but should work
-		//		printf("RX: %s\r\n", buff);
-		//		extract_num = atof(buff);
-		//		printf("extracted: %f\r\n", extract_num);
-		//		if(sum_count < 10)
-		//		{
-		//			sum_freq = extract_num + sum_freq;
-		//			sum_count++;
-		//		}
-		//		if(sum_count == 10)
-		//		{
-		//			baseline_freq = sum_freq/10.0;
-		//			//printf("baseline freq :%f\r\n", baseline_freq);
-		//			sum_count++;
-		//		}	
-		//		if(sum_count > 10)
-		//		{
-		//			// //now we can start detecting
-		//			playBuzzerSound(extract_num, min_metal_detect, baseline_freq);
-		//		}
-		//		
-		//	}
-		//}
+	
 	}
 }

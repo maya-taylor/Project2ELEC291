@@ -7,11 +7,33 @@ import matplotlib.pyplot as plt
 # Global variables for joystick position
 xpos_data, ypos_data = [], []
 dis_trav = 0.0
+
+def get_coordinates(letter):
+    coordinates = {'A': (0, 50),
+                   'B': (0, 30),
+                   'C': (0, 20),
+                   'D': (0, -50),
+                   'E': (0, -30),
+                   'F': (0, -10),
+                   'G': (50, 0),
+                   'H': (30, 0),
+                   'I': (-50, 0),
+                   'J': (-30, 0),
+                   'K': (20, 45),
+                   'L': (-20, 45),
+                   'M': (20, -45),
+                   'N': (-20, -45),
+                   'Z': (0, 0)}
+
+    return coordinates.get(letter.upper(), (0, 0))
+
 # Function to update joystick position
 def update_joystick_position(xpos, ypos):
     global dis_trav
     xpos_data.append(xpos/50)
     ypos_data.append(ypos/50)
+    
+    
     # Limit data to last 100 points for better visualization
     if len(xpos_data) > 1:
         xpos_data.pop(0)
@@ -71,18 +93,21 @@ while True:
         strin = ser.readline()
         
         if strin:
-            if len(strin) == 9 and strin[0] != '1':
-                xpos = int(strin[0:3])
-                if (xpos > 50):
-                    xpos = 0
-                    ypos = 0 #this handles if it accidentally read the frequency strin
-                ypos = int(strin[4:])
+            if len(strin) == 2:
+                if strin[0] in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Z']: #This will only execute if we send in movement from joystick
+                    letter = strin[0]
+                #if (xpos > 50):
+                #    xpos = 0
+                 #   ypos = 0 #this handles if it accidentally read the frequency strin
+                #ypos = int(strin[4:])
+                    xpos, ypos = get_coordinates(letter) #This can be used to parse the letter into x y coordinates.
+                    
 
                 print("Joystick positions: %d, %d" % (xpos, ypos))
                 update_joystick_position(xpos, ypos)
-            elif len(strin) == 11:
-                mag_freq = float(strin[0:])
-                print("Magnitude of frequency: %.2f" % mag_freq)
+       #     elif len(strin) == 11:  #Were gonna have to change this to deal with levels -> maybe we show the beep level?
+       #         mag_freq = float(strin[0:])
+       #         print("Magnitude of frequency: %.2f" % mag_freq)
 
     except serial.SerialException as e:
         print("Serial communication error:", e)
