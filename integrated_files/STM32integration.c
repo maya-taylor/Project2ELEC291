@@ -883,26 +883,18 @@ long int GetPeriod (int n)
 char MapFrequency(int freq) {
     char letter;
 
-    switch (freq) {
-        case metalLevel_1:
-            letter = 'a';
-            break;
-        case metalLevel_2:
-            letter = 'b';
-            break;
-        case metalLevel_3:
-            letter = 'c';
-            break;
-        case metalLevel_4:
-            letter = 'd';
-            break;
-        case metalLevel_5:
-            letter = 'e';
-            break;
-        default:
-            letter = 'z';
-            break;
-    }
+	if (freq > metalLevel_5)
+		letter = 'e';
+	else if (freq > metalLevel_4)
+		letter = 'd';
+	else if (freq > metalLevel_3)
+		letter = 'c';
+	else if (freq > metalLevel_2)
+		letter = 'b';
+	else if (freq > metalLevel_1)
+		letter = 'a';
+	else 
+		letter  = 'z';
 
     return letter;
 }
@@ -915,7 +907,7 @@ int main(void)
 	int x, y;
 	long int count;
 	float T, f;
-	char dir, freq;
+	char dirc, freqc;
 	
 	//code for creating baseline frequency
 	float extract_num = 0.0;
@@ -927,7 +919,8 @@ int main(void)
 	int sum_count = 0; //count to keep track of first 10 vals
 	int sum_freq = 0; //where I am adding the frequencies into
 	int baseline_freq;
-	
+	int pastfreqs[];
+
     RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A Rohan wants to delete this, already declared in hardware init
 
 	GPIOA->MODER &= ~(BIT12 | BIT13); // Make pin PA6 input
@@ -1003,7 +996,7 @@ int main(void)
 				T= 1.0*count/(F_CPU*100.0); // Since we have the time of 200 periods, we need to divide by 200
 				f=1.0/T;
 				
-				//waitms(1);
+				waitms(1);
 				
 				printf("count = %d, f=%.2f\r\n",count, f);
 				
@@ -1016,19 +1009,20 @@ int main(void)
 					{
 						sum_freq += f;
 						sum_count++;
+						freqc = 'z';
 					}
 					if(sum_count == 10)
 					{
 						baseline_freq = sum_freq/10;
 						sum_count++;
+						freqc = 'z';
 					}
 					if(sum_count > 10)
 					{
 						//this is where we start sending our baseline
-						if(f > min_metal_detect + baseline_freq)
-							freq = MapFrequency((int) (f-baseline_freq));
+						freqc = MapFrequency((int) (f-baseline_freq));
 					}
-					sprintf(buff,"%c\r\n",freq);
+					sprintf(buff,"%c\r\n",freqc);
 					printf(buff);
 					eputs2(buff);
 				}
@@ -1038,9 +1032,9 @@ int main(void)
 			{
 				//if (strlen(buff)==2) printf("\r");
 				//if (strlen(buff)==1) printf("\r\n");
-				dir = buff[0];
-				setCoordinates(dir,&x,&y); // use character `c` to convert to x and y values
-				printf("%c, x=%d, y=%d\r\n", dir,x,y);
+				dirc = buff[0];
+				setCoordinates(dirc,&x,&y); // use character `c` to convert to x and y values
+				printf("%c, x=%d, y=%d\r\n", dirc,x,y);
 
 				motorControlLoop(x,y); // moves motors based on x and y
 				// motorControlLoop(x, y); // Previous control. Automatically go into "Joy stick control mode"

@@ -673,11 +673,11 @@ void main(void)
 	int sum_count = 0; //count to keep track of first 10 vals
 	float sum_freq = 0.0; //where I am adding the frequencies into
 	float baseline_freq = 0.0;
-	
+	int metal_lev = 0;
 	float v[2];
     float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
-	//xdata char buff_x[17];
-    //xdata char buff_y[17];
+	xdata char buff_x[17];
+    xdata char buff_y[17];
 	xdata char temp_buff[4];
 	float mid[2];
     char mapped_dir;
@@ -753,13 +753,14 @@ void main(void)
         GetPosition2(v, xy_pos);
 
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
+		
+		
+		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
+    	LCDprint(buff_x, 1, 1);
+	    sprintf(buff_y, "y=%.2f,pos=%c", xy_pos[1], mapped_dir);
+    	LCDprint(buff_y, 2, 1);
 
-		//sprintf(buff_x, "x=%.4f", xy_pos[0]);
-    	//LCDprint(buff_x, 1, 1);
-	    //sprintf(buff_y, "y=%.4f, pos=%c", xy_pos[1], mapped_dir);
-    	//LCDprint(buff_y, 2, 1);
-
-        printf("x=%.4f y=%.4f pos=%c\r\n", xy_pos[0], xy_pos[1], mapped_dir);
+        //printf("x=%.2f y=%.4f pos=%c\r\n", xy_pos[0], xy_pos[1], mapped_dir);
        
 		//printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
 
@@ -776,7 +777,7 @@ void main(void)
         sprintf(temp_buff, "%c\r\n", mapped_dir);
         sendstr1(temp_buff);
         
-		waitms(200);
+		waitms(50);
 
 
 		sendstr1("m\r\n");
@@ -797,7 +798,42 @@ void main(void)
 		{
 			getstr1(buff);
             printf("%s\r\n", buff);
+            if(strlen(buff) == 2)
+            {
+            	if(buff[0] != 'z')
+            	{
+            		if(buff[0] == 'a')
+            			loadTimer2(1222);
+            		else if(buff[0] == 'b')
+            			loadTimer2(1333);
+            		else if(buff[0] == 'c')
+            			loadTimer2(1444);
+            		else if(buff[0] == 'd')
+            			loadTimer2(1555);
+            		else if(buff[0] == 'e')
+            			loadTimer2(1666);
+            	}
+            	else
+            	{
+            		TR2 = 0; 		// Stop timer 2
+ 					BUZZER_OUT = 0;
+            	}
+            }
+            
         }
+        
+        if(buff[0] == 'a')
+			metal_lev = 1;
+		if(buff[0] == 'b')
+			metal_lev = 2;
+		if(buff[0] == 'c')
+			metal_lev = 3;
+		if(buff[0] == 'd')
+			metal_lev = 4;
+		if(buff[0] == 'e')
+			metal_lev = 5;
+		if(buff[0] == 'z')
+			metal_lev = 0;
 		//	if(strlen(buff) == 10)
 		//	{
 		//		//need to test sum_count part still but should work

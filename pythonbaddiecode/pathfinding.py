@@ -21,6 +21,10 @@ class PathDrawer:
         self.send_button = tk.Button(self.master, text="Send", command=self.send_data)   # call send data command on press
         self.send_button.pack(side=tk.LEFT)
 
+        # Custom paths button
+        self.square_button = tk.Button(self.master, text="Draw squre", command=self.draw_square)
+        self.square_button.pack(side=tk.LEFT)
+
         self.approx_button = tk.Button(self.master, text="Approximate", command=self.approximate_and_draw) # call approximate_and_draw command on press
         self.approx_button.pack(side=tk.LEFT)
         
@@ -98,24 +102,24 @@ class PathDrawer:
         self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
         self.draw_lines()
     
-    def draw_i(self):
-        self.clear_canvas()
-        center_x = self.canvas.winfo_width() / 2
-        center_y = self.canvas.winfo_height() / 2
-        top = (center_x, center_y - 50)
-        bottom = (center_x, center_y + 50)
-        self.data_points = [top, bottom]
-        self.draw_lines()
+    # def draw_i(self):
+    #     self.clear_canvas()
+    #     center_x = self.canvas.winfo_width() / 2
+    #     center_y = self.canvas.winfo_height() / 2
+    #     top = (center_x, center_y - 50)
+    #     bottom = (center_x, center_y + 50)
+    #     self.data_points = [top, bottom]
+    #     self.draw_lines()
     
-    def draw_figure_8(self):
-        self.clear_canvas()
-        center_x = self.canvas.winfo_width() / 2
-        center_y = self.canvas.winfo_height() / 2
-        radius = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 3
-        top_circle = [(int(center_x + radius * np.cos(theta)), int(center_y - radius * np.sin(theta))) for theta in np.linspace(0, np.pi, 50)]
-        bottom_circle = [(int(center_x + radius * np.cos(theta)), int(center_y + radius * np.sin(theta))) for theta in np.linspace(np.pi, 2 * np.pi, 50)]
-        self.data_points = top_circle + bottom_circle
-        self.draw_lines()
+    # def draw_figure_8(self):
+    #     self.clear_canvas()
+    #     center_x = self.canvas.winfo_width() / 2
+    #     center_y = self.canvas.winfo_height() / 2
+    #     radius = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 3
+    #     top_circle = [(int(center_x + radius * np.cos(theta)), int(center_y - radius * np.sin(theta))) for theta in np.linspace(0, np.pi, 50)]
+    #     bottom_circle = [(int(center_x + radius * np.cos(theta)), int(center_y + radius * np.sin(theta))) for theta in np.linspace(np.pi, 2 * np.pi, 50)]
+    #     self.data_points = top_circle + bottom_circle
+    #     self.draw_lines()
 
 
 root = tk.Tk()
