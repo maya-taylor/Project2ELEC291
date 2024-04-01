@@ -202,7 +202,7 @@ class PathDrawer:
             if (phase < 0):
                 phase = phase + 360 # negative angles is a CCW turn, convert to a CW turn by adding 360 degrees
 
-            self.phasors_list.append([vector[0], phase])
+            self.phasors_list.append([int(vector[0]*canvas_scaling_factor), phase]) # phasor with scaled vector + phase
             prev_vector = vector
 
     def send_data(self):

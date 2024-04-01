@@ -14,7 +14,7 @@
 
 #define PI 3.141592654
 #define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
-#define CW_VELOCITY      		119.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
+#define CW_VELOCITY      		115.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
 #define CCW_VELOCITY     		121.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
 #define DIAG_VELOCITY_LEFT		35.0 // diagonal velocity for forward left
 #define DIAG_VELOCITY_RIGHT		34.0 // diagonal velocity for forward right
@@ -85,8 +85,8 @@ void forward (int cm) {
 	// motors go forward at max speed
 	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; 
 	while (timerCount_ms < milliSeconds) {
-		pwm1 = 2; // right motor
-		pwm2 = 0; // left motor
+		pwm1 = 4; // right motor (slower is faster)
+		pwm2 = 0; // left motor  (slower is faster)
 		GPIOA->ODR |= BIT2; // pin is GND
 		GPIOA->ODR |= BIT4; // pin is GND
 	}
@@ -154,9 +154,10 @@ void emergency_stop () {
 		if (ReceivedBytes2()>0)
 		{
 			egets2(buff, sizeof(buff)-1);
-			printf("%s\r\n", buff);
+			//printf("%s", buff);
 			if (buff[0]=='€')
 			{
+				waitms(500);
 				return;
 			}
 		}
@@ -405,271 +406,178 @@ void setPWM(char letter) {
    Params:
 	- letter -- encoded letter that is sent over
 */
-void pathFindingDecoder (char letter) {
-	// First for ASCII ranges
-	int ASCII_num = letter - '0'; // convert ASCII to integer
-
-	// Group A control
-	if (ASCII_num >= 48 & ASCII_num <= 57) {
-		CW_turn(15*(ASCII_num-48)); // based on ASCII number, turn amount is in increments of 15 degrees
-		forward(10);
-	}
-
-	// Group B control
-	if (ASCII_num >=102 & ASCII_num <=108) {
-		CW_turn(15*(ASCII_num-102)); // based on ASCII number, turn amount is in increments of 15 degrees
-		forward(10);
-	}
-	if (ASCII_num >=110 & ASCII_num <=116) {
-		CW_turn(15*(ASCII_num-110)); // based on ASCII number, turn amount is in increments of 15 degrees
-		forward(10);
-	}
-	if (ASCII_num >=117 & ASCII_num <=121) {
-		CW_turn(15*(ASCII_num-117)); // based on ASCII number, turn amount is in increments of 15 degrees
-		forward(25);
-	}
-
-	// Group C control
-	if (ASCII_num >=161 & ASCII_num <= 244) {
-		if (ASCII_num >= 221) {
-			// 221 to 244
-			CW_turn(15*(ASCII_num-221));
-			forward(125);
-		}
-		else if (ASCII_num >= 197) {
-			// 197 to 220
-			CW_turn(15*(ASCII_num-197));
-			forward(100);
-			
-		}
-		else if (ASCII_num >= 173) {
-			// 173 to 196
-			CW_turn(15*(ASCII_num-173));
-			forward(75);
-
-		}
-		else {
-			// 161 to 172
-			CW_turn(15*(ASCII_num-161)+180);
-			forward(50);
-		}
-	}
-
+void pathFindingDecoder (int letter) {
 	// Hardcoded switch statement range
 	// If input character does not match with anything, then this will exit without calling anything
 	switch (letter) {
-		case '`':
-			CW_turn(75);
-			forward(25);
-			break;
-		case '~':
-			CW_turn(90);
-			forward(25);
-			break;
-		case '!':
-			CW_turn(105);
-			forward(25);
-			break;
-		case '@':
-			CW_turn(120);
-			forward(25);
-			break;
-		case '#':
-			CW_turn(135);
-			forward(25);
-			break;
-		case '$':
-			CW_turn(150);
-			forward(25);
-			break;
-		case '%':
-			CW_turn(165);
-			forward(25);
-			break;
-		case '^':
-			CW_turn(180);
-			forward(25);
-			break;
-		case '&':
-			CW_turn(195);
-			forward(25);
-			break;
-		case '*':
-			CW_turn(210);
-			forward(25);
-			break;
-		case '(':
-			CW_turn(225);
-			forward(25);
-			break;
-		case ')':
-			CW_turn(240);
-			forward(25);
-			break;
-		case '-':
-			CW_turn(255);
-			forward(25);
-			break;
-		case '_':
-			CW_turn(270);
-			forward(25);
-			break;
-		case '+':
-			CW_turn(285);
-			forward(25);
-			break;
-		case '=':
-			CW_turn(300);
-			forward(25);
-			break;
-		case '{':
-			CW_turn(315);
-			forward(25);
-			break;
-		case '}':
-			CW_turn(0);
-			forward(35);
-			break;
-		case '[':
-			CW_turn(15);
-			forward(35);
-			break;
-		case '|':
-			CW_turn(30);
-			forward(35);
-			break;
-		case '\\':
-			CW_turn(45);
-			forward(35);
-			break;
-		case ';':
-			CW_turn(60);
-			forward(35);
-			break;
-		case ':':
-			CW_turn(75);
-			forward(35);
-			break;
-		case '"':
-			CW_turn(90);
-			forward(35);
-			break;
-		case '\'':
-			CW_turn(105);
-			forward(35);
-			break;
-		case '/':
-			CW_turn(120);
-			forward(35);
-			break;
-		case '?':
-			CW_turn(135);
-			forward(35);
-			break;
-		case '‚': // ignore this error
-			CW_turn(150);
-			forward(35);
-			break;
-		case 'ƒ':
-			CW_turn(165);
-			forward(35);
-			break;
-		case '„':
-			CW_turn(180);
-			forward(35);
-			break;
-		case '…':
-			CW_turn(195);
-			forward(35);
-			break;
-		case '†':
-			CW_turn(210);
-			forward(35);
-			break;
-		case '‡':
-			CW_turn(225);
-			forward(35);
-			break;
-		case 'ˆ': // ignore this error
-			CW_turn(240);
-			forward(35);
-			break;
-		case '‰':
-			CW_turn(255);
-			forward(35);
-			break;
-		case 'Š':
-			CW_turn(270);
-			forward(35);
-			break;
-		case '‹': // ignore this error
-			CW_turn(285);
-			forward(35);
-			break;
-		case 'Œ':
-			CW_turn(300);
-			forward(35);
-			break;
-		case 'Ž':
-			CW_turn(315);
-			forward(35);
-			break;
-		case '‘': // ignore this error
-			CW_turn(330);
-			forward(35);
-			break;
-		case '’': // ignore this error
-			CW_turn(345);
-			forward(35);
-			break;
-		case '“':
-			CW_turn(0);
-			forward(50);
-			break;
-		case '”':
-			CW_turn(15);
-			forward(50);
-			break;
-		case '•':
-			CW_turn(30);
-			forward(50);
-			break;
-		case '–': // ignore this error
-			CW_turn(45);
-			forward(50);
-			break;
-		case '—':
-			CW_turn(60);
-			forward(50);
-			break;
-		case '˜': // ignore this error
-			CW_turn(75);
-			forward(50);
-			break;
-		case '™':
-			CW_turn(90);
-			forward(50);
-			break;
-		case 'š':
-			CW_turn(105);
-			forward(50);
-			break;
-		case '›': // ignore this error
-			CW_turn(120);
-			forward(50);
-			break;
-		case 'œ':
-			CW_turn(135);
-			forward(50);
-			break;
-		case 'ž':
-			CW_turn(150);
-			forward(50);
-			break;
-		case 'Ÿ':
-			CW_turn(165);
-			forward(50);
-			break;
+		case '0': CW_turn(0); forward(10); break;
+        case '1': CW_turn(15); forward(10); break;
+        case '2': CW_turn(30); forward(10); break;
+        case '3': CW_turn(45); forward(10); break;
+        case '4': CW_turn(60); forward(10); break;
+        case '5': CW_turn(75); forward(10); break;
+        case '6': CW_turn(90); forward(10); break;
+        case '7': CW_turn(105); forward(10); break;
+        case '8': CW_turn(120); forward(10); break;
+        case '9': CW_turn(135); forward(10); break;
+        case 'f': CW_turn(150); forward(10); break;
+        case 'g': CW_turn(165); forward(10); break;
+        case 'h': CW_turn(180); forward(10); break;
+        case 'i': CW_turn(195); forward(10); break;
+        case 'j': CW_turn(210); forward(10); break;
+        case 'k': CW_turn(225); forward(10); break;
+        case 'l': CW_turn(240); forward(10); break;
+        case 'n': CW_turn(255); forward(10); break;
+        case 'o': CW_turn(270); forward(10); break;
+        case 'p': CW_turn(285); forward(10); break;
+        case 'q': CW_turn(300); forward(10); break;
+        case 'r': CW_turn(315); forward(10); break;
+        case 's': CW_turn(330); forward(10); break;
+        case 't': CW_turn(345); forward(10); break;
+        case 'u': CW_turn(0); forward(25); break;
+        case 'v': CW_turn(15); forward(25); break;
+        case 'w': CW_turn(30); forward(25); break;
+        case 'x': CW_turn(45); forward(25); break;
+        case 'y': CW_turn(60); forward(25); break;
+        case '`': CW_turn(75); forward(25); break;
+        case '~': CW_turn(90); forward(25); break;
+        case '!': CW_turn(105); forward(25); break;
+        case '@': CW_turn(120); forward(25); break;
+        case '#': CW_turn(135); forward(25); break;
+        case '$': CW_turn(150); forward(25); break;
+        case '%': CW_turn(165); forward(25); break;
+        case '^': CW_turn(180); forward(25); break;
+        case '&': CW_turn(195); forward(25); break;
+        case '*': CW_turn(210); forward(25); break;
+        case '(': CW_turn(225); forward(25); break;
+        case ')': CW_turn(240); forward(25); break;
+        case '-': CW_turn(255); forward(25); break;
+        case '_': CW_turn(270); forward(25); break;
+        case '+': CW_turn(285); forward(25); break;
+        case '=': CW_turn(300); forward(25); break;
+        case '{': CW_turn(315); forward(25); break;
+        case '}': CW_turn(330); forward(25); break;
+        case '[': CW_turn(345); forward(25); break;
+        case ']': CW_turn(0); forward(35); break;
+        case '|': CW_turn(15); forward(35); break;
+        case '\\': CW_turn(30); forward(35); break;
+        case ';': CW_turn(45); forward(35); break;
+        case ':': CW_turn(60); forward(35); break;
+        case '"': CW_turn(75); forward(35); break;
+        case '\'': CW_turn(90); forward(35); break;
+        case '/': CW_turn(105); forward(35); break;
+        case '?': CW_turn(120); forward(35); break;
+        case ',': CW_turn(135); forward(35); break;
+        case '‚': CW_turn(150); forward(35); break;
+        case 'ƒ': CW_turn(165); forward(35); break;
+        case '„': CW_turn(180); forward(35); break;
+        case '…': CW_turn(195); forward(35); break;
+        case '†': CW_turn(210); forward(35); break;
+        case '‡': CW_turn(225); forward(35); break;
+        case 'ˆ': CW_turn(240); forward(35); break;
+        case '‰': CW_turn(255); forward(35); break;
+        case 'Š': CW_turn(270); forward(35); break;
+        case '‹': CW_turn(285); forward(35); break;
+        case 'Œ': CW_turn(300); forward(35); break;
+        case 'Ž': CW_turn(315); forward(35); break;
+        case '‘': CW_turn(330); forward(35); break;
+        case '’': CW_turn(345); forward(35); break;
+        case '“': CW_turn(0); forward(50); break;
+        case '”': CW_turn(15); forward(50); break;
+        case '•': CW_turn(30); forward(50); break;
+        case '–': CW_turn(45); forward(50); break;
+        case '—': CW_turn(60); forward(50); break;
+        case '˜': CW_turn(75); forward(50); break;
+        case '™': CW_turn(90); forward(50); break;
+        case 'š': CW_turn(105); forward(50); break;
+        case '›': CW_turn(120); forward(50); break;
+        case 'œ': CW_turn(135); forward(50); break;
+        case 'ž': CW_turn(150); forward(50); break;
+        case 'Ÿ': CW_turn(165); forward(50); break;
+        case '¡': CW_turn(180); forward(50); break;
+        case '¢': CW_turn(195); forward(50); break;
+        case '£': CW_turn(210); forward(50); break;
+        case '¤': CW_turn(225); forward(50); break;
+        case '¥': CW_turn(240); forward(50); break;
+        case '¦': CW_turn(255); forward(50); break;
+        case '§': CW_turn(270); forward(50); break;
+        case '¨': CW_turn(285); forward(50); break;
+        case '©': CW_turn(300); forward(50); break;
+        case 'ª': CW_turn(315); forward(50); break;
+        case '«': CW_turn(330); forward(50); break;
+        case '¬': CW_turn(345); forward(50); break;
+        case '­': CW_turn(0); forward(75); break;
+        case '®': CW_turn(15); forward(75); break;
+        case '¯': CW_turn(30); forward(75); break;
+        case '°': CW_turn(45); forward(75); break;
+        case '±': CW_turn(60); forward(75); break;
+        case '²': CW_turn(75); forward(75); break;
+        case '³': CW_turn(90); forward(75); break;
+        case '´': CW_turn(105); forward(75); break;
+        case 'µ': CW_turn(120); forward(75); break;
+        case '¶': CW_turn(135); forward(75); break;
+        case '·': CW_turn(150); forward(75); break;
+        case '¸': CW_turn(165); forward(75); break;
+        case '¹': CW_turn(180); forward(75); break;
+        case 'º': CW_turn(195); forward(75); break;
+        case '»': CW_turn(210); forward(75); break;
+        case '¼': CW_turn(225); forward(75); break;
+        case '½': CW_turn(240); forward(75); break;
+        case '¾': CW_turn(255); forward(75); break;
+        case '¿': CW_turn(270); forward(75); break;
+        case 'À': CW_turn(285); forward(75); break;
+        case 'Á': CW_turn(300); forward(75); break;
+        case 'Â': CW_turn(315); forward(75); break;
+        case 'Ã': CW_turn(330); forward(75); break;
+        case 'Ä': CW_turn(345); forward(75); break;
+        case 'Å': CW_turn(0); forward(100); break;
+        case 'Æ': CW_turn(15); forward(100); break;
+        case 'Ç': CW_turn(30); forward(100); break;
+        case 'È': CW_turn(45); forward(100); break;
+        case 'É': CW_turn(60); forward(100); break;
+        case 'Ê': CW_turn(75); forward(100); break;
+        case 'Ë': CW_turn(90); forward(100); break;
+        case 'Ì': CW_turn(105); forward(100); break;
+        case 'Í': CW_turn(120); forward(100); break;
+        case 'Î': CW_turn(135); forward(100); break;
+        case 'Ï': CW_turn(150); forward(100); break;
+        case 'Ð': CW_turn(165); forward(100); break;
+        case 'Ñ': CW_turn(180); forward(100); break;
+        case 'Ò': CW_turn(195); forward(100); break;
+        case 'Ó': CW_turn(210); forward(100); break;
+        case 'Ô': CW_turn(225); forward(100); break;
+        case 'Õ': CW_turn(240); forward(100); break;
+        case 'Ö': CW_turn(255); forward(100); break;
+        case '×': CW_turn(270); forward(100); break;
+        case 'Ø': CW_turn(285); forward(100); break;
+        case 'Ù': CW_turn(300); forward(100); break;
+        case 'Ú': CW_turn(315); forward(100); break;
+        case 'Û': CW_turn(330); forward(100); break;
+        case 'Ü': CW_turn(345); forward(100); break;
+        case 'Ý': CW_turn(0); forward(125); break;
+        case 'Þ': CW_turn(15); forward(125); break;
+        case 'ß': CW_turn(30); forward(125); break;
+        case 'à': CW_turn(45); forward(125); break;
+        case 'á': CW_turn(60); forward(125); break;
+        case 'â': CW_turn(75); forward(125); break;
+        case 'ã': CW_turn(90); forward(125); break;
+        case 'ä': CW_turn(105); forward(125); break;
+        case 'å': CW_turn(120); forward(125); break;
+        case 'æ': CW_turn(135); forward(125); break;
+        case 'ç': CW_turn(150); forward(125); break;
+        case 'è': CW_turn(165); forward(125); break;
+        case 'é': CW_turn(180); forward(125); break;
+        case 'ê': CW_turn(195); forward(125); break;
+        case 'ë': CW_turn(210); forward(125); break;
+        case 'ì': CW_turn(225); forward(125); break;
+        case 'í': CW_turn(240); forward(125); break;
+        case 'î': CW_turn(255); forward(125); break;
+        case 'ï': CW_turn(270); forward(125); break;
+        case 'ð': CW_turn(285); forward(125); break;
+        case 'ñ': CW_turn(300); forward(125); break;
+        case 'ò': CW_turn(315); forward(125); break;
+        case 'ó': CW_turn(330); forward(125); break;
+		case 'ô': CW_turn(345); forward(125); break;
 		default:
 			// Handle unknown characters or default case
 			break; // This will make it so that the robot doesn't do anything. 
@@ -682,6 +590,7 @@ void ButtonCommand (char letter){
         case '€':
 			printf("Emergency stop :(\r\n");
             emergency_stop();
+			printf("Restart :)\r\n");
             break;
         case 'ý':
             str_line();
@@ -892,15 +801,19 @@ int main(void)
 	//figure8();
 	//stopCar_ms(1000); // this process is blocking
 	
-	// char test_char = 'Þ';
-	// pathFindingDecoder(test_char);
-	// char test_char = 'ó';
-	// pathFindingDecoder(test_char);
-	// char test_char = '›';
-	// pathFindingDecoder(test_char);
-	// stopCar_ms(5000);
-
-
+	// Path Finding test
+	stopCar_ms(2000);
+	int test_char = 'Å'; // forward
+	pathFindingDecoder(test_char);
+	test_char = '³'; // 75cm and turns 90 degrees
+	pathFindingDecoder(test_char);
+	test_char = '³'; // 75cm and turns 90 degrees
+	pathFindingDecoder(test_char);
+	test_char = 'é';
+	pathFindingDecoder(test_char);
+	stopCar_ms(3000);
+	
+	// = = = = = = = = = Main Loop = = = = = = = 
 	while (1) {
 		// insert joystick reading 
 		
@@ -968,7 +881,7 @@ int main(void)
 				dirc = buff[0];
 				setPWM(dirc); 		// use character `dirc` to directly set PWM values
 				ButtonCommand(dirc);
-				printf("made it!\r\n");
+				//printf("made it!\r\n");
 			}
 			
 		}

@@ -5,6 +5,10 @@ import time
 import matplotlib.pyplot as plt
 from pynput import keyboard
 
+# allowing all characters that are sent from the EFM8 to the STM
+allowed_characters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Z'}
+
+
 ser = serial.Serial(
     port='COM16',
     baudrate=9600,
@@ -21,10 +25,13 @@ def pressed (key):
         ascii_code = ord(key_char)
         
         # Send the ASCII code through the serial port
-        ser.write(bytes([ascii_code]))
+        if key_char in allowed_characters:
+            ser.write(bytes([ascii_code]))
         
-        # Print the pressed key
-        print(f"Sent {key_char}")
+            # Print the pressed key
+            print(f"Sent {key_char}")
+        else:
+            print ("Not a valid character.")
     except AttributeError:
         # Ignore non-character keys
         pass

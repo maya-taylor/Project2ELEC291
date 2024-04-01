@@ -363,8 +363,8 @@ void GetPosition2 (float volts[2], float pos[2]) {
     float mov_x = 0.0;
     float mov_y = 0.0;
 	// approx values
-	float mid_x = 2.15;
-	float mid_y = 2.25;
+	float mid_x = 2.25;
+	float mid_y = 2.35;
 
 
 	float vx = volts[0];
@@ -673,6 +673,7 @@ void main(void)
 	while(1)
 	{
 		waitms(50);
+		
 
             
         v[0] = Volts_at_Pin(XPOS_PIN) ;
@@ -703,12 +704,22 @@ void main(void)
 		if(P2_1 == 0)
 		{
 			//this is the emergency stop character
-			sendstr1("€\r\n");
+			waitms(10);
+			if(P2_1 == 0)
+			{
+				while(P2_1 == 0);
+				printf("--EMERGENCY--\r\n");
+				sendstr1("€€\r\n");
+				//sendstr1("€\r\n");
+
+			}
+
 		}
 
-		waitms(50);
+		waitms(10);
 
 		sendstr1("m\r\n");
+		
 		putchar('.');
 			
 		timeout_cnt = 0;
