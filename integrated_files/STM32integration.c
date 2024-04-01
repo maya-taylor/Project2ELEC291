@@ -14,9 +14,10 @@
 
 #define PI 3.141592654
 #define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
-#define CW_VELOCITY      		112.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
-#define CCW_VELOCITY     		112.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
-#define DIAG_VELOCITY			100.0 // diagonal velocity for forward (not measured yet)
+#define CW_VELOCITY      		119.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
+#define CCW_VELOCITY     		121.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
+#define DIAG_VELOCITY_LEFT		35.0 // diagonal velocity for forward left
+#define DIAG_VELOCITY_RIGHT		34.0 // diagonal velocity for forward right
 #define F_CPU 32000000L
 #define AVG_NUM 5
 
@@ -39,6 +40,24 @@ volatile unsigned char pwm1 = 0, pwm2 = 0;
 volatile int timerCount_100us = 0;
 volatile int timerCount_ms = 0;
 // volatile int timerCount_s = 0;
+
+void Delay_us(unsigned char us)
+{
+	// For SysTick info check the STM32L0xxx Cortex-M0 programming manual page 85.
+	SysTick->LOAD = (F_CPU/(1000000L/us)) - 1;  // set reload register, counter rolls over from zero, hence -1
+	SysTick->VAL = 0; // load the SysTick counter
+	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer 
+	while((SysTick->CTRL & BIT16)==0); // Bit 16 is the COUNTFLAG.  True when counter rolls over from zero.
+	SysTick->CTRL = 0x00; // Disable Systick counter
+}
+
+void waitms (unsigned int ms)
+{
+	unsigned int j;
+	unsigned char k;
+	for(j=0; j<ms; j++)
+		for (k=0; k<4; k++) Delay_us(250);
+}
 
 void stopMotors (void) {
 	pwm1 = 0;
@@ -66,7 +85,7 @@ void forward (int cm) {
 	// motors go forward at max speed
 	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; 
 	while (timerCount_ms < milliSeconds) {
-		pwm1 = 1; // right motor
+		pwm1 = 2; // right motor
 		pwm2 = 0; // left motor
 		GPIOA->ODR |= BIT2; // pin is GND
 		GPIOA->ODR |= BIT4; // pin is GND
@@ -102,9 +121,9 @@ void CCW_turn (int degrees) {
 void diag_left (int degrees) {
 	timerCount_ms = 0;
 
-	int milliseconds = degrees/DIAG_VELOCITY*1000.0;
+	int milliseconds = degrees/DIAG_VELOCITY_LEFT*1000.0;
 	while (timerCount_ms < milliseconds) {
-			pwm2 = 30; 			 	// left forward slow
+			pwm2 = 40; 			 	// left forward slow
 			GPIOA->ODR |= BIT4;  	// pin is at 5V
 			pwm1 = 0; 		 		// right forward fast
 			GPIOA->ODR |= BIT2; 	// pin is 5V
@@ -114,17 +133,35 @@ void diag_left (int degrees) {
 void diag_right (int degrees) {
 	timerCount_ms = 0;
 
-	int milliseconds = degrees/DIAG_VELOCITY*1000.0;
+	int milliseconds = degrees/DIAG_VELOCITY_RIGHT*1000.0;
 	while (timerCount_ms < milliseconds) {
 			pwm2 = 0; 			 	// left forward fast
 			GPIOA->ODR |= BIT4;  	// pin is at 5V
-			pwm1 = 30; 		 		// right forward slow
+			pwm1 = 40; 		 		// right forward slow
 			GPIOA->ODR |= BIT2; 	// pin is 5V
 	}
 }
 
 void emergency_stop () {
+	char buff[5];
+	waitms(1000);
+	while(1){
+		pwm1 = 0;
+		pwm2 = 0;
+		GPIOA->ODR &= ~BIT2; // pin is GND
+		GPIOA->ODR &= ~BIT4; // pin is GND
+		
+		if (ReceivedBytes2()>0)
+		{
+			egets2(buff, sizeof(buff)-1);
+			printf("%s\r\n", buff);
+			if (buff[0]=='€')
+			{
+				return;
+			}
+		}
 	
+	}
 }
 
 void str_line () {
@@ -138,17 +175,20 @@ void circle () {
 // drive in square - blocking!!
 void square () { 
 	for (int i = 0; i < 4; i++) {
-		forward(10);
+		forward(20);
 		stopCar_ms(10); 
 
-		CW_turn(90);
+		CW_turn(88);
 		stopCar_ms(10); 
 	}
 }
 
 // Drives in a figrue 8 path
 void figure8(void) {
-
+	diag_left(280);
+	forward(20);
+	diag_right(280);
+	forward(20);
 }
 
 
@@ -248,23 +288,9 @@ void TIM2_Handler(void)
 }
 
 // Uses SysTick to delay <us> micro-seconds. 
-void Delay_us(unsigned char us)
-{
-	// For SysTick info check the STM32L0xxx Cortex-M0 programming manual page 85.
-	SysTick->LOAD = (F_CPU/(1000000L/us)) - 1;  // set reload register, counter rolls over from zero, hence -1
-	SysTick->VAL = 0; // load the SysTick counter
-	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer 
-	while((SysTick->CTRL & BIT16)==0); // Bit 16 is the COUNTFLAG.  True when counter rolls over from zero.
-	SysTick->CTRL = 0x00; // Disable Systick counter
-}
 
-void waitms (unsigned int ms)
-{
-	unsigned int j;
-	unsigned char k;
-	for(j=0; j<ms; j++)
-		for (k=0; k<4; k++) Delay_us(250);
-}
+
+
 
 void SendATCommand (char * s)
 {
@@ -654,6 +680,7 @@ void ButtonCommand (char letter){
 
     switch(letter){
         case '€':
+			printf("Emergency stop :(\r\n");
             emergency_stop();
             break;
         case 'ý':
@@ -855,13 +882,15 @@ int main(void)
 	// = = = = = = = = = Testing pathFindingDecoder with a series of characters = = = = = = = 
 	// angular velocity test
 
-	stopCar_ms(3000); // this process is blocking
-	diag_left(360);
-	stopCar_ms(3000); // this process is blocking
-	CW_turn(360);
-	stopCar_ms(3000); // this process is blocking
-	forward(100);
-	stopCar_ms(3000); // this process is blocking
+	//stopCar_ms(1000); // this process is blocking
+	//str_line();
+	//stopCar_ms(1000); // this process is blocking
+	//circle();
+	//stopCar_ms(1000); // this process is blocking
+	//square();
+	//stopCar_ms(1000); // this process is blocking
+	//figure8();
+	//stopCar_ms(1000); // this process is blocking
 	
 	// char test_char = 'Þ';
 	// pathFindingDecoder(test_char);
@@ -938,7 +967,8 @@ int main(void)
 			{
 				dirc = buff[0];
 				setPWM(dirc); 		// use character `dirc` to directly set PWM values
-			
+				ButtonCommand(dirc);
+				printf("made it!\r\n");
 			}
 			
 		}

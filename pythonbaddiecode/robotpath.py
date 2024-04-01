@@ -15,6 +15,11 @@ ypos = 0
 strength = 'None'
 dis_trav = 0.0
 
+# Robot path finding
+canvas_scaling_factor = 0.5 # scaling final phasor magnitudes 
+FORWARD_VELOCITY      = 15.0
+CW_VELOCITY      	  = 119.0
+
 coordinates = {65: (0, 50), #A to N
                66: (0, 30),
                67: (0, 20),
@@ -83,9 +88,185 @@ ascii_mapping = {
     (101, 125, 300, 314): 'ñ', (101, 125, 315, 329): 'ò', (101, 125, 330, 344): 'ó', (101, 125, 345, 359): 'ô',
 }
 
+# GUI that allow the user to draw on canvas approximate their path, then send that data as instructions for the car
+
+# latest - updated to incorporate basic functionality commands 
+
+import tkinter as tk
+import numpy as np
+import cmath # for vector math
+
+# Draw path and returns a phasor list
+# Draw path and returns a phasor list
+class PathDrawer:
+    def __init__(self, master):
+        self.master = master
+        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")
+        self.canvas.pack()
+
+        # Data array attributes ot the class
+        self.data_points = []   # Draw datapoints from canvas drawing
+        self.approx_points = [] # Approximated waypoints of the drawn path
+        self.vectors_list = []  # Turning into lists of vectors
+        self.phasors_list = []  # Angle for CW rotation as a list calculated from previous vector
+
+        self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+
+        self.clear_button = tk.Button(self.master, text="Clear", command=self.clear_canvas) # call clear canvas command on press
+        self.clear_button.pack(side=tk.LEFT)
+
+        self.send_button = tk.Button(self.master, text="Send", command=self.send_data)   # call send data command on press
+        self.send_button.pack(side=tk.LEFT)
+
+        # Custom paths button
+        self.square_button = tk.Button(self.master, text="Draw squre", command=self.draw_square)
+        self.square_button.pack(side=tk.LEFT)
+
+        self.approx_button = tk.Button(self.master, text="Approximate", command=self.approximate_and_draw) # call approximate_and_draw command on press
+        self.approx_button.pack(side=tk.LEFT)
+        
+        # Input value which will be used to determine the resolution of path approximation
+        self.num_segments_entry = tk.Entry(self.master)
+        self.num_segments_entry.pack(side=tk.LEFT)
+        self.num_segments_entry.insert(tk.END, "5")
+
+    def on_click(self, event):
+        self.data_points.append((event.x, event.y))
+
+    def on_drag(self, event):
+        self.data_points.append((event.x, event.y))
+        self.draw_lines()
+
+    def draw_lines(self):
+        self.canvas.delete("line")
+        if len(self.data_points) >= 2:
+            for i in range(len(self.data_points) - 1):
+                x0, y0 = self.data_points[i]
+                x1, y1 = self.data_points[i + 1]
+                self.canvas.create_line(x0, y0, x1, y1, tags="line")
+
+    def clear_canvas(self):
+        self.canvas.delete("all")
+        self.data_points = []
+
+    # go through datapoints array and select in even intervals
+    # datapoints selected from points[] array (generated from on_drag or on_clikc events)
+    # number of datapoints to use determined by num_segments, higher creates more
+    def approximate_and_draw(self):
+        approx_points = []
+        num_segments = int(self.num_segments_entry.get())
+        length_data = len(self.data_points)
+
+        sampling_interval = int(length_data/num_segments)
+
+        # path approximation is done by linearly sampling self.data_points
+        # spaced evenly using the modulus operator then preserving end point
+        for i in range (0, length_data):
+            if (i % sampling_interval == 0):
+                approx_points.append(self.data_points[i])
+
+        # Due to the nature of sampling, if if `length_data` is k*num_segments, integer truncation doesn't happen
+        # Result is that don't take the last datapoint
+        if ((length_data) % num_segments == 0):
+            approx_points.append(self.data_points[length_data-1])
+
+        self.canvas.delete("line") # delete previous path on the canvas on press
+        self.approx_points = approx_points #save as attribute to self
+
+        # plot new approximated path
+        for i in range(len(approx_points) - 1):
+            x0, y0 = approx_points[i]
+            x1, y1 = approx_points[i + 1]
+            self.canvas.create_line(x0, y0, x1, y1, tags="line")
+
+        self.convert_to_vectors()
+        self.convert_to_phasors()
+
+    def convert_to_vectors(self):
+        self.vectors_list = []
+        prev_point = self.approx_points[0]
+        for point in self.approx_points[1:]:
+            dx = point[0] - prev_point[0]
+            dy = point[1] - prev_point[1]
+            magnitude = abs(complex(dx, -dy))       #tkinter has downwards as positive, flipped here for calculations
+            phase = cmath.phase(complex(dx, -dy))   #tkinter has downwards as positive, flipped here for calculations
+            self.vectors_list.append((int(magnitude), int(phase*180/np.pi)))
+            prev_point = point
+
+    def convert_to_phasors(self):
+        self.phasors_list = []
+        prev_vector = [0, 90]
+        for vector in self.vectors_list:
+            phase = prev_vector[1] - vector[1]
+            if (phase < 0):
+                phase = phase + 360 # negative angles is a CCW turn, convert to a CW turn by adding 360 degrees
+
+            self.phasors_list.append([vector[0], phase])
+            prev_vector = vector
+
+    def send_data(self):
+        print("Phasors:") # send data to serial on a set time
+        for phasor in self.phasors_list:
+            phasor_ascii_char = self.polar_to_ascii(phasor[0], phasor[1])
+            
+            # calculate amount of time that current path should take
+            wait_time = phasor[1] / CW_VELOCITY + phasor[0] / FORWARD_VELOCITY
+            # adding a slight buffer so that new instruction isn't sent
+            # while executing current instruction robotpath in .c is blocking
+            wait_time = wait_time * 1.05 + 0.2 
+
+            ser.write(phasor_ascii_char.encode()) # send over serial to JDY40
+            print(phasor)                         # print what character is sent
+            
+            time.sleep(wait_time)                 # pause program while we wait for phasors to be sent over
+
+            
+    def draw_square(self):
+        self.clear_canvas()
+        side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
+        center_x = self.canvas.winfo_width() / 2
+        center_y = self.canvas.winfo_height() / 2
+        top_left = (center_x - side_length / 2, center_y - side_length / 2)
+        top_right = (center_x + side_length / 2, center_y - side_length / 2)
+        bottom_right = (center_x + side_length / 2, center_y + side_length / 2)
+        bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
+        self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
+        self.draw_lines()
+
+    def polar_to_ascii(self, magnitude, argument):
+    # Iterate through the dictionary to find the corresponding character
+        for key, value in ascii_mapping.items():
+            if key[0] <= magnitude <= key[1] and key[2] <= argument <= key[3]:
+                return value
+        
+        # Return None if no matching character is found
+        return None
+            
+    def draw_square(self):
+        self.clear_canvas()
+        side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
+        center_x = self.canvas.winfo_width() / 2
+        center_y = self.canvas.winfo_height() / 2
+        top_left = (center_x - side_length / 2, center_y - side_length / 2)
+        top_right = (center_x + side_length / 2, center_y - side_length / 2)
+        bottom_right = (center_x + side_length / 2, center_y + side_length / 2)
+        bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
+        self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
+        self.draw_lines()
+
 def on_option_select():
     selected = selected_option.get()
     result_label.config(text=f"Selected Option: {selected}")
+
+    if selected == 'Draw':
+        root = tk.Tk()
+        app = PathDrawer(root)
+        root.mainloop()
+    elif selected == 'Joystick':
+        print("Joystick Mode")
+    else:
+        print("Invalid Option")
 
 root = tk.Tk()
 root.title("Start by Manual Joystick Driving or Draw a Path")
@@ -103,12 +284,18 @@ show_button.pack()
 result_label = tk.Label(root, text="")
 result_label.pack()
 root.mainloop()
+# -- CHANGE MADE -- GL
+# Moved this code to the `on_option_select` command
 
-joystick_flag = 0
+# joystick_flag = 0 
 
-if selected_option.get() == 'Joystick':
-    joystick_flag = 1
-    print("Joystick Mode")
+# if selected_option.get() == 'Joystick':
+#     joystick_flag = 1
+#     print("Joystick Mode")
+# elif selected_option.get() == 'Draw':
+#     root = tk.Tk()
+#     app = PathDrawer(root)
+#     root.mainloop()
 
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))
