@@ -54,6 +54,8 @@
 #define level4_freq    1500
 #define level5_freq    2000
 
+// For normalizing joystick position 
+#define external_voltage_reference 1.7854  // in volts
 
 
 unsigned char overflow_count;
@@ -61,6 +63,12 @@ unsigned char overflow_count;
 idata char buff[20];
 
 volatile long int count_ms = 0;
+
+// new global variables here
+// extract_num, baseline_freq, min_metal_detect
+volatile float extract_num = 0.0;
+volatile float min_metal_detect = 200; //frequency increase at which metal is detected
+volatile float baseline_freq = 0.0;
 
 char _c51_external_startup (void)
 {
@@ -156,12 +164,12 @@ void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 {
 	SFRPAGE=0x10;
 	TF2H = 0; // Clear Timer2 interrupt flag
-	BUZZER_OUT=!BUZZER_OUT; // complements the value of BUZZER_OUT to generate a square wave
+	BUZZER_OUT =! BUZZER_OUT; // complements the value of BUZZER_OUT to generate a square wave
 }
 // Timer 5 controls the output of timer2
 void Timer5_ISR (void) interrupt INTERRUPT_TIMER5
 {
-	// int lengthBeeps;
+	int lengthBeeps;
 	SFRPAGE=0x10;
 	TF5H = 0;
 	TR5_OUT_TEST =! TR5_OUT_TEST; // generates a continuous 1kHz wave. -- Debug to verify that ISR5 is running
@@ -194,9 +202,17 @@ void Timer5_ISR (void) interrupt INTERRUPT_TIMER5
 		lengthBeeps = 1000;
 		printf("BEEP\r\n");
 	}
-	lengthBeeps = 500;
+	else {
+		// turns off timer2 - used for testing
+		lengthBeeps = -1;
+		TR2=0;
+	}
+	//printf("beep\r\n");
+	//lengthBeeps = 1000;
 
-	if (count_ms >= 100) {
+	lengthBeeps = 1000;
+
+	if (count_ms >= lengthBeeps) {
 		if (TR2 == 0)
 			TR2 = 1; // Enable / disable timer2 interrupts
 		else
@@ -242,7 +258,7 @@ void InitADC (void)
 	
 	ADC0CN2 =
 		(0x0 << 7) | // PACEN. 0x0: The ADC accumulator is over-written.  0x1: The ADC accumulator adds to results.
-		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: Timer5, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
+		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: 	, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: Timer5, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
 
 	ADEN=1; // Enable ADC
 }
@@ -648,22 +664,24 @@ void loadTimer2(unsigned long int freq) {
 void main(void)
 {
 	//unsigned int cnt;
-	float extract_num = 0.0;
+	// float extract_num = 0.0;
 	float prev_num = 0.1;
 	//int mapped_num; //for the beeping
-	float min_metal_detect = 200; //frequency increase at which metal is detected
+	// float min_metal_detect = 200; //frequency increase at which metal is detected
 	float mapped_range = 5.0; //1 to mapped_range+1
 	float extract_range = 800.0; //max range of beeping frequency
 	int timeout_cnt = 0;
 	int sum_count = 0; //count to keep track of first 10 vals
 	float sum_freq = 0.0; //where I am adding the frequencies into
-	float baseline_freq = 0.0;
+	// float baseline_freq = 0.0;
 	
 	float v[2];
     float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
 	xdata char buff_x[17];
     xdata char buff_y[17];
 	xdata char temp_buff[80];
+
+	//EA=0; // Global interrupt disable
 
 	//float adc[2]
 	// TIMER0_Init();
@@ -711,6 +729,9 @@ void main(void)
 	
 	//printf("\r\nPress and hold the BOOT button to transmit.\r\n");
 	
+	//EA=1; // Global interrupt enable
+  	
+
 	//cnt=0;
 	while(1)
 	{

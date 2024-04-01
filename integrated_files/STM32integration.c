@@ -1,3 +1,5 @@
+// robot code - using new position mapping to characters
+
 #include "../Common/Include/stm32l051xx.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,6 +32,12 @@
 #define S_SQUARE 				2
 #define S_FIGURE8 				3
 #define S_PATH   				4
+
+#define metalLevel_1   225
+#define metalLevel_2   300
+#define metalLevel_3   400
+#define metalLevel_4   500
+#define metalLevel_5   700
 
 // Global variables	
 volatile int PWM_Counter = 0;
@@ -163,7 +171,7 @@ void turnLeftMotor (int PWM, float PWM_adjust) {
     // to be 1 or 0 which then controlls CW or CCW rotation
     // Clock wise rotation
     if (PWM_adjust < 0) { // Backwards
-        pwm1 = PWM;
+        pwm1 = PWM; // right motor PWM
         GPIOA->ODR &= ~BIT2;    // set left motor to 0 when CW
     } 
     else { // Forwards
@@ -175,12 +183,12 @@ void turnLeftMotor (int PWM, float PWM_adjust) {
 // THIS IS ACTUALLY THE LEFT MOTOR
 int turnRightMotor (int PWM, float PWM_adjust) { 
     if (PWM_adjust < 0) {
-        pwm2 = PWM*MOTOR_ADJUST;
+        pwm2 = PWM*MOTOR_ADJUST; // left motor PWM
         GPIOA->ODR &= ~BIT4;     // set right motor to 0 when CCW
     }
     else {
         pwm2 = (100-PWM);         // Inversed by 100 - PWM, turns when `pwm2` is LOW
-        GPIOA->ODR |= BIT4;     // set right motor to 1 when CCW
+        GPIOA->ODR |= BIT4;       // set right motor to 1 when CCW
     }
 }
 
@@ -412,8 +420,360 @@ void SendATCommand (char * s)
 	printf("Response: %s", buff);
 }
 
+// A giant switch statement that maps compressed letters to x and y directions
+void setCoordinates(char letter, int *x, int *y) {
+    switch (letter) {
+        case 'A': // forward fast
+			// pwm1 = 0;
+			// pwm2 = 0;
+			// GPIOA->ODR |= ~BIT2; // pin is at 5V
+			// GPIOA->ODR |= ~BIT4; // pin is at 5V
+			*x = 0;
+			*y = 50;
+
+            break;
+        case 'B': //forward mid
+            *x = 0;
+            *y = 30;
+            break;
+        case 'C': //forward slow
+            *x = 0;
+            *y = 20;
+            break;
+        case 'D': // backwards fast
+            *x = 0;
+            *y = -50;
+
+			// pwm1 = 100;
+			// pwm2 = 100;
+			// GPIOA->ODR &= ~BIT2; // pin is GND
+			// GPIOA->ODR &= ~BIT4; // pin is GND
+            break;
+        case 'E': //backwards mid
+            *x = 0;
+            *y = -30;
+            break;
+        case 'F': //backwards slow
+            *x = 0;
+            *y = -10;
+            break;
+        case 'G': // CW turn on the spot fast
+            *x = 50;
+            *y = 0;
+            break;
+        case 'H': //CW turn on spot mid
+            *x = 30;
+            *y = 0;
+            break;
+        case 'I': //CCW turn on spot  fast
+            *x = -50;
+            *y = 0;
+            break;
+        case 'J': //CCW turn on sport mid
+            *x = -30;
+            *y = 0;
+            break;
+        case 'K': //diagonal NE 
+            *x = 20;
+            *y = 45;
+            break;
+        case 'L': //diagonal NW 
+            *x = -20;
+            *y = 45;
+            break;
+        case 'M': //diagonal SE
+            *x = 20;
+            *y = -45;
+            break;
+        case 'N': //diagonal SW
+            *x = -20;
+            *y = -45;
+            break;
+        case 'Z': // stop car
+        default:
+            *x = 0;
+            *y = 0;
+            break;
+    }
+}
+/* Function: Decodes letters as 
+   Params:
+	- letter -- encoded letter that is sent over
+*/
+void pathFindingDecoder (char letter) {
+	// First for ASCII ranges
+	int ASCII_num = letter - '0'; // convert ASCII to integer
+
+	// Group A control
+	if (ASCII_num >= 48 & ASCII_num <= 57) {
+		forward(10);
+		CW_turn(15*(ASCII_num-48)); // based on ASCII number, turn amount is in increments of 15 degrees
+	}
+
+	// Group B control
+	if (ASCII_num >=102 & ASCII_num <=108) {
+		forward(10);
+		CW_turn(15*(ASCII_num-102)); // based on ASCII number, turn amount is in increments of 15 degrees
+	}
+	if (ASCII_num >=110 & ASCII_num <=116) {
+		forward(10);
+		CW_turn(15*(ASCII_num-110)); // based on ASCII number, turn amount is in increments of 15 degrees
+	}
+	if (ASCII_num >=117 & ASCII_num <=121) {
+		forward(25);
+		CW_turn(15*(ASCII_num-117)); // based on ASCII number, turn amount is in increments of 15 degrees
+	}
+
+	// Group C control
+	if (ASCII_num >=161 & ASCII_num <= 244) {
+		if (ASCII_num >= 221) {
+			// 221 to 244
+			forward(125);
+			CW_turn(15*(ASCII_num-221));
+		}
+		else if (ASCII_num >= 197) {
+			// 197 to 220
+			forward(100);
+			CW_turn(15*(ASCII_num-197));
+			
+		}
+		else if (ASCII_num >= 173) {
+			// 173 to 196
+			forward(75);
+			CW_turn(15*(ASCII_num-173));
+
+		}
+		else {
+			// 161 to 172
+			forward(50);
+			CW_turn(15*(ASCII_num-161)+180);
+		}
+	}
+
+	// Hardcoded switch statement range
+	// If input character does not match with anything, then this will exit without calling anything
+	switch (letter) {
+        case '`':
+            forward(25);
+            CW_turn(75);
+            break;
+        case '~':
+            forward(25);
+            CW_turn(90);
+            break;
+        case '!':
+            forward(25);
+            CW_turn(105);
+            break;
+        case '@':
+            forward(25);
+            CW_turn(120);
+            break;
+        case '#':
+            forward(25);
+            CW_turn(135);
+            break;
+        case '$':
+            forward(25);
+            CW_turn(150);
+            break;
+        case '%':
+            forward(25);
+            CW_turn(165);
+            break;
+        case '^':
+            forward(25);
+            CW_turn(180);
+            break;
+        case '&':
+            forward(25);
+            CW_turn(195);
+            break;
+        case '*':
+            forward(25);
+            CW_turn(210);
+            break;
+        case '(':
+            forward(25);
+            CW_turn(225);
+            break;
+        case ')':
+            forward(25);
+            CW_turn(240);
+            break;
+        case '-':
+            forward(25);
+            CW_turn(255);
+            break;
+        case '_':
+            forward(25);
+            CW_turn(270);
+            break;
+        case '+':
+            forward(25);
+            CW_turn(285);
+            break;
+        case '=':
+            forward(25);
+            CW_turn(300);
+            break;
+        case '{':
+            forward(25);
+            CW_turn(315);
+            break;
+        case '}':
+            forward(35);
+            CW_turn(0);
+            break;
+        case '[':
+            forward(35);
+            CW_turn(15);
+            break;
+        case '|':
+            forward(35);
+            CW_turn(30);
+            break;
+        case '\\':
+            forward(35);
+            CW_turn(45);
+            break;
+        case ';':
+            forward(35);
+            CW_turn(60);
+            break;
+        case ':':
+            forward(35);
+            CW_turn(75);
+            break;
+        case '"':
+            forward(35);
+            CW_turn(90);
+            break;
+        case '\'':
+            forward(35);
+            CW_turn(105);
+            break;
+        case '/':
+            forward(35);
+            CW_turn(120);
+            break;
+        case '?':
+            forward(35);
+            CW_turn(135);
+            break;
+        case '‚': // ignore this error
+            forward(35);
+            CW_turn(150);
+            break;
+        case 'ƒ':
+            forward(35);
+            CW_turn(165);
+            break;
+        case '„':
+            forward(35);
+            CW_turn(180);
+            break;
+        case '…':
+            forward(35);
+            CW_turn(195);
+            break;
+        case '†':
+            forward(35);
+            CW_turn(210);
+            break;
+        case '‡':
+            forward(35);
+            CW_turn(225);
+            break;
+        case 'ˆ': // ignore this error
+            forward(35);
+            CW_turn(240);
+            break;
+        case '‰':
+            forward(35);
+            CW_turn(255);
+            break;
+        case 'Š':
+            forward(35);
+            CW_turn(270);
+            break;
+        case '‹': // ignore this error
+            forward(35);
+            CW_turn(285);
+            break;
+        case 'Œ':
+            forward(35);
+            CW_turn(300);
+            break;
+        case 'Ž':
+            forward(35);
+            CW_turn(315);
+            break;
+        case '‘': // ignore this error
+            forward(35);
+            CW_turn(330);
+            break;
+        case '’': // ignore this error
+            forward(35);
+            CW_turn(345);
+            break;
+        case '“':
+            forward(50);
+            CW_turn(0);
+            break;
+        case '”':
+            forward(50);
+            CW_turn(15);
+            break;
+        case '•':
+            forward(50);
+            CW_turn(30);
+            break;
+        case '–': // ignore this error
+            forward(50);
+            CW_turn(45);
+            break;
+        case '—':
+            forward(50);
+            CW_turn(60);
+            break;
+        case '˜': // ignore this error
+            forward(50);
+            CW_turn(75);
+            break;
+        case '™':
+            forward(50);
+            CW_turn(90);
+            break;
+        case 'š':
+            forward(50);
+            CW_turn(105);
+            break;
+        case '›': // ignore this error
+            forward(50);
+            CW_turn(120);
+            break;
+        case 'œ':
+            forward(50);
+            CW_turn(135);
+            break;
+        case 'ž':
+            forward(50);
+            CW_turn(150);
+            break;
+        case 'Ÿ':
+            forward(50);
+            CW_turn(165);
+            break;
+        default:
+            // Handle unknown characters or default case
+            break; // This will make it so that the robot doesn't do anything. 
+    }
+}
+
+
 // LQFP32 pinout
-//		             ----------
+//		           ----------
 //		       VDD -|1       32|- VSS
 //		      PC14 -|2       31|- BOOT0
 //		      PC15 -|3       30|- PB7
@@ -520,15 +880,53 @@ long int GetPeriod (int n)
 	return 0xffffff-SysTick->VAL;
 }
 
+char MapFrequency(int freq) {
+    char letter;
+
+    switch (freq) {
+        case metalLevel_1:
+            letter = 'a';
+            break;
+        case metalLevel_2:
+            letter = 'b';
+            break;
+        case metalLevel_3:
+            letter = 'c';
+            break;
+        case metalLevel_4:
+            letter = 'd';
+            break;
+        case metalLevel_5:
+            letter = 'e';
+            break;
+        default:
+            letter = 'z';
+            break;
+    }
+
+    return letter;
+}
 
 int main(void)
 {
-    char buff[80];
+    char buff[4];
     int npwm;
 	int robot_state = S_MANUAL; // sets robot control mode to `MANUAL` which is the default. Joystick controlled  
 	int x, y;
 	long int count;
 	float T, f;
+	char dir, freq;
+	
+	//code for creating baseline frequency
+	float extract_num = 0.0;
+	//float prev_num = 0.1;
+	int mapped_num; //for the beeping
+	float min_metal_detect = 200; //frequency increase at which metal is detected
+	float mapped_range = 5.0; //1 to mapped_range+1
+	float extract_range = 800.0; //max range of beeping frequency
+	int sum_count = 0; //count to keep track of first 10 vals
+	int sum_freq = 0; //where I am adding the frequencies into
+	int baseline_freq;
 	
     RCC->IOPENR |= 0x00000001; // peripheral clock enable for port A Rohan wants to delete this, already declared in hardware init
 
@@ -591,37 +989,62 @@ int main(void)
 		{
 			egets2(buff, sizeof(buff)-1);
 			
+			//character conversions
+
+
+
 			printf("RX: %s", buff);
 			//printf("len: %d", strlen(buff));
-			if (buff[0]=='M' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) {// remote wants metal detector status (&& strlen(buff)==3)
+			if (buff[0]=='m' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) {// remote wants metal detector status (&& strlen(buff)==3)
 
 				count=GetPeriod(100);
 
 				
 				T= 1.0*count/(F_CPU*100.0); // Since we have the time of 200 periods, we need to divide by 200
 				f=1.0/T;
-				waitms(1);
+				
+				//waitms(1);
 				
 				printf("count = %d, f=%.2f\r\n",count, f);
 				
 				if (count==0) {
-					eputs2("000000.00\r\n");
+					eputs2("z\r\n");
 				}
 				else {
-					sprintf(buff,"%.2f\r\n",f);
+					// do freq mapping here!
+					if(sum_count < 10)
+					{
+						sum_freq += f;
+						sum_count++;
+					}
+					if(sum_count == 10)
+					{
+						baseline_freq = sum_freq/10;
+						sum_count++;
+					}
+					if(sum_count > 10)
+					{
+						//this is where we start sending our baseline
+						if(f > min_metal_detect + baseline_freq)
+							freq = MapFrequency((int) (f-baseline_freq));
+					}
+					sprintf(buff,"%c\r\n",freq);
+					printf(buff);
 					eputs2(buff);
 				}
 			}
 			//changing if statement to receive position instead of M being sent
-			if (strlen(buff) == 9 || strlen(buff) == 8) // remote sent pos data
+			else if (strlen(buff)==2) // remote sent pos data
 			{
 				//if (strlen(buff)==2) printf("\r");
 				//if (strlen(buff)==1) printf("\r\n");
-				x = atoi(buff);
-				y = atoi(buff+4);
-				printf("xpos = %d, ypos = %d\r\n", x,y);
+				dir = buff[0];
+				setCoordinates(dir,&x,&y); // use character `c` to convert to x and y values
+				printf("%c, x=%d, y=%d\r\n", dir,x,y);
+
+				motorControlLoop(x,y); // moves motors based on x and y
 				// motorControlLoop(x, y); // Previous control. Automatically go into "Joy stick control mode"
-				robot_control_FSM(robot_state, x,y);
+				// robot_control_FSM(robot_state, x,y);
 			
 			}
 			
