@@ -1,7 +1,5 @@
-# prints to terminal directly from keyboard input
-# if using up-down-left-right, ie. WASD, type the letter followed by anything that isn't these four letters
-# if using this for diagonals, type w then a, a then s, s then d, or d then w - to move first in the direction of the first value and then in a diagonal
-# press ctrl+c to escape system
+#uses the same format of strings as george (to be processed into letters before sending
+
 import time
 import serial
 import curses
@@ -77,6 +75,44 @@ finally:
     curses.endwin()
 
     ser.close()  # Close the serial port when done
+
+
+'''    
+# for testing that the curses library works
+
+import curses
+
+def test_curses():
+    # Initialize curses
+    stdscr = curses.initscr()
+    curses.noecho()  # Turn off echoing of keys
+    stdscr.keypad(True)  # Enable keypad mode
+    curses.cbreak()  # React to keys immediately without waiting for Enter key
+
+    try:
+        stdscr.addstr("Press keys to see their ASCII values. Press 'q' to quit.")
+        stdscr.refresh()
+
+        while True:
+            key = stdscr.getch()
+            stdscr.clear()
+
+            if key == ord('q'):
+                break
+
+            stdscr.addstr(f"Pressed key: {chr(key)} (ASCII: {key})")
+            stdscr.refresh()
+
+    finally:
+        # Cleanup curses
+        curses.nocbreak()
+        stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+
+# Run the test function
+test_curses()
+''' 
 
 
 '''    
