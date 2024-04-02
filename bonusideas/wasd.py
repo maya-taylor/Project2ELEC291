@@ -6,10 +6,10 @@ import serial
 
 # Initialize serial port
 ser = serial.Serial(
-    port='/dev/tty.URT0',  # Change this to your serial port
-    baudrate=9600,
+    port='/dev/tty.usbserial-D30APJ7X',  # Change this to your serial port
+    baudrate=115200,
     parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
+    stopbits=serial.STOPBITS_TWO,
     bytesize=serial.EIGHTBITS
 )
 '''
@@ -37,27 +37,27 @@ try:
                 y += dy
 
 
-        # Check for diagonal movements
-        # NW Diagonal
-        if keyboard.is_pressed('w') and keyboard.is_pressed('a'):
-            x -= 10
-            y += 10
+            # Check for diagonal movements
+            # NW Diagonal
+            if keyboard.is_pressed('w') and keyboard.is_pressed('a'):
+                x -= 10
+                y += 10
 
-        # SW Diagonal
-        elif keyboard.is_pressed('a') and keyboard.is_pressed('s'):
-            x -= 10
-            y -= 10
+            # SW Diagonal
+            elif keyboard.is_pressed('a') and keyboard.is_pressed('s'):
+                x -= 10
+                y -= 10
 
-        # SE Diagonal
-        elif keyboard.is_pressed('s') and keyboard.is_pressed('d'):
-            x += 10
-            y -= 10
+            # SE Diagonal
+            elif keyboard.is_pressed('s') and keyboard.is_pressed('d'):
+                x += 10
+                y -= 10
 
-        # NE Diagonal
-        elif keyboard.is_pressed('w') and keyboard.is_pressed('d'):
-            x += 10
-            y += 10
-          
+            # NE Diagonal
+            elif keyboard.is_pressed('w') and keyboard.is_pressed('d'):
+                x += 10
+                y += 10
+            
         # Send coordinates
         send_coordinates(x, y)
 '''
@@ -65,26 +65,52 @@ try:
 # Send letters
 # Mapping of keys to letters
 key_to_coords = {
-    'w': 'C', # forward mid, char 'C'
-    'a': 'J', #  CCW in place mid (Left), char 'J'
-    's': 'E', # backward mid, char 'E'
-    'd': 'H', # CW in place mid (Right), char 'H'
+    'w': ('C'), # forward mid, char 'C'
+    'a': ('J'), #  CCW in place mid (Left), char 'J'
+    's': ('E'), # backward mid, char 'E'
+    'd': ('H'), # CW in place mid (Right), char 'H'
 
     #diagonals
-    # NW, SW, SE, NE
+    # NW:
+    # SW: 
+    # SE: 
+    # NE:
 
 }    
+'''
 # Function to send coordinates
 def send_coordinates(x, y):
     ser.write(f"{x},{y}\n".encode())
+'''
+
+def send_letter(letter):
+    ser.write(letter.encode())
 
 # Main Loop
 try: 
     while (True):
         # Check for keypresses
-        for key, (dx, dy) in key_to_coords.items():
+        for key, (letter) in key_to_coords.items():
             if keyboard.is_pressed(key):
-        
+                send_letter (letter)
+        # Check for diagonal movements
+        # NW Diagonal
+        if keyboard.is_pressed('w') and keyboard.is_pressed('a'):
+            send_letter('L')
+
+        # SW Diagonal
+        elif keyboard.is_pressed('a') and keyboard.is_pressed('s'):
+            send_letter('N')
+
+        # SE Diagonal
+        elif keyboard.is_pressed('s') and keyboard.is_pressed('d'):
+            send_letter('M')
+
+        # NE Diagonal
+        elif keyboard.is_pressed('w') and keyboard.is_pressed('d'):
+            send_letter('K')
+
+    
         # Wait for 1 second to reduce errors
         time.sleep(1)
 

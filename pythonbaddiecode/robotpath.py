@@ -5,6 +5,10 @@ from matplotlib.widgets import Button
 import tkinter as tk
 from tkinter import simpledialog
 
+# voice recognition modules
+import pyaudio
+import SpeechRecognition
+
 
 # velocity at full is 0.8 second per breadboard
 # 0.5 breadboards per second
@@ -113,6 +117,8 @@ def on_option_select():
        print("Draw Mode")
     elif selected == 'Joystick':
         print("Joystick Mode")
+    elif selected == 'Voice Control':
+        print("Voice Control Mode")
     else:
         print("Invalid Option")
 
@@ -122,7 +128,7 @@ root.geometry("400x100")
 # Create a StringVar to hold the selected option
 selected_option = tk.StringVar()
 # Create the dropdown menu
-options = ["Joystick", "Draw"]
+options = ["Joystick", "Draw", "Voice Control"] # adding a voice control option
 dropdown = tk.OptionMenu(root, selected_option, *options)
 dropdown.pack(pady=10)
 # Add a button to display the selected option
@@ -135,7 +141,7 @@ root.mainloop()
 # -- CHANGE MADE -- GL
 # Moved this code to the `on_option_select` command
 
-joystick_flag = 0 
+joystick_flag = 0 # should change this to a state variable?
 if selected_option.get() == 'Joystick':
     joystick_flag = 1
     print("Joystick Mode")
