@@ -6,6 +6,7 @@ import pygame
 import csv
 
 
+
 '''
 purpose: create a metalography chart in cartesian coordinates
 info   : loci with higher metal density (a.k.a., frequency difference is bigger) will appear more 
@@ -13,6 +14,8 @@ info   : loci with higher metal density (a.k.a., frequency difference is bigger)
 
 '''
 
+
+FILE = 'filename.csv' #edit!!!
 # Define the ASCII characters marking the three specific kinds of data
 
 #flags for x, y loci
@@ -26,15 +29,15 @@ cwf_flag = 'G'
 cwm_flag = 'F'
 ccwf_flag = 'H'
 ccwm_flag = 'I'
-ne_flag = chr(75)
-nw_flag = chr(76)
-se_flag = chr(77)
-sw_flag = chr(78)
-no_movmt_flag = chr(90)
+ne_flag = 'J'
+nw_flag = 'K'
+se_flag = 'L'
+sw_flag = 'M'
+no_movmt_flag = 'N'
 
 
 # Open the CSV file
-with open('your_file.csv', 'r') as file:
+with open(FILE, 'r') as file:
     # Create a CSV reader object
     reader = csv.reader(file)
     
