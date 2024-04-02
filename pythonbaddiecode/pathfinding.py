@@ -122,7 +122,7 @@ class PathDrawer:
             print(vector)
         print("Phasors:")
         for phasor in self.phasors_list:
-            print(phasor)
+            print(phasor) 
 
     def draw_square(self):
         self.clear_canvas()

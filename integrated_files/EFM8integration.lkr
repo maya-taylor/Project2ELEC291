@@ -1,4 +1,4 @@
-path=C:\CrossIDE\Call51\Bin\..\lib\small
+path=C:\Users\keybo\Documents\CrossIDE\Call51\Bin\..\lib\small
 lib=libc51.lib
 lib=libint.lib
 lib=liblong.lib

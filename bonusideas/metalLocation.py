@@ -40,28 +40,68 @@ no_movmt_flag = 'Z'
 with open(FILE, 'r') as file:
     # Create a CSV reader object
     reader = csv.reader(file)
-    
+    coord_map = [] #dynamic initialization of x,y
+    strength_map = [] 
+    xpos = 0 #variables that are used as buffers 
+    ypos = 0
+    metal_strength = 0
     # Iterate through each row in the CSV file
     for row in reader:
         # Assuming one column in the CSV file
         data = row[0]
         
-        # Check if the data contains any of the markers
-        if marker_1 in data:
-            # Process data of type 1
-            # For example:
-            print("Type 1 data:", data)
-        elif marker_2 in data:
-            # Process data of type 2
-            # For example:
-            print("Type 2 data:", data)
-        elif marker_3 in data:
-            # Process data of type 3
-            # For example:
-            print("Type 3 data:", data)
+        # Check if the data contains location flags:
+        if ff_flag in data:
+            xpos += 0
+            ypos += 50
+        elif fm_flag in data:
+            xpos += 0
+            ypos += 30
+        elif fs_flag in data:
+            xpos += 0
+            ypos += 20
+        elif bf_flag in data:
+            xpos += 0
+            ypos += -50
+        elif bm_flag in data:
+            xpos += 0
+            ypos += -30
+        elif bs_flag in data:
+            xpos += 0
+            ypos += -10
+        elif cwf_flag in data:
+            xpos += 50
+            ypos += 0
+        elif cwm_flag in data:
+            xpos += 30
+            ypos += 0
+        elif ccwf_flag in data:
+            xpos += -50
+            ypos += 0
+        elif ccwm_flag in data:
+            xpos += -30
+            ypos += 0
+        elif ne_flag in data:
+            xpos += 20
+            ypos += 45
+        elif nw_flag in data:
+            xpos += -20
+            ypos += 45
+        elif se_flag in data:
+            xpos += 20
+            ypos += -45
+        elif sw_flag in data:
+            xpos += -20
+            ypos += -45
+        elif no_movmt_flag in data:
+            xpos += 0
+            ypos += 0
         else:
             # Data does not match any of the markers, skip or handle it as needed
             pass
+        coord_map.append([xpos, ypos])
+
+
 
 
 '''

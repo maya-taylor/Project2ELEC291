@@ -298,7 +298,7 @@ class PathDrawer:
         
         # Return None if no matching character is found
         return None
-            
+'''            
     def draw_square(self):
         self.clear_canvas()
         side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
@@ -310,7 +310,7 @@ class PathDrawer:
         bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
         self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
         self.draw_lines()
-
+'''
 # check if joystick_flag is zero
 if (joystick_flag == 0):
     # Create an instance of the PathDrawer class
