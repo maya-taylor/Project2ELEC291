@@ -805,13 +805,13 @@ int main(void)
 //	stopCar_ms(2000);
 //	int test_char = 'Å'; // forward
 //	pathFindingDecoder(test_char);
-	test_char = '³'; // 75cm and turns 90 degrees
-	pathFindingDecoder(test_char);
-	test_char = '³'; // 75cm and turns 90 degrees
-	pathFindingDecoder(test_char);
-	test_char = 'é';
-	pathFindingDecoder(test_char);
-	stopCar_ms(3000);
+//	test_char = '³'; // 75cm and turns 90 degrees
+//	pathFindingDecoder(test_char);
+//	test_char = '³'; // 75cm and turns 90 degrees
+//	pathFindingDecoder(test_char);
+//	test_char = 'é';
+//	pathFindingDecoder(test_char);
+//	stopCar_ms(3000);
 	
 	// = = = = = = = = = Main Loop = = = = = = = 
 	while (1) {
@@ -880,7 +880,8 @@ int main(void)
 			{
 				dirc = buff[0];
 				setPWM(dirc); 		// use character `dirc` to directly set PWM values
-				ButtonCommand(dirc);
+				//ButtonCommand(dirc);
+				pathFindingDecoder(dirc);
 				//printf("made it!\r\n");
 			}
 			

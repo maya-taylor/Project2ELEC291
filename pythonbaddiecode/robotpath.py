@@ -16,7 +16,7 @@ strength = 'None'
 dis_trav = 0.0
 
 # Robot path finding
-canvas_scaling_factor = 0.5 # scaling final phasor magnitudes 
+canvas_scaling_factor = 0.3 # scaling final phasor magnitudes 
 FORWARD_VELOCITY      = 15.0
 CW_VELOCITY      	  = 119.0
 

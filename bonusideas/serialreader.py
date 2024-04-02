@@ -26,7 +26,7 @@ try:
         csv_writer.writerow(data_values)
         
         # Print the data to the console
-        print(data_values)
+        # print(data_values)
 finally:
     # Close the serial port and CSV file
     ser.close()
