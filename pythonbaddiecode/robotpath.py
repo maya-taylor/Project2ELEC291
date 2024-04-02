@@ -6,8 +6,8 @@ import tkinter as tk
 from tkinter import simpledialog
 
 # voice recognition modules
-import pyaudio
-import SpeechRecognition
+# import pyaudio
+# import SpeechRecognition
 
 
 # velocity at full is 0.8 second per breadboard

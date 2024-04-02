@@ -633,14 +633,11 @@ void main(void)
 	SendATCommand("AT+RFC\r\n");
 	SendATCommand("AT+POWE\r\n");
 	SendATCommand("AT+CLSS\r\n");
-	
-	//mid[0] = Volts_at_Pin(XPOS_PIN);
-	//mid[1] = Volts_at_Pin(YPOS_PIN);
 
-    mid[0] = Volts_at_Pin(XPOS_PIN);;
-    mid[1] = Volts_at_Pin(YPOS_PIN);;
+    mid[0] = Volts_at_Pin(XPOS_PIN);
+    mid[1] = Volts_at_Pin(YPOS_PIN);
 
-	//LEDgetposition(mid);
+
 	printf("LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f \r\n", mid[1], mid[0]);
 
 	while(1)
@@ -665,7 +662,7 @@ void main(void)
 		// 
 		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
     	LCDprint(buff_x, 1, 1);
-	    sprintf(buff_y, "y=%.2f,pos=%c", xy_pos[1], mapped_dir);
+	    sprintf(buff_y, "y=%.2f, pos=%c", xy_pos[1], mapped_dir);
     	LCDprint(buff_y, 2, 1);
 		
         sprintf(temp_buff, "%c\r\n", mapped_dir);
