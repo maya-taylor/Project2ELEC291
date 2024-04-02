@@ -1,121 +1,117 @@
-#uses the same format of strings as george (to be processed into letters before sending
-
+# prints to terminal directly from keyboard input
+# if using up-down-left-right, ie. WASD, type the letter followed by anything that isn't these four letters
+# if using this for diagonals, type w then a, a then s, s then d, or d then w - to move first in the direction of the first value and then in a diagonal
+# press ctrl+c to escape system
 import time
-import keyboard
 import serial
+import curses
 
 # Initialize serial port
 ser = serial.Serial(
-    port='/dev/tty.usbserial-D30APJ7X',  # Change this to your serial port
+    port='COM16',  # Change this to your serial port
     baudrate=115200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_TWO,
     bytesize=serial.EIGHTBITS
 )
-'''
-# Function to send coordinates
-def send_coordinates(x, y):
-    ser.write(f"{x},{y}\n".encode())
 
-# Mapping of keys to coordinates
 key_to_coords = {
-    'w': (0, 30), # forward mid, char 'C'
-    'a': (-30, 0), #  CCW in place mid (Left), char 'J'
-    's': (0, -30), # backward mid, char 'E'
-    'd': (30, 0) # CW in place mid (Right), char 'H'
+    ord('w'): ('C'),  # forward mid, char 'C'
+    ord('a'): ('J'),  # CCW in place mid (Left), char 'J'
+    ord('s'): ('E'),  # backward mid, char 'E'
+    ord('d'): ('H'),  # CW in place mid (Right), char 'H'
 }
+
+# Print letter to serial port / terminal
+def send_letter(letter):
+    #ser.write(letter.encode()) # change this if you want to print to serial
+    print(letter)
 
 # Main loop
 try:
+    # Initialize curses
+    stdscr = curses.initscr()
+    curses.noecho()  # Turn off echoing of keys
+    stdscr.keypad(True)  # Enable keypad mode
+    curses.cbreak()  # React to keys immediately without waiting for Enter key
+
     while True:
         x, y = 0, 0
         
+        # Get user input
+        key = stdscr.getch()
+
         # Check for keypresses
-        for key, (dx, dy) in key_to_coords.items():
-            if keyboard.is_pressed(key):
-                x += dx
-                y += dy
+        if key in key_to_coords:
+            send_letter(key_to_coords[key])
 
-
-            # Check for diagonal movements
-            # NW Diagonal
-            if keyboard.is_pressed('w') and keyboard.is_pressed('a'):
-                x -= 10
-                y += 10
-
-            # SW Diagonal
-            elif keyboard.is_pressed('a') and keyboard.is_pressed('s'):
-                x -= 10
-                y -= 10
-
-            # SE Diagonal
-            elif keyboard.is_pressed('s') and keyboard.is_pressed('d'):
-                x += 10
-                y -= 10
-
-            # NE Diagonal
-            elif keyboard.is_pressed('w') and keyboard.is_pressed('d'):
-                x += 10
-                y += 10
-            
-        # Send coordinates
-        send_coordinates(x, y)
-'''
-
-# Send letters
-# Mapping of keys to letters
-key_to_coords = {
-    'w': ('C'), # forward mid, char 'C'
-    'a': ('J'), #  CCW in place mid (Left), char 'J'
-    's': ('E'), # backward mid, char 'E'
-    'd': ('H'), # CW in place mid (Right), char 'H'
-
-    #diagonals
-    # NW:
-    # SW: 
-    # SE: 
-    # NE:
-
-}    
-'''
-# Function to send coordinates
-def send_coordinates(x, y):
-    ser.write(f"{x},{y}\n".encode())
-'''
-
-def send_letter(letter):
-    ser.write(letter.encode())
-
-# Main Loop
-try: 
-    while (True):
-        # Check for keypresses
-        for key, (letter) in key_to_coords.items():
-            if keyboard.is_pressed(key):
-                send_letter (letter)
         # Check for diagonal movements
         # NW Diagonal
-        if keyboard.is_pressed('w') and keyboard.is_pressed('a'):
+        if key == ord('w') and stdscr.getch() == ord('a'):
             send_letter('L')
 
         # SW Diagonal
-        elif keyboard.is_pressed('a') and keyboard.is_pressed('s'):
+        elif key == ord('a') and stdscr.getch() == ord('s'):
             send_letter('N')
 
         # SE Diagonal
-        elif keyboard.is_pressed('s') and keyboard.is_pressed('d'):
+        elif key == ord('s') and stdscr.getch() == ord('d'):
             send_letter('M')
 
         # NE Diagonal
-        elif keyboard.is_pressed('w') and keyboard.is_pressed('d'):
+        elif key == ord('d') and stdscr.getch() == ord('w'):
             send_letter('K')
 
-    
         # Wait for 1 second to reduce errors
-        time.sleep(1)
+        #time.sleep(1)
 
 except KeyboardInterrupt:
     pass
 
 finally:
+    # Cleanup curses
+    curses.initscr()
+    curses.nocbreak()
+    stdscr.keypad(False)
+    curses.echo()
+    curses.endwin()
+
     ser.close()  # Close the serial port when done
+
+
+'''    
+# for testing that the curses library works
+
+import curses
+
+def test_curses():
+    # Initialize curses
+    stdscr = curses.initscr()
+    curses.noecho()  # Turn off echoing of keys
+    stdscr.keypad(True)  # Enable keypad mode
+    curses.cbreak()  # React to keys immediately without waiting for Enter key
+
+    try:
+        stdscr.addstr("Press keys to see their ASCII values. Press 'q' to quit.")
+        stdscr.refresh()
+
+        while True:
+            key = stdscr.getch()
+            stdscr.clear()
+
+            if key == ord('q'):
+                break
+
+            stdscr.addstr(f"Pressed key: {chr(key)} (ASCII: {key})")
+            stdscr.refresh()
+
+    finally:
+        # Cleanup curses
+        curses.nocbreak()
+        stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+
+# Run the test function
+test_curses()
+''' 

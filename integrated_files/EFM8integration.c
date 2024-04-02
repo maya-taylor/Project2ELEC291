@@ -638,11 +638,11 @@ void main(void)
     mid[1] = Volts_at_Pin(YPOS_PIN);
 
 
-	printf("LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f \r\n", mid[1], mid[0]);
+	//printf("LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f \r\n", mid[1], mid[0]);
 
 	while(1)
 	{
-		waitms(50);
+		//waitms(50);
 		
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;

@@ -1,4 +1,3 @@
-import serial 
 import time
 import re
 import matplotlib.pyplot as plt
@@ -14,8 +13,20 @@ info   : loci with higher metal density (a.k.a., frequency difference is bigger)
 
 '''
 
+'''
+note: may have to divide all the plots by a factor of 50 since the ascii table is 
+'''
 
 FILE = 'filename.csv' #edit!!!
+
+# RGB values for light colors
+lightorange = (255/255, 204/255, 153/255)
+lightyellow = (255/255, 255/255, 153/255)
+lightgreen = (204/255, 255/255, 204/255)
+lightblue = (153/255, 204/255, 255/255)
+lightpurple = (204/255, 153/255, 255/255)
+lightred = (255/255, 153/255, 153/255)   
+
 # Define the ASCII characters marking the three specific kinds of data
 
 #flags for x, y loci
@@ -43,31 +54,37 @@ level_4 = 'd'
 level_5 = 'e'
 null_detect = 'z'
 
+L1F = 225
+L2F = 300
+L3F = 400
+L4F = 500
+L5F = 700
+LOW_STRENGTH = 0
+
 def dummy_data_gen(rows):
     data = []
     for _ in range(rows):
-        dummy_x = random.choice(['ff_flag', 'fm_flag','fs_flag',
-                                 'bf_flag','bm_flag','bs_flag',
-                                 'cwf_flag','cwm_flag','ccwf_flag','ccwm_flag',
-                                 'ne_flag','nw_flag','se_flag','sw_flag',
-                                 'no_movmt_flag'
+        dummy_loci = random.choice([ff_flag, fm_flag,fs_flag,
+                                 bf_flag,bm_flag,bs_flag,
+                                 cwf_flag,cwm_flag,ccwf_flag,ccwm_flag,
+                                 ne_flag,nw_flag,se_flag,sw_flag,
+                                 no_movmt_flag
                                  ])
-        dummy_y = random.choice(['ff_flag', 'fm_flag','fs_flag',
-                                 'bf_flag','bm_flag','bs_flag',
-                                 'cwf_flag','cwm_flag','ccwf_flag','ccwm_flag',
-                                 'ne_flag','nw_flag','se_flag','sw_flag',
-                                 'no_movmt_flag'
-                                 ])
-        dummy_strength = random.choice(['level_1', 'level_2', 'level_3',
-                                         'level_4', 'level_5', 'null_detect'])
+        dummy_strength = random.choice([level_1, level_2, level_3,
+                                         level_4, level_5, null_detect])
 
-        data.append([dummy_x, dummy_y, dummy_strength])
+        data.append(dummy_loci)
+        data.append(dummy_strength)
 
-        return data
+    return data
     
-def dummy_file_gen(filename, data):
+def dummy_file_gen(filename, data, rows):
     with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
         
+        for i in range(rows):
+            writer.writerow(data[i])
+
 def process_csv(filename):
     # Open the CSV file
     with open(filename, 'r') as file:
@@ -133,28 +150,63 @@ def process_csv(filename):
             coord_map.append([xpos, ypos])
 
             if level_1 in data:
-                metal_strength = 225
+                metal_strength = L1F
             elif level_2 in data:
-                metal_strength = 300
+                metal_strength = L2F
             elif level_3 in data:
-                metal_strength = 400
+                metal_strength = L3F
             elif level_4 in data:
-                metal_strength = 500
+                metal_strength = L4F
             elif level_5 in data:
-                metal_strength = 700
+                metal_strength = L5F
             elif null_detect in data:
-                metal_strength = 0
+                metal_strength = LOW_STRENGTH
             else:
                 metal_strength += 0 #retain previous state as a default
             
             strength_map.append(metal_strength)
 
-    return
+            print(xpos)
+            print(ypos)
+            print(metal_strength)
+
+    return coord_map, strength_map
         
 
 #drawing the map below 
 
 
+
+
+
+#testing:
+num_rows = 30
+dummy_data = dummy_data_gen(num_rows)
+dummy_file_gen(FILE, dummy_data, num_rows)
+
+coords, strengths = process_csv(FILE)
+
+for coords, strengths in zip(coords, strengths):
+    x, y = coords
+
+    if strengths == L1F:
+        plt.scatter(x, y, color= lightorange)
+    elif strengths == L2F:
+        plt.scatter(x, y, color=lightyellow)
+    elif strengths == L3F:
+        plt.scatter(x, y, color=lightgreen)
+    elif strengths == L4F:
+        plt.scatter(x, y, color=lightblue)   
+    elif strengths == L5F:
+        plt.scatter(x, y, color=lightpurple)
+    else:
+        plt.scatter(x, y, color=lightred)         
+
+plt.xlabel('X coordinate')
+plt.ylabel('Y coordinate')
+plt.title('Metal Topography Chart')
+
+plt.show()
 '''
 
 ideas:

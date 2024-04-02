@@ -7,7 +7,7 @@ from tkinter import simpledialog
 
 # voice recognition modules
 # import pyaudio
-# import SpeechRecognition
+# import speech_recognition as sr
 
 
 # velocity at full is 0.8 second per breadboard
@@ -20,9 +20,10 @@ strength = 'None'
 dis_trav = 0.0
 
 # Robot path finding
-canvas_scaling_factor = 0.3 # scaling final phasor magnitudes 
+canvas_scaling_factor = 0.5 # scaling final phasor magnitudes 
 FORWARD_VELOCITY      = 15.0
 CW_VELOCITY      	  = 119.0
+CCW_VELOCITY      	  = 119.0
 
 # Configure the serial port
 ser = serial.Serial(
@@ -155,7 +156,7 @@ elif selected_option.get() == 'Draw':
 class PathDrawer:
     def __init__(self, master):
         self.master = master
-        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")
+        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white") # canvas value previously 400, changed down to 120
         self.canvas.pack()
 
         # Data array attributes ot the class
@@ -163,6 +164,8 @@ class PathDrawer:
         self.approx_points = [] # Approximated waypoints of the drawn path
         self.vectors_list = []  # Turning into lists of vectors
         self.phasors_list = []  # Angle for CW rotation as a list calculated from previous vector
+
+        master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # ser = serial.Serial(
         #     port='COM16',
@@ -266,24 +269,35 @@ class PathDrawer:
 
             self.phasors_list.append([int(vector[0]*canvas_scaling_factor), phase]) # phasor with scaled vector + phase
             prev_vector = vector
+        
+        print("Phasors List:", self.phasors_list)
 
     def send_data(self):
         print("Phasors:") # send data to serial on a set time
+        ser.write("ü\r\n".encode()) # starting the sequence character
+        ser.write("ü\r\n".encode()) # starting the sequence character     
         for phasor in self.phasors_list:
             phasor_ascii_char = self.polar_to_ascii(phasor[0], phasor[1])
             
             # calculate amount of time that current path should take
-            wait_time = phasor[1] / CW_VELOCITY + phasor[0] / FORWARD_VELOCITY
+            if (phasor[1] <= 180):
+                wait_time = phasor[1] / CW_VELOCITY + phasor[0] / FORWARD_VELOCITY
+            else:
+                wait_time = abs(360-phasor[1]) / CCW_VELOCITY + phasor[0] / FORWARD_VELOCITY
             # adding a slight buffer so that new instruction isn't sent
             # while executing current instruction robotpath in .c is blocking
-            wait_time = wait_time * 1.05 + 0.2 
+            wait_time = wait_time * 1.05 + 0.15
+            # wait_time = 1
 
             ser.write(f"{phasor_ascii_char}\r\n".encode())  # send over serial to JDY40
-            print(f"{phasor},{phasor_ascii_char}") # print what character is sent
+            print(f"Sent string = {phasor_ascii_char}\r\n".encode())      # check this string
+            print(f"{phasor},{phasor_ascii_char}, wait = {wait_time}") # print what character is sent
             
             time.sleep(wait_time)                 # pause program while we wait for phasors to be sent over
+        ser.write("û\r\n".encode()) #path completed character
+        ser.write("û\r\n".encode()) #path completed character
+        print("Finished!")
 
-            
     def draw_square(self):
         self.clear_canvas()
         side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
@@ -293,8 +307,17 @@ class PathDrawer:
         top_right = (center_x + side_length / 2, center_y - side_length / 2)
         bottom_right = (center_x + side_length / 2, center_y + side_length / 2)
         bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
-        self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
+        # self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
+        self.data_points = [bottom_left, top_left, top_right, bottom_right, bottom_left]
         self.draw_lines()
+
+        # create phasors array
+        # self.phasors_list = []
+        # self.phasors_list.append([60,0])
+        # self.phasors_list.append([60,90])
+        # self.phasors_list.append([60,90])
+        # self.phasors_list.append([60,90])
+        # self.phasors_list.append([0,90]) #reset to original direction
 
     def polar_to_ascii(self, magnitude, argument):
     # Iterate through the dictionary to find the corresponding character
@@ -304,19 +327,10 @@ class PathDrawer:
         
         # Return None if no matching character is found
         return None
-'''            
-    def draw_square(self):
-        self.clear_canvas()
-        side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
-        center_x = self.canvas.winfo_width() / 2
-        center_y = self.canvas.winfo_height() / 2
-        top_left = (center_x - side_length / 2, center_y - side_length / 2)
-        top_right = (center_x + side_length / 2, center_y - side_length / 2)
-        bottom_right = (center_x + side_length / 2, center_y + side_length / 2)
-        bottom_left = (center_x - side_length / 2, center_y + side_length / 2)
-        self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
-        self.draw_lines()
-'''
+
+    def on_closing(self):
+        self.master.destroy()  # Destroy the Tkinter window
+
 # check if joystick_flag is zero
 if (joystick_flag == 0):
     # Create an instance of the PathDrawer class
@@ -325,6 +339,12 @@ if (joystick_flag == 0):
     drawer = PathDrawer(root)   
     # start main tkinter loop
     root.mainloop()
+    # root.destroy()
+    
+
+    joystick_flag = 1
+
+
 
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))

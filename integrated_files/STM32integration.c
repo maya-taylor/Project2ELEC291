@@ -13,9 +13,11 @@
 #define SYSCLK 32000000L
 
 #define PI 3.141592654
+#define FORWARD_ACCELERATION    77.355 // calculated via solving x = a * t^2
 #define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
-#define CW_VELOCITY      		115.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
-#define CCW_VELOCITY     		121.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
+#define ANGULAR_ACCELERATION    77.355 // calculated via solving theta = a * t^2, a is our anglular acceleration
+#define CW_VELOCITY      		108.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
+#define CCW_VELOCITY     		110.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
 #define DIAG_VELOCITY_LEFT		35.0 // diagonal velocity for forward left
 #define DIAG_VELOCITY_RIGHT		34.0 // diagonal velocity for forward right
 #define F_CPU 32000000L
@@ -39,6 +41,7 @@ volatile unsigned char pwm1 = 0, pwm2 = 0;
 // Global timer variables
 volatile int timerCount_100us = 0;
 volatile int timerCount_ms = 0;
+volatile int PathFind_Flag = 0;
 // volatile int timerCount_s = 0;
 
 void Delay_us(unsigned char us)
@@ -79,11 +82,14 @@ void stopCar_ms (int milliSeconds) {
 	}
 }
 
+// this process is blocking
 void forward (int cm) {
 	timerCount_ms=0;
 
 	// motors go forward at max speed
-	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; 
+	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; // calculation assuming instant acceleration and const. velocity
+
+	// new calcuation for time would take into account acceleration up to a max velocity
 	while (timerCount_ms < milliSeconds) {
 		pwm1 = 4; // right motor (slower is faster)
 		pwm2 = 0; // left motor  (slower is faster)
@@ -94,6 +100,7 @@ void forward (int cm) {
 	stopMotors();
 }
 
+// this process is blocking
 void CW_turn(int degrees) {
 	timerCount_ms=0;
 
@@ -106,6 +113,7 @@ void CW_turn(int degrees) {
 	}
 }
 
+// this process is blocking
 void CCW_turn (int degrees) {
 	timerCount_ms = 0;
 	
@@ -468,30 +476,30 @@ void pathFindingDecoder (int letter) {
         case '/': CW_turn(105); forward(25); break;
         case '?': CW_turn(120); forward(25); break;
         case ',': CW_turn(135); forward(25); break;
-        case '‚': CW_turn(150); forward(25); break;
-        case 'ƒ': CW_turn(165); forward(25); break;
-        case '„': CW_turn(180); forward(25); break;
+        case '‚': CW_turn(150); forward(25); break; // bad char
+        case 'ƒ': CW_turn(165); forward(25); break; // bad char
+        case '„': CW_turn(180); forward(25); break; // bad char
         case '…': CCW_turn(165); forward(25); break;
         case '†': CCW_turn(150); forward(25); break;
         case '‡': CCW_turn(135); forward(25); break;
-        case 'ˆ': CCW_turn(120); forward(25); break;
-        case '‰': CCW_turn(105); forward(25); break;
+        case 'ˆ': CCW_turn(120); forward(25); break; // bad char
+        case '‰': CCW_turn(105); forward(25); break; // bad char
         case 'Š': CCW_turn(90); forward(25); break;
-        case '‹': CCW_turn(75); forward(25); break;
+        case '‹': CCW_turn(75); forward(25); break; // bad char
         case 'Œ': CCW_turn(60); forward(25); break;
         case 'Ž': CCW_turn(45); forward(25); break;
-        case '‘': CCW_turn(30); forward(25); break;
-        case '’': CCW_turn(15); forward(25); break;
+        case '‘': CCW_turn(30); forward(25); break; // bad char
+        case '’': CCW_turn(15); forward(25); break; // bad char
         case '“': CW_turn(0); forward(35); break;
         case '”': CW_turn(15); forward(35); break;
-        case '•': CW_turn(30); forward(35); break;
-        case '–': CW_turn(45); forward(35); break;
+        case '•': CW_turn(30); forward(35); break; // bad char
+        case '–': CW_turn(45); forward(35); break; // bad char
         case '—': CW_turn(60); forward(35); break;
         case '˜': CW_turn(75); forward(35); break;
         case '™': CW_turn(90); forward(35); break;
-        case 'š': CW_turn(105); forward(35); break;
-        case '›': CW_turn(120); forward(35); break;
-        case 'œ': CW_turn(135); forward(35); break;
+        case 'š': CW_turn(105); forward(35); break; // bad char
+        case '›': CW_turn(120); forward(35); break; 
+        case 'œ': CW_turn(135); forward(35); break; 
         case 'ž': CW_turn(150); forward(35); break;
         case 'Ÿ': CW_turn(165); forward(35); break;
         case '¡': CW_turn(180); forward(35); break;
@@ -563,7 +571,7 @@ void pathFindingDecoder (int letter) {
         case 'ã': CW_turn(90); forward(70); break;
         case 'ä': CW_turn(105); forward(70); break;
         case 'å': CW_turn(120); forward(70); break;
-        case 'æ': CW_turn(135); forward(70); break;
+        case 'æ': CW_turn(135); forward(70); break;  
         case 'ç': CW_turn(150); forward(70); break;
         case 'è': CW_turn(165); forward(70); break;
         case 'é': CW_turn(180); forward(70); break;
@@ -739,6 +747,7 @@ char MapFrequency(int freq) {
     return letter;
 }
 
+
 int main(void)
 {
     char buff[4];
@@ -767,6 +776,7 @@ int main(void)
 	
 	waitms(500); // Give putty a chance to start before we send characters with printf()
 	
+	printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
     printf("Metal Detecting Robot\r\n");
 
 	// We should select an unique device ID.  The device ID can be a hex
@@ -791,7 +801,23 @@ int main(void)
 	// = = = = = = = = = Testing pathFindingDecoder with a series of characters = = = = = = = 
 	// angular velocity test
 
-	//stopCar_ms(1000); // this process is blocking
+//	stopCar_ms(1000); // this process is blocking
+//	CW_turn(360);
+//	stopCar_ms(1000);
+//	CCW_turn(360);
+//	stopCar_ms(1000);
+//	CW_turn(270);
+//	stopCar_ms(1000);
+//	CCW_turn(270);
+//	stopCar_ms(1000);
+//	CW_turn(180);
+//	stopCar_ms(1000);
+//	CCW_turn(180);
+//	stopCar_ms(1000);
+//	CW_turn(90);
+//	stopCar_ms(1000);
+//	CCW_turn(90);
+//	stopCar_ms(1000);
 	//str_line();
 	//stopCar_ms(1000); // this process is blocking
 	//circle();
@@ -802,17 +828,17 @@ int main(void)
 	//stopCar_ms(1000); // this process is blocking
 	
 	// Path Finding test
-//	stopCar_ms(2000);
-//	int test_char = 'Å'; // forward
-//	pathFindingDecoder(test_char);
-//	test_char = '³'; // 75cm and turns 90 degrees
-//	pathFindingDecoder(test_char);
-//	test_char = '³'; // 75cm and turns 90 degrees
-//	pathFindingDecoder(test_char);
-//	test_char = 'é';
-//	pathFindingDecoder(test_char);
-//	stopCar_ms(3000);
-	
+	// stopCar_ms(2000);
+	// int test_char = 'Å'; // forward
+	// pathFindingDecoder(test_char);
+	// test_char = '§'; // 35cm and turns 90 degrees CCW
+	// pathFindingDecoder(test_char);
+	// test_char = '§'; // 35cm and turns 90 degrees CCW
+	// pathFindingDecoder(test_char);
+	// test_char = '§';
+	// pathFindingDecoder(test_char);
+	// stopCar_ms(3000);
+
 	// = = = = = = = = = Main Loop = = = = = = = 
 	while (1) {
 		// insert joystick reading 
@@ -826,7 +852,7 @@ int main(void)
 
 			printf("RX: %s", buff);
 			//printf("len: %d", strlen(buff));
-			if (buff[0]=='m' && (strlen(buff)==3 || strlen(buff)==2 || strlen(buff)==1)) {// remote wants metal detector status
+			if (buff[0]=='m') {// remote wants metal detector status
 
 				count=GetPeriod(100);
 				T= 1.0*count/(F_CPU*100.0); // Since we have the time of 200 periods, we need to divide by 200
@@ -876,13 +902,27 @@ int main(void)
 				}
 			}
 			//changing if statement to receive position instead of M being sent
-			else if (strlen(buff)==2) // remote sent pos data
+			else // remote sent pos data
 			{
 				dirc = buff[0];
-				setPWM(dirc); 		// use character `dirc` to directly set PWM values
-				//ButtonCommand(dirc);
-				pathFindingDecoder(dirc);
-				//printf("made it!\r\n");
+				//RK
+				//if(dirc == 'ü')
+					//PathFind_Flag = 1;
+				//else if(dirc == 'û')
+					//PathFind_Flag = 0;
+				
+				//Runs joystick commands if paathfinding is off
+				//if (PathFind_Flag == 0){	
+					setPWM(dirc); 		// use character `dirc` to directly set PWM values
+					//ButtonCommand(dirc);
+			    //}
+				//else if (PathFind_Flag ==1){
+					pathFindingDecoder(dirc);
+				//}
+
+				//Checks for toggle variable for pathfinding mode
+
+				
 			}
 			
 		}
