@@ -3,7 +3,7 @@ import csv
 
 # Configure the serial port
 ser = serial.Serial(
-    port='COM16',  # Change this to your serial port
+    port='COM6',  # Change this to your serial port
     baudrate=9600,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
