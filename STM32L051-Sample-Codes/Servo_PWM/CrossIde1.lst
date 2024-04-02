@@ -1,0 +1,1953 @@
+0000              1   ;--------------------------------------------------------
+0000              2   ; File Created by C51
+0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
+0000              4   ; This file was generated Mon Apr 01 16:17:26 2024
+0000              5   ;--------------------------------------------------------
+                  5   $name CrossIde1
+                  6   $optc51 --model-small
+                  7   $printf_float
+0000              9            R_DSEG    segment data
+0000             10            R_CSEG    segment code
+0000             11            R_BSEG    segment bit
+0000             12            R_XSEG    segment xdata
+0000             13            R_PSEG    segment xdata
+0000             14            R_ISEG    segment idata
+0000             15            R_OSEG    segment data overlay
+0000             16            BIT_BANK  segment data overlay
+0000             17            R_HOME    segment code
+0000             18            R_GSINIT  segment code
+0000             19            R_IXSEG   segment xdata
+0000             20            R_CONST   segment code
+0000             21            R_XINIT   segment code
+0000             22            R_DINIT   segment code
+0000             23   
+0000             24   ;--------------------------------------------------------
+0000             25   ; Public variables in this module
+0000             26   ;--------------------------------------------------------
+0000             27            public _InitPinADC_PARM_2
+0000             28            public _main
+0000             29            public _GetPosition2
+0000             30            public _LEDgetposition
+0000             31            public _map2
+0000             32            public _Volts_at_Pin
+0000             33            public _waitms
+0000             34            public _Get_ADC
+0000             35            public _ADC_at_Pin
+0000             36            public _Timer3us
+0000             37            public _InitPinADC
+0000             38            public _GetPosition2_PARM_3
+0000             39            public _GetPosition2_PARM_2
+0000             40            public _map2_PARM_5
+0000             41            public _map2_PARM_4
+0000             42            public _map2_PARM_3
+0000             43            public _map2_PARM_2
+0000             44   ;--------------------------------------------------------
+0000             45   ; Special Function Registers
+0000             46   ;--------------------------------------------------------
+0000             47   _ACC            DATA 0xe0
+0000             48   _ADC0ASAH       DATA 0xb6
+0000             49   _ADC0ASAL       DATA 0xb5
+0000             50   _ADC0ASCF       DATA 0xa1
+0000             51   _ADC0ASCT       DATA 0xc7
+0000             52   _ADC0CF0        DATA 0xbc
+0000             53   _ADC0CF1        DATA 0xb9
+0000             54   _ADC0CF2        DATA 0xdf
+0000             55   _ADC0CN0        DATA 0xe8
+0000             56   _ADC0CN1        DATA 0xb2
+0000             57   _ADC0CN2        DATA 0xb3
+0000             58   _ADC0GTH        DATA 0xc4
+0000             59   _ADC0GTL        DATA 0xc3
+0000             60   _ADC0H          DATA 0xbe
+0000             61   _ADC0L          DATA 0xbd
+0000             62   _ADC0LTH        DATA 0xc6
+0000             63   _ADC0LTL        DATA 0xc5
+0000             64   _ADC0MX         DATA 0xbb
+0000             65   _B              DATA 0xf0
+0000             66   _CKCON0         DATA 0x8e
+0000             67   _CKCON1         DATA 0xa6
+0000             68   _CLEN0          DATA 0xc6
+0000             69   _CLIE0          DATA 0xc7
+0000             70   _CLIF0          DATA 0xe8
+0000             71   _CLKSEL         DATA 0xa9
+0000             72   _CLOUT0         DATA 0xd1
+0000             73   _CLU0CF         DATA 0xb1
+0000             74   _CLU0FN         DATA 0xaf
+0000             75   _CLU0MX         DATA 0x84
+0000             76   _CLU1CF         DATA 0xb3
+0000             77   _CLU1FN         DATA 0xb2
+0000             78   _CLU1MX         DATA 0x85
+0000             79   _CLU2CF         DATA 0xb6
+0000             80   _CLU2FN         DATA 0xb5
+0000             81   _CLU2MX         DATA 0x91
+0000             82   _CLU3CF         DATA 0xbf
+0000             83   _CLU3FN         DATA 0xbe
+0000             84   _CLU3MX         DATA 0xae
+0000             85   _CMP0CN0        DATA 0x9b
+0000             86   _CMP0CN1        DATA 0x99
+0000             87   _CMP0MD         DATA 0x9d
+0000             88   _CMP0MX         DATA 0x9f
+0000             89   _CMP1CN0        DATA 0xbf
+0000             90   _CMP1CN1        DATA 0xac
+0000             91   _CMP1MD         DATA 0xab
+0000             92   _CMP1MX         DATA 0xaa
+0000             93   _CRC0CN0        DATA 0xce
+0000             94   _CRC0CN1        DATA 0x86
+0000             95   _CRC0CNT        DATA 0xd3
+0000             96   _CRC0DAT        DATA 0xcb
+0000             97   _CRC0FLIP       DATA 0xcf
+0000             98   _CRC0IN         DATA 0xca
+0000             99   _CRC0ST         DATA 0xd2
+0000            100   _DAC0CF0        DATA 0x91
+0000            101   _DAC0CF1        DATA 0x92
+0000            102   _DAC0H          DATA 0x85
+0000            103   _DAC0L          DATA 0x84
+0000            104   _DAC1CF0        DATA 0x93
+0000            105   _DAC1CF1        DATA 0x94
+0000            106   _DAC1H          DATA 0x8a
+0000            107   _DAC1L          DATA 0x89
+0000            108   _DAC2CF0        DATA 0x95
+0000            109   _DAC2CF1        DATA 0x96
+0000            110   _DAC2H          DATA 0x8c
+0000            111   _DAC2L          DATA 0x8b
+0000            112   _DAC3CF0        DATA 0x9a
+0000            113   _DAC3CF1        DATA 0x9c
+0000            114   _DAC3H          DATA 0x8e
+0000            115   _DAC3L          DATA 0x8d
+0000            116   _DACGCF0        DATA 0x88
+0000            117   _DACGCF1        DATA 0x98
+0000            118   _DACGCF2        DATA 0xa2
+0000            119   _DERIVID        DATA 0xad
+0000            120   _DEVICEID       DATA 0xb5
+0000            121   _DPH            DATA 0x83
+0000            122   _DPL            DATA 0x82
+0000            123   _EIE1           DATA 0xe6
+0000            124   _EIE2           DATA 0xf3
+0000            125   _EIP1           DATA 0xbb
+0000            126   _EIP1H          DATA 0xee
+0000            127   _EIP2           DATA 0xed
+0000            128   _EIP2H          DATA 0xf6
+0000            129   _EMI0CN         DATA 0xe7
+0000            130   _FLKEY          DATA 0xb7
+0000            131   _HFO0CAL        DATA 0xc7
+0000            132   _HFO1CAL        DATA 0xd6
+0000            133   _HFOCN          DATA 0xef
+0000            134   _I2C0ADM        DATA 0xff
+0000            135   _I2C0CN0        DATA 0xba
+0000            136   _I2C0DIN        DATA 0xbc
+0000            137   _I2C0DOUT       DATA 0xbb
+0000            138   _I2C0FCN0       DATA 0xad
+0000            139   _I2C0FCN1       DATA 0xab
+0000            140   _I2C0FCT        DATA 0xf5
+0000            141   _I2C0SLAD       DATA 0xbd
+0000            142   _I2C0STAT       DATA 0xb9
+0000            143   _IE             DATA 0xa8
+0000            144   _IP             DATA 0xb8
+0000            145   _IPH            DATA 0xf2
+0000            146   _IT01CF         DATA 0xe4
+0000            147   _LFO0CN         DATA 0xb1
+0000            148   _P0             DATA 0x80
+0000            149   _P0MASK         DATA 0xfe
+0000            150   _P0MAT          DATA 0xfd
+0000            151   _P0MDIN         DATA 0xf1
+0000            152   _P0MDOUT        DATA 0xa4
+0000            153   _P0SKIP         DATA 0xd4
+0000            154   _P1             DATA 0x90
+0000            155   _P1MASK         DATA 0xee
+0000            156   _P1MAT          DATA 0xed
+0000            157   _P1MDIN         DATA 0xf2
+0000            158   _P1MDOUT        DATA 0xa5
+0000            159   _P1SKIP         DATA 0xd5
+0000            160   _P2             DATA 0xa0
+0000            161   _P2MASK         DATA 0xfc
+0000            162   _P2MAT          DATA 0xfb
+0000            163   _P2MDIN         DATA 0xf3
+0000            164   _P2MDOUT        DATA 0xa6
+0000            165   _P2SKIP         DATA 0xcc
+0000            166   _P3             DATA 0xb0
+0000            167   _P3MDIN         DATA 0xf4
+0000            168   _P3MDOUT        DATA 0x9c
+0000            169   _PCA0CENT       DATA 0x9e
+0000            170   _PCA0CLR        DATA 0x9c
+0000            171   _PCA0CN0        DATA 0xd8
+0000            172   _PCA0CPH0       DATA 0xfc
+0000            173   _PCA0CPH1       DATA 0xea
+0000            174   _PCA0CPH2       DATA 0xec
+0000            175   _PCA0CPH3       DATA 0xf5
+0000            176   _PCA0CPH4       DATA 0x85
+0000            177   _PCA0CPH5       DATA 0xde
+0000            178   _PCA0CPL0       DATA 0xfb
+0000            179   _PCA0CPL1       DATA 0xe9
+0000            180   _PCA0CPL2       DATA 0xeb
+0000            181   _PCA0CPL3       DATA 0xf4
+0000            182   _PCA0CPL4       DATA 0x84
+0000            183   _PCA0CPL5       DATA 0xdd
+0000            184   _PCA0CPM0       DATA 0xda
+0000            185   _PCA0CPM1       DATA 0xdb
+0000            186   _PCA0CPM2       DATA 0xdc
+0000            187   _PCA0CPM3       DATA 0xae
+0000            188   _PCA0CPM4       DATA 0xaf
+0000            189   _PCA0CPM5       DATA 0xcc
+0000            190   _PCA0H          DATA 0xfa
+0000            191   _PCA0L          DATA 0xf9
+0000            192   _PCA0MD         DATA 0xd9
+0000            193   _PCA0POL        DATA 0x96
+0000            194   _PCA0PWM        DATA 0xf7
+0000            195   _PCON0          DATA 0x87
+0000            196   _PCON1          DATA 0xcd
+0000            197   _PFE0CN         DATA 0xc1
+0000            198   _PRTDRV         DATA 0xf6
+0000            199   _PSCTL          DATA 0x8f
+0000            200   _PSTAT0         DATA 0xaa
+0000            201   _PSW            DATA 0xd0
+0000            202   _REF0CN         DATA 0xd1
+0000            203   _REG0CN         DATA 0xc9
+0000            204   _REVID          DATA 0xb6
+0000            205   _RSTSRC         DATA 0xef
+0000            206   _SBCON1         DATA 0x94
+0000            207   _SBRLH1         DATA 0x96
+0000            208   _SBRLL1         DATA 0x95
+0000            209   _SBUF           DATA 0x99
+0000            210   _SBUF0          DATA 0x99
+0000            211   _SBUF1          DATA 0x92
+0000            212   _SCON           DATA 0x98
+0000            213   _SCON0          DATA 0x98
+0000            214   _SCON1          DATA 0xc8
+0000            215   _SFRPAGE        DATA 0xa7
+0000            216   _SFRPGCN        DATA 0xbc
+0000            217   _SFRSTACK       DATA 0xd7
+0000            218   _SMB0ADM        DATA 0xd6
+0000            219   _SMB0ADR        DATA 0xd7
+0000            220   _SMB0CF         DATA 0xc1
+0000            221   _SMB0CN0        DATA 0xc0
+0000            222   _SMB0DAT        DATA 0xc2
+0000            223   _SMB0FCN0       DATA 0xc3
+0000            224   _SMB0FCN1       DATA 0xc4
+0000            225   _SMB0FCT        DATA 0xef
+0000            226   _SMB0RXLN       DATA 0xc5
+0000            227   _SMB0TC         DATA 0xac
+0000            228   _SMOD1          DATA 0x93
+0000            229   _SP             DATA 0x81
+0000            230   _SPI0CFG        DATA 0xa1
+0000            231   _SPI0CKR        DATA 0xa2
+0000            232   _SPI0CN0        DATA 0xf8
+0000            233   _SPI0DAT        DATA 0xa3
+0000            234   _SPI0FCN0       DATA 0x9a
+0000            235   _SPI0FCN1       DATA 0x9b
+0000            236   _SPI0FCT        DATA 0xf7
+0000            237   _SPI0PCF        DATA 0xdf
+0000            238   _TCON           DATA 0x88
+0000            239   _TH0            DATA 0x8c
+0000            240   _TH1            DATA 0x8d
+0000            241   _TL0            DATA 0x8a
+0000            242   _TL1            DATA 0x8b
+0000            243   _TMOD           DATA 0x89
+0000            244   _TMR2CN0        DATA 0xc8
+0000            245   _TMR2CN1        DATA 0xfd
+0000            246   _TMR2H          DATA 0xcf
+0000            247   _TMR2L          DATA 0xce
+0000            248   _TMR2RLH        DATA 0xcb
+0000            249   _TMR2RLL        DATA 0xca
+0000            250   _TMR3CN0        DATA 0x91
+0000            251   _TMR3CN1        DATA 0xfe
+0000            252   _TMR3H          DATA 0x95
+0000            253   _TMR3L          DATA 0x94
+0000            254   _TMR3RLH        DATA 0x93
+0000            255   _TMR3RLL        DATA 0x92
+0000            256   _TMR4CN0        DATA 0x98
+0000            257   _TMR4CN1        DATA 0xff
+0000            258   _TMR4H          DATA 0xa5
+0000            259   _TMR4L          DATA 0xa4
+0000            260   _TMR4RLH        DATA 0xa3
+0000            261   _TMR4RLL        DATA 0xa2
+0000            262   _TMR5CN0        DATA 0xc0
+0000            263   _TMR5CN1        DATA 0xf1
+0000            264   _TMR5H          DATA 0xd5
+0000            265   _TMR5L          DATA 0xd4
+0000            266   _TMR5RLH        DATA 0xd3
+0000            267   _TMR5RLL        DATA 0xd2
+0000            268   _UART0PCF       DATA 0xd9
+0000            269   _UART1FCN0      DATA 0x9d
+0000            270   _UART1FCN1      DATA 0xd8
+0000            271   _UART1FCT       DATA 0xfa
+0000            272   _UART1LIN       DATA 0x9e
+0000            273   _UART1PCF       DATA 0xda
+0000            274   _VDM0CN         DATA 0xff
+0000            275   _WDTCN          DATA 0x97
+0000            276   _XBR0           DATA 0xe1
+0000            277   _XBR1           DATA 0xe2
+0000            278   _XBR2           DATA 0xe3
+0000            279   _XOSC0CN        DATA 0x86
+0000            280   _DPTR           DATA 0x8382
+0000            281   _TMR2RL         DATA 0xcbca
+0000            282   _TMR3RL         DATA 0x9392
+0000            283   _TMR4RL         DATA 0xa3a2
+0000            284   _TMR5RL         DATA 0xd3d2
+0000            285   _TMR0           DATA 0x8c8a
+0000            286   _TMR1           DATA 0x8d8b
+0000            287   _TMR2           DATA 0xcfce
+0000            288   _TMR3           DATA 0x9594
+0000            289   _TMR4           DATA 0xa5a4
+0000            290   _TMR5           DATA 0xd5d4
+0000            291   _SBRL1          DATA 0x9695
+0000            292   _PCA0           DATA 0xfaf9
+0000            293   _PCA0CP0        DATA 0xfcfb
+0000            294   _PCA0CP1        DATA 0xeae9
+0000            295   _PCA0CP2        DATA 0xeceb
+0000            296   _PCA0CP3        DATA 0xf5f4
+0000            297   _PCA0CP4        DATA 0x8584
+0000            298   _PCA0CP5        DATA 0xdedd
+0000            299   _ADC0ASA        DATA 0xb6b5
+0000            300   _ADC0GT         DATA 0xc4c3
+0000            301   _ADC0           DATA 0xbebd
+0000            302   _ADC0LT         DATA 0xc6c5
+0000            303   _DAC0           DATA 0x8584
+0000            304   _DAC1           DATA 0x8a89
+0000            305   _DAC2           DATA 0x8c8b
+0000            306   _DAC3           DATA 0x8e8d
+0000            307   ;--------------------------------------------------------
+0000            308   ; special function bits
+0000            309   ;--------------------------------------------------------
+0000            310   _ACC_0          BIT 0xe0
+0000            311   _ACC_1          BIT 0xe1
+0000            312   _ACC_2          BIT 0xe2
+0000            313   _ACC_3          BIT 0xe3
+0000            314   _ACC_4          BIT 0xe4
+0000            315   _ACC_5          BIT 0xe5
+0000            316   _ACC_6          BIT 0xe6
+0000            317   _ACC_7          BIT 0xe7
+0000            318   _TEMPE          BIT 0xe8
+0000            319   _ADGN0          BIT 0xe9
+0000            320   _ADGN1          BIT 0xea
+0000            321   _ADWINT         BIT 0xeb
+0000            322   _ADBUSY         BIT 0xec
+0000            323   _ADINT          BIT 0xed
+0000            324   _IPOEN          BIT 0xee
+0000            325   _ADEN           BIT 0xef
+0000            326   _B_0            BIT 0xf0
+0000            327   _B_1            BIT 0xf1
+0000            328   _B_2            BIT 0xf2
+0000            329   _B_3            BIT 0xf3
+0000            330   _B_4            BIT 0xf4
+0000            331   _B_5            BIT 0xf5
+0000            332   _B_6            BIT 0xf6
+0000            333   _B_7            BIT 0xf7
+0000            334   _C0FIF          BIT 0xe8
+0000            335   _C0RIF          BIT 0xe9
+0000            336   _C1FIF          BIT 0xea
+0000            337   _C1RIF          BIT 0xeb
+0000            338   _C2FIF          BIT 0xec
+0000            339   _C2RIF          BIT 0xed
+0000            340   _C3FIF          BIT 0xee
+0000            341   _C3RIF          BIT 0xef
+0000            342   _D1SRC0         BIT 0x88
+0000            343   _D1SRC1         BIT 0x89
+0000            344   _D1AMEN         BIT 0x8a
+0000            345   _D01REFSL       BIT 0x8b
+0000            346   _D3SRC0         BIT 0x8c
+0000            347   _D3SRC1         BIT 0x8d
+0000            348   _D3AMEN         BIT 0x8e
+0000            349   _D23REFSL       BIT 0x8f
+0000            350   _D0UDIS         BIT 0x98
+0000            351   _D1UDIS         BIT 0x99
+0000            352   _D2UDIS         BIT 0x9a
+0000            353   _D3UDIS         BIT 0x9b
+0000            354   _EX0            BIT 0xa8
+0000            355   _ET0            BIT 0xa9
+0000            356   _EX1            BIT 0xaa
+0000            357   _ET1            BIT 0xab
+0000            358   _ES0            BIT 0xac
+0000            359   _ET2            BIT 0xad
+0000            360   _ESPI0          BIT 0xae
+0000            361   _EA             BIT 0xaf
+0000            362   _PX0            BIT 0xb8
+0000            363   _PT0            BIT 0xb9
+0000            364   _PX1            BIT 0xba
+0000            365   _PT1            BIT 0xbb
+0000            366   _PS0            BIT 0xbc
+0000            367   _PT2            BIT 0xbd
+0000            368   _PSPI0          BIT 0xbe
+0000            369   _P0_0           BIT 0x80
+0000            370   _P0_1           BIT 0x81
+0000            371   _P0_2           BIT 0x82
+0000            372   _P0_3           BIT 0x83
+0000            373   _P0_4           BIT 0x84
+0000            374   _P0_5           BIT 0x85
+0000            375   _P0_6           BIT 0x86
+0000            376   _P0_7           BIT 0x87
+0000            377   _P1_0           BIT 0x90
+0000            378   _P1_1           BIT 0x91
+0000            379   _P1_2           BIT 0x92
+0000            380   _P1_3           BIT 0x93
+0000            381   _P1_4           BIT 0x94
+0000            382   _P1_5           BIT 0x95
+0000            383   _P1_6           BIT 0x96
+0000            384   _P1_7           BIT 0x97
+0000            385   _P2_0           BIT 0xa0
+0000            386   _P2_1           BIT 0xa1
+0000            387   _P2_2           BIT 0xa2
+0000            388   _P2_3           BIT 0xa3
+0000            389   _P2_4           BIT 0xa4
+0000            390   _P2_5           BIT 0xa5
+0000            391   _P2_6           BIT 0xa6
+0000            392   _P3_0           BIT 0xb0
+0000            393   _P3_1           BIT 0xb1
+0000            394   _P3_2           BIT 0xb2
+0000            395   _P3_3           BIT 0xb3
+0000            396   _P3_4           BIT 0xb4
+0000            397   _P3_7           BIT 0xb7
+0000            398   _CCF0           BIT 0xd8
+0000            399   _CCF1           BIT 0xd9
+0000            400   _CCF2           BIT 0xda
+0000            401   _CCF3           BIT 0xdb
+0000            402   _CCF4           BIT 0xdc
+0000            403   _CCF5           BIT 0xdd
+0000            404   _CR             BIT 0xde
+0000            405   _CF             BIT 0xdf
+0000            406   _PARITY         BIT 0xd0
+0000            407   _F1             BIT 0xd1
+0000            408   _OV             BIT 0xd2
+0000            409   _RS0            BIT 0xd3
+0000            410   _RS1            BIT 0xd4
+0000            411   _F0             BIT 0xd5
+0000            412   _AC             BIT 0xd6
+0000            413   _CY             BIT 0xd7
+0000            414   _RI             BIT 0x98
+0000            415   _TI             BIT 0x99
+0000            416   _RB8            BIT 0x9a
+0000            417   _TB8            BIT 0x9b
+0000            418   _REN            BIT 0x9c
+0000            419   _CE             BIT 0x9d
+0000            420   _SMODE          BIT 0x9e
+0000            421   _RI1            BIT 0xc8
+0000            422   _TI1            BIT 0xc9
+0000            423   _RBX1           BIT 0xca
+0000            424   _TBX1           BIT 0xcb
+0000            425   _REN1           BIT 0xcc
+0000            426   _PERR1          BIT 0xcd
+0000            427   _OVR1           BIT 0xce
+0000            428   _SI             BIT 0xc0
+0000            429   _ACK            BIT 0xc1
+0000            430   _ARBLOST        BIT 0xc2
+0000            431   _ACKRQ          BIT 0xc3
+0000            432   _STO            BIT 0xc4
+0000            433   _STA            BIT 0xc5
+0000            434   _TXMODE         BIT 0xc6
+0000            435   _MASTER         BIT 0xc7
+0000            436   _SPIEN          BIT 0xf8
+0000            437   _TXNF           BIT 0xf9
+0000            438   _NSSMD0         BIT 0xfa
+0000            439   _NSSMD1         BIT 0xfb
+0000            440   _RXOVRN         BIT 0xfc
+0000            441   _MODF           BIT 0xfd
+0000            442   _WCOL           BIT 0xfe
+0000            443   _SPIF           BIT 0xff
+0000            444   _IT0            BIT 0x88
+0000            445   _IE0            BIT 0x89
+0000            446   _IT1            BIT 0x8a
+0000            447   _IE1            BIT 0x8b
+0000            448   _TR0            BIT 0x8c
+0000            449   _TF0            BIT 0x8d
+0000            450   _TR1            BIT 0x8e
+0000            451   _TF1            BIT 0x8f
+0000            452   _T2XCLK0        BIT 0xc8
+0000            453   _T2XCLK1        BIT 0xc9
+0000            454   _TR2            BIT 0xca
+0000            455   _T2SPLIT        BIT 0xcb
+0000            456   _TF2CEN         BIT 0xcc
+0000            457   _TF2LEN         BIT 0xcd
+0000            458   _TF2L           BIT 0xce
+0000            459   _TF2H           BIT 0xcf
+0000            460   _T4XCLK0        BIT 0x98
+0000            461   _T4XCLK1        BIT 0x99
+0000            462   _TR4            BIT 0x9a
+0000            463   _T4SPLIT        BIT 0x9b
+0000            464   _TF4CEN         BIT 0x9c
+0000            465   _TF4LEN         BIT 0x9d
+0000            466   _TF4L           BIT 0x9e
+0000            467   _TF4H           BIT 0x9f
+0000            468   _T5XCLK0        BIT 0xc0
+0000            469   _T5XCLK1        BIT 0xc1
+0000            470   _TR5            BIT 0xc2
+0000            471   _T5SPLIT        BIT 0xc3
+0000            472   _TF5CEN         BIT 0xc4
+0000            473   _TF5LEN         BIT 0xc5
+0000            474   _TF5L           BIT 0xc6
+0000            475   _TF5H           BIT 0xc7
+0000            476   _RIE            BIT 0xd8
+0000            477   _RXTO0          BIT 0xd9
+0000            478   _RXTO1          BIT 0xda
+0000            479   _RFRQ           BIT 0xdb
+0000            480   _TIE            BIT 0xdc
+0000            481   _TXHOLD         BIT 0xdd
+0000            482   _TXNF1          BIT 0xde
+0000            483   _TFRQ           BIT 0xdf
+0000            484   ;--------------------------------------------------------
+0000            485   ; overlayable register banks
+0000            486   ;--------------------------------------------------------
+0000            487            rbank0 segment data overlay
+0000            488   ;--------------------------------------------------------
+0000            489   ; internal ram data
+0000            490   ;--------------------------------------------------------
+0000            491            rseg R_DSEG
+0000            492   _map2_PARM_2:
+0000            493            ds 4
+0004            494   _map2_PARM_3:
+0004            495            ds 4
+0008            496   _map2_PARM_4:
+0008            497            ds 4
+000C            498   _map2_PARM_5:
+000C            499            ds 4
+0010            500   _GetPosition2_PARM_2:
+0010            501            ds 3
+0013            502   _GetPosition2_PARM_3:
+0013            503            ds 3
+0016            504   _GetPosition2_volts_1_101:
+0016            505            ds 3
+0019            506   _GetPosition2_mid_x_1_102:
+0019            507            ds 4
+001D            508   _GetPosition2_mid_y_1_102:
+001D            509            ds 4
+0021            510   _GetPosition2_vx_1_102:
+0021            511            ds 4
+0025            512   _GetPosition2_vy_1_102:
+0025            513            ds 4
+0029            514   _main_v_1_108:
+0029            515            ds 8
+0031            516   _main_xy_pos_1_108:
+0031            517            ds 8
+0039            518   _main_mid_1_108:
+0039            519            ds 8
+0041            520   ;--------------------------------------------------------
+0041            521   ; overlayable items in internal ram 
+0041            522   ;--------------------------------------------------------
+0000            523            rseg    R_OSEG
+0000            524   _InitPinADC_PARM_2:
+0000            525            ds 1
+0001            526            rseg    R_OSEG
+0001            527            rseg    R_OSEG
+0001            528   ;--------------------------------------------------------
+0001            529   ; indirectly addressable internal ram data
+0001            530   ;--------------------------------------------------------
+0000            531            rseg R_ISEG
+0000            532   ;--------------------------------------------------------
+0000            533   ; absolute internal ram data
+0000            534   ;--------------------------------------------------------
+0000            535            DSEG
+0000            536   ;--------------------------------------------------------
+0000            537   ; bit data
+0000            538   ;--------------------------------------------------------
+0000            539            rseg R_BSEG
+0000            540   ;--------------------------------------------------------
+0000            541   ; paged external ram data
+0000            542   ;--------------------------------------------------------
+0000            543            rseg R_PSEG
+0000            544   ;--------------------------------------------------------
+0000            545   ; external ram data
+0000            546   ;--------------------------------------------------------
+0000            547            rseg R_XSEG
+0000            548   _main_buff_x_1_108:
+0000            549            ds 17
+0011            550   _main_buff_y_1_108:
+0011            551            ds 17
+0022            552   _main_temp_buff_1_108:
+0022            553            ds 80
+0072            554   ;--------------------------------------------------------
+0072            555   ; absolute external ram data
+0072            556   ;--------------------------------------------------------
+0000            557            XSEG
+0000            558   ;--------------------------------------------------------
+0000            559   ; external initialized ram data
+0000            560   ;--------------------------------------------------------
+0000            561            rseg R_IXSEG
+0000            562            rseg R_HOME
+0000            563            rseg R_GSINIT
+0000            564            rseg R_CSEG
+0000            565   ;--------------------------------------------------------
+0000            566   ; Reset entry point and interrupt vectors
+0000            567   ;--------------------------------------------------------
+0000            568            CSEG at 0x0000
+0000 020000     569            ljmp    _crt0
+0003            570   ;--------------------------------------------------------
+0003            571   ; global & static initialisations
+0003            572   ;--------------------------------------------------------
+0000            573            rseg R_HOME
+0000            574            rseg R_GSINIT
+0000            575            rseg R_GSINIT
+0000            576   ;--------------------------------------------------------
+0000            577   ; data variables initialization
+0000            578   ;--------------------------------------------------------
+0000            579            rseg R_DINIT
+0000            580            ; The linker places a 'ret' at the end of segment R_DINIT.
+0000            581   ;--------------------------------------------------------
+0000            582   ; code
+0000            583   ;--------------------------------------------------------
+0000            584            rseg R_CSEG
+0000            585   ;------------------------------------------------------------
+0000            586   ;Allocation info for local variables in function 'InitPinADC'
+0000            587   ;------------------------------------------------------------
+0000            588   ;pinno                     Allocated with name '_InitPinADC_PARM_2'
+0000            589   ;portno                    Allocated to registers r2 
+0000            590   ;mask                      Allocated to registers r3 
+0000            591   ;------------------------------------------------------------
+0000            592   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:18: void InitPinADC (unsigned char portno, unsigned char pinno)
+0000            593   ;        -----------------------------------------
+0000            594   ;         function InitPinADC
+0000            595   ;        -----------------------------------------
+0000            596   _InitPinADC:
+0000            597            using   0
+0000 AA82       598            mov     r2,dpl
+0002            599   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:22: mask=1<<pinno;
+0002 8568F0     600            mov     b,_InitPinADC_PARM_2
+0005 05F0       601            inc     b
+0007 7401       602            mov     a,#0x01
+0009 8000       603            sjmp    L002013?
+000B            604   L002011?:
+000B 25E0       605            add     a,acc
+000D            606   L002013?:
+000D D5F0D8     607            djnz    b,L002011?
+0010 FB         608            mov     r3,a
+0011            609   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:24: SFRPAGE = 0x20;
+0011 75A720     610            mov     _SFRPAGE,#0x20
+0014            611   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:25: switch (portno)
+0014 BA0058     612            cjne    r2,#0x00,L002014?
+0017 8000       613            sjmp    L002001?
+0019            614   L002014?:
+0019 BA01D8     615            cjne    r2,#0x01,L002015?
+001C 8000       616            sjmp    L002002?
+001E            617   L002015?:
+001E            618   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:27: case 0:
+001E BA0258     619            cjne    r2,#0x02,L002005?
+0021 8000       620            sjmp    L002003?
+0023            621   L002001?:
+0023            622   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:28: P0MDIN &= (~mask); // Set pin as analog input
+0023 EB         623            mov     a,r3
+0024 F4         624            cpl     a
+0025 FA         625            mov     r2,a
+0026 52F1       626            anl     _P0MDIN,a
+0028            627   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:29: P0SKIP |= mask; // Skip Crossbar decoding for this pin
+0028 EB         628            mov     a,r3
+0029 42D4       629            orl     _P0SKIP,a
+002B            630   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:30: break;
+002B            631   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:31: case 1:
+002B 8000       632            sjmp    L002005?
+002D            633   L002002?:
+002D            634   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:32: P1MDIN &= (~mask); // Set pin as analog input
+002D EB         635            mov     a,r3
+002E F4         636            cpl     a
+002F FA         637            mov     r2,a
+0030 52F2       638            anl     _P1MDIN,a
+0032            639   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:33: P1SKIP |= mask; // Skip Crossbar decoding for this pin
+0032 EB         640            mov     a,r3
+0033 42D5       641            orl     _P1SKIP,a
+0035            642   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:34: break;
+0035            643   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:35: case 2:
+0035 8000       644            sjmp    L002005?
+0037            645   L002003?:
+0037            646   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:36: P2MDIN &= (~mask); // Set pin as analog input
+0037 EB         647            mov     a,r3
+0038 F4         648            cpl     a
+0039 FA         649            mov     r2,a
+003A 52F3       650            anl     _P2MDIN,a
+003C            651   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:37: P2SKIP |= mask; // Skip Crossbar decoding for this pin
+003C EB         652            mov     a,r3
+003D 42CC       653            orl     _P2SKIP,a
+003F            654   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:41: }
+003F            655   L002005?:
+003F            656   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:42: SFRPAGE = 0x00;
+003F 75A700     657            mov     _SFRPAGE,#0x00
+0042 22         658            ret
+0043            659   ;------------------------------------------------------------
+0043            660   ;Allocation info for local variables in function 'Timer3us'
+0043            661   ;------------------------------------------------------------
+0043            662   ;us                        Allocated to registers r2 
+0043            663   ;i                         Allocated to registers r3 
+0043            664   ;------------------------------------------------------------
+0043            665   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:44: void Timer3us(unsigned char us)
+0043            666   ;        -----------------------------------------
+0043            667   ;         function Timer3us
+0043            668   ;        -----------------------------------------
+0043            669   _Timer3us:
+0043 AA82       670            mov     r2,dpl
+0045            671   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:49: CKCON0|=0b_0100_0000;
+0045 438E40     672            orl     _CKCON0,#0x40
+0048            673   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:51: TMR3RL = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
+0048 7592B8     674            mov     _TMR3RL,#0xB8
+004B 7593FF     675            mov     (_TMR3RL >> 8),#0xFF
+004E            676   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:52: TMR3 = TMR3RL;                 // Initialize Timer3 for first overflow
+004E 859294     677            mov     _TMR3,_TMR3RL
+0051 859395     678            mov     (_TMR3 >> 8),(_TMR3RL >> 8)
+0054            679   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:54: TMR3CN0 = 0x04;                 // Sart Timer3 and clear overflow flag
+0054 759104     680            mov     _TMR3CN0,#0x04
+0057            681   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:55: for (i = 0; i < us; i++)       // Count <us> overflows
+0057 7B00       682            mov     r3,#0x00
+0059            683   L003004?:
+0059 C3         684            clr     c
+005A EB         685            mov     a,r3
+005B 9A         686            subb    a,r2
+005C 5000       687            jnc     L003007?
+005E            688   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:57: while (!(TMR3CN0 & 0x80));  // Wait for overflow
+005E            689   L003001?:
+005E E591       690            mov     a,_TMR3CN0
+0060 30E758     691            jnb     acc.7,L003001?
+0063            692   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:58: TMR3CN0 &= ~(0x80);         // Clear overflow indicator
+0063 53917F     693            anl     _TMR3CN0,#0x7F
+0066            694   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:55: for (i = 0; i < us; i++)       // Count <us> overflows
+0066 0B         695            inc     r3
+0067 8000       696            sjmp    L003004?
+0069            697   L003007?:
+0069            698   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:60: TMR3CN0 = 0 ;                   // Stop Timer3 and clear overflow flag
+0069 759100     699            mov     _TMR3CN0,#0x00
+006C 22         700            ret
+006D            701   ;------------------------------------------------------------
+006D            702   ;Allocation info for local variables in function 'ADC_at_Pin'
+006D            703   ;------------------------------------------------------------
+006D            704   ;pin                       Allocated to registers 
+006D            705   ;------------------------------------------------------------
+006D            706   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:62: unsigned int ADC_at_Pin(unsigned char pin)
+006D            707   ;        -----------------------------------------
+006D            708   ;         function ADC_at_Pin
+006D            709   ;        -----------------------------------------
+006D            710   _ADC_at_Pin:
+006D 8582BB     711            mov     _ADC0MX,dpl
+0070            712   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:65: ADINT = 0;
+0070 C2ED       713            clr     _ADINT
+0072            714   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:66: ADBUSY = 1;     // Convert voltage at the pin
+0072 D2EC       715            setb    _ADBUSY
+0074            716   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:67: while (!ADINT); // Wait for conversion to complete
+0074            717   L004001?:
+0074 30ED98     718            jnb     _ADINT,L004001?
+0077            719   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:68: return (ADC0);
+0077 85BD82     720            mov     dpl,_ADC0
+007A 85BE83     721            mov     dph,(_ADC0 >> 8)
+007D 22         722            ret
+007E            723   ;------------------------------------------------------------
+007E            724   ;Allocation info for local variables in function 'Get_ADC'
+007E            725   ;------------------------------------------------------------
+007E            726   ;------------------------------------------------------------
+007E            727   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:71: unsigned int Get_ADC (void)
+007E            728   ;        -----------------------------------------
+007E            729   ;         function Get_ADC
+007E            730   ;        -----------------------------------------
+007E            731   _Get_ADC:
+007E            732   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:73: ADINT = 0;
+007E C2ED       733            clr     _ADINT
+0080            734   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:74: ADBUSY = 1;
+0080 D2EC       735            setb    _ADBUSY
+0082            736   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:75: while (!ADINT); // Wait for conversion to complete
+0082            737   L005001?:
+0082 30ED18     738            jnb     _ADINT,L005001?
+0085            739   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:76: return (ADC0);
+0085 85BD82     740            mov     dpl,_ADC0
+0088 85BE83     741            mov     dph,(_ADC0 >> 8)
+008B 22         742            ret
+008C            743   ;------------------------------------------------------------
+008C            744   ;Allocation info for local variables in function 'waitms'
+008C            745   ;------------------------------------------------------------
+008C            746   ;ms                        Allocated to registers r2 r3 
+008C            747   ;j                         Allocated to registers r4 r5 
+008C            748   ;k                         Allocated to registers r6 
+008C            749   ;------------------------------------------------------------
+008C            750   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:79: void waitms (unsigned int ms)
+008C            751   ;        -----------------------------------------
+008C            752   ;         function waitms
+008C            753   ;        -----------------------------------------
+008C            754   _waitms:
+008C AA82       755            mov     r2,dpl
+008E AB83       756            mov     r3,dph
+0090            757   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:83: for(j=0; j<ms; j++)
+0090 7C00       758            mov     r4,#0x00
+0092 7D00       759            mov     r5,#0x00
+0094            760   L006005?:
+0094 C3         761            clr     c
+0095 EC         762            mov     a,r4
+0096 9A         763            subb    a,r2
+0097 ED         764            mov     a,r5
+0098 9B         765            subb    a,r3
+0099 5000       766            jnc     L006009?
+009B            767   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:84: for (k=0; k<4; k++) Timer3us(250);
+009B 7E00       768            mov     r6,#0x00
+009D            769   L006001?:
+009D BE0418     770            cjne    r6,#0x04,L006018?
+00A0            771   L006018?:
+00A0 5000       772            jnc     L006007?
+00A2 7582FA     773            mov     dpl,#0xFA
+00A5 C002       774            push    ar2
+00A7 C003       775            push    ar3
+00A9 C004       776            push    ar4
+00AB C005       777            push    ar5
+00AD C006       778            push    ar6
+00AF 120000     779            lcall   _Timer3us
+00B2 D006       780            pop     ar6
+00B4 D005       781            pop     ar5
+00B6 D004       782            pop     ar4
+00B8 D003       783            pop     ar3
+00BA D002       784            pop     ar2
+00BC 0E         785            inc     r6
+00BD 8000       786            sjmp    L006001?
+00BF            787   L006007?:
+00BF            788   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:83: for(j=0; j<ms; j++)
+00BF 0C         789            inc     r4
+00C0 BC0058     790            cjne    r4,#0x00,L006005?
+00C3 0D         791            inc     r5
+00C4 8000       792            sjmp    L006005?
+00C6            793   L006009?:
+00C6 22         794            ret
+00C7            795   ;------------------------------------------------------------
+00C7            796   ;Allocation info for local variables in function 'Volts_at_Pin'
+00C7            797   ;------------------------------------------------------------
+00C7            798   ;pin                       Allocated to registers r2 
+00C7            799   ;------------------------------------------------------------
+00C7            800   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:87: float Volts_at_Pin(unsigned char pin)
+00C7            801   ;        -----------------------------------------
+00C7            802   ;         function Volts_at_Pin
+00C7            803   ;        -----------------------------------------
+00C7            804   _Volts_at_Pin:
+00C7            805   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:89: return ((ADC_at_Pin(pin)*VDD)/0b_0011_1111_1111_1111);
+00C7 120000     806            lcall   _ADC_at_Pin
+00CA 120000     807            lcall   ___uint2fs
+00CD AA82       808            mov     r2,dpl
+00CF AB83       809            mov     r3,dph
+00D1 ACF0       810            mov     r4,b
+00D3 FD         811            mov     r5,a
+00D4 C002       812            push    ar2
+00D6 C003       813            push    ar3
+00D8 C004       814            push    ar4
+00DA C005       815            push    ar5
+00DC 906C8B     816            mov     dptr,#0x6C8B
+00DF 75F053     817            mov     b,#0x53
+00E2 7440       818            mov     a,#0x40
+00E4 120000     819            lcall   ___fsmul
+00E7 AA82       820            mov     r2,dpl
+00E9 AB83       821            mov     r3,dph
+00EB ACF0       822            mov     r4,b
+00ED FD         823            mov     r5,a
+00EE E581       824            mov     a,sp
+00F0 24FC       825            add     a,#0xfc
+00F2 F581       826            mov     sp,a
+00F4 E4         827            clr     a
+00F5 C0E0       828            push    acc
+00F7 74FC       829            mov     a,#0xFC
+00F9 C0E0       830            push    acc
+00FB 747F       831            mov     a,#0x7F
+00FD C0E0       832            push    acc
+00FF 7446       833            mov     a,#0x46
+0101 C0E0       834            push    acc
+0103 8A82       835            mov     dpl,r2
+0105 8B83       836            mov     dph,r3
+0107 8CF0       837            mov     b,r4
+0109 ED         838            mov     a,r5
+010A 120000     839            lcall   ___fsdiv
+010D AA82       840            mov     r2,dpl
+010F AB83       841            mov     r3,dph
+0111 ACF0       842            mov     r4,b
+0113 FD         843            mov     r5,a
+0114 E581       844            mov     a,sp
+0116 24FC       845            add     a,#0xfc
+0118 F581       846            mov     sp,a
+011A 8A82       847            mov     dpl,r2
+011C 8B83       848            mov     dph,r3
+011E 8CF0       849            mov     b,r4
+0120 ED         850            mov     a,r5
+0121 22         851            ret
+0122            852   ;------------------------------------------------------------
+0122            853   ;Allocation info for local variables in function 'map2'
+0122            854   ;------------------------------------------------------------
+0122            855   ;in_min                    Allocated with name '_map2_PARM_2'
+0122            856   ;in_max                    Allocated with name '_map2_PARM_3'
+0122            857   ;out_min                   Allocated with name '_map2_PARM_4'
+0122            858   ;out_max                   Allocated with name '_map2_PARM_5'
+0122            859   ;x                         Allocated to registers r2 r3 r4 r5 
+0122            860   ;value                     Allocated to registers r2 r3 r4 r5 
+0122            861   ;------------------------------------------------------------
+0122            862   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:92: float map2(float x, float in_min, float in_max, float out_min, float out_max)
+0122            863   ;        -----------------------------------------
+0122            864   ;         function map2
+0122            865   ;        -----------------------------------------
+0122            866   _map2:
+0122 AA82       867            mov     r2,dpl
+0124 AB83       868            mov     r3,dph
+0126 ACF0       869            mov     r4,b
+0128 FD         870            mov     r5,a
+0129            871   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:94: float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+0129 C088       872            push    _map2_PARM_2
+012B C089       873            push    (_map2_PARM_2 + 1)
+012D C08A       874            push    (_map2_PARM_2 + 2)
+012F C08B       875            push    (_map2_PARM_2 + 3)
+0131 8A82       876            mov     dpl,r2
+0133 8B83       877            mov     dph,r3
+0135 8CF0       878            mov     b,r4
+0137 ED         879            mov     a,r5
+0138 120000     880            lcall   ___fssub
+013B AA82       881            mov     r2,dpl
+013D AB83       882            mov     r3,dph
+013F ACF0       883            mov     r4,b
+0141 FD         884            mov     r5,a
+0142 E581       885            mov     a,sp
+0144 24FC       886            add     a,#0xfc
+0146 F581       887            mov     sp,a
+0148 C002       888            push    ar2
+014A C003       889            push    ar3
+014C C004       890            push    ar4
+014E C005       891            push    ar5
+0150 C008       892            push    _map2_PARM_4
+0152 C009       893            push    (_map2_PARM_4 + 1)
+0154 C00A       894            push    (_map2_PARM_4 + 2)
+0156 C00B       895            push    (_map2_PARM_4 + 3)
+0158 85C882     896            mov     dpl,_map2_PARM_5
+015B 85C983     897            mov     dph,(_map2_PARM_5 + 1)
+015E 85CAF0     898            mov     b,(_map2_PARM_5 + 2)
+0161 E5CB       899            mov     a,(_map2_PARM_5 + 3)
+0163 120000     900            lcall   ___fssub
+0166 AE82       901            mov     r6,dpl
+0168 AF83       902            mov     r7,dph
+016A A8F0       903            mov     r0,b
+016C F9         904            mov     r1,a
+016D E581       905            mov     a,sp
+016F 24FC       906            add     a,#0xfc
+0171 F581       907            mov     sp,a
+0173 D005       908            pop     ar5
+0175 D004       909            pop     ar4
+0177 D003       910            pop     ar3
+0179 D002       911            pop     ar2
+017B C006       912            push    ar6
+017D C007       913            push    ar7
+017F C000       914            push    ar0
+0181 C001       915            push    ar1
+0183 8A82       916            mov     dpl,r2
+0185 8B83       917            mov     dph,r3
+0187 8CF0       918            mov     b,r4
+0189 ED         919            mov     a,r5
+018A 120000     920            lcall   ___fsmul
+018D AA82       921            mov     r2,dpl
+018F AB83       922            mov     r3,dph
+0191 ACF0       923            mov     r4,b
+0193 FD         924            mov     r5,a
+0194 E581       925            mov     a,sp
+0196 24FC       926            add     a,#0xfc
+0198 F581       927            mov     sp,a
+019A C002       928            push    ar2
+019C C003       929            push    ar3
+019E C004       930            push    ar4
+01A0 C005       931            push    ar5
+01A2 C088       932            push    _map2_PARM_2
+01A4 C089       933            push    (_map2_PARM_2 + 1)
+01A6 C08A       934            push    (_map2_PARM_2 + 2)
+01A8 C08B       935            push    (_map2_PARM_2 + 3)
+01AA 854882     936            mov     dpl,_map2_PARM_3
+01AD 854983     937            mov     dph,(_map2_PARM_3 + 1)
+01B0 854AF0     938            mov     b,(_map2_PARM_3 + 2)
+01B3 E54B       939            mov     a,(_map2_PARM_3 + 3)
+01B5 120000     940            lcall   ___fssub
+01B8 AE82       941            mov     r6,dpl
+01BA AF83       942            mov     r7,dph
+01BC A8F0       943            mov     r0,b
+01BE F9         944            mov     r1,a
+01BF E581       945            mov     a,sp
+01C1 24FC       946            add     a,#0xfc
+01C3 F581       947            mov     sp,a
+01C5 D005       948            pop     ar5
+01C7 D004       949            pop     ar4
+01C9 D003       950            pop     ar3
+01CB D002       951            pop     ar2
+01CD C006       952            push    ar6
+01CF C007       953            push    ar7
+01D1 C000       954            push    ar0
+01D3 C001       955            push    ar1
+01D5 8A82       956            mov     dpl,r2
+01D7 8B83       957            mov     dph,r3
+01D9 8CF0       958            mov     b,r4
+01DB ED         959            mov     a,r5
+01DC 120000     960            lcall   ___fsdiv
+01DF AA82       961            mov     r2,dpl
+01E1 AB83       962            mov     r3,dph
+01E3 ACF0       963            mov     r4,b
+01E5 FD         964            mov     r5,a
+01E6 E581       965            mov     a,sp
+01E8 24FC       966            add     a,#0xfc
+01EA F581       967            mov     sp,a
+01EC C008       968            push    _map2_PARM_4
+01EE C009       969            push    (_map2_PARM_4 + 1)
+01F0 C00A       970            push    (_map2_PARM_4 + 2)
+01F2 C00B       971            push    (_map2_PARM_4 + 3)
+01F4 8A82       972            mov     dpl,r2
+01F6 8B83       973            mov     dph,r3
+01F8 8CF0       974            mov     b,r4
+01FA ED         975            mov     a,r5
+01FB 120000     976            lcall   ___fsadd
+01FE AA82       977            mov     r2,dpl
+0200 AB83       978            mov     r3,dph
+0202 ACF0       979            mov     r4,b
+0204 FD         980            mov     r5,a
+0205 E581       981            mov     a,sp
+0207 24FC       982            add     a,#0xfc
+0209 F581       983            mov     sp,a
+020B            984   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:95: return value;
+020B 8A82       985            mov     dpl,r2
+020D 8B83       986            mov     dph,r3
+020F 8CF0       987            mov     b,r4
+0211 ED         988            mov     a,r5
+0212 22         989            ret
+0213            990   ;------------------------------------------------------------
+0213            991   ;Allocation info for local variables in function 'LEDgetposition'
+0213            992   ;------------------------------------------------------------
+0213            993   ;volts                     Allocated to registers r2 r3 r4 
+0213            994   ;------------------------------------------------------------
+0213            995   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:100: void LEDgetposition (float volts[2]) {
+0213            996   ;        -----------------------------------------
+0213            997   ;         function LEDgetposition
+0213            998   ;        -----------------------------------------
+0213            999   _LEDgetposition:
+0213           1000   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:112: volts[0] = volts[0] - external_voltage_reference; //convert to midpoint
+0213 AA82      1001            mov     r2,dpl
+0215 AB83      1002            mov     r3,dph
+0217 ACF0      1003            mov     r4,b
+0219 120000    1004            lcall   __gptrget
+021C FD        1005            mov     r5,a
+021D A3        1006            inc     dptr
+021E 120000    1007            lcall   __gptrget
+0221 FE        1008            mov     r6,a
+0222 A3        1009            inc     dptr
+0223 120000    1010            lcall   __gptrget
+0226 FF        1011            mov     r7,a
+0227 A3        1012            inc     dptr
+0228 120000    1013            lcall   __gptrget
+022B F8        1014            mov     r0,a
+022C C002      1015            push    ar2
+022E C003      1016            push    ar3
+0230 C004      1017            push    ar4
+0232 74FD      1018            mov     a,#0xFD
+0234 C0E0      1019            push    acc
+0236 7487      1020            mov     a,#0x87
+0238 C0E0      1021            push    acc
+023A 74E4      1022            mov     a,#0xE4
+023C C0E0      1023            push    acc
+023E 743F      1024            mov     a,#0x3F
+0240 C0E0      1025            push    acc
+0242 8D82      1026            mov     dpl,r5
+0244 8E83      1027            mov     dph,r6
+0246 8FF0      1028            mov     b,r7
+0248 E8        1029            mov     a,r0
+0249 120000    1030            lcall   ___fssub
+024C AD82      1031            mov     r5,dpl
+024E AE83      1032            mov     r6,dph
+0250 AFF0      1033            mov     r7,b
+0252 F8        1034            mov     r0,a
+0253 E581      1035            mov     a,sp
+0255 24FC      1036            add     a,#0xfc
+0257 F581      1037            mov     sp,a
+0259 D004      1038            pop     ar4
+025B D003      1039            pop     ar3
+025D D002      1040            pop     ar2
+025F 8A82      1041            mov     dpl,r2
+0261 8B83      1042            mov     dph,r3
+0263 8CF0      1043            mov     b,r4
+0265 ED        1044            mov     a,r5
+0266 120000    1045            lcall   __gptrput
+0269 A3        1046            inc     dptr
+026A EE        1047            mov     a,r6
+026B 120000    1048            lcall   __gptrput
+026E A3        1049            inc     dptr
+026F EF        1050            mov     a,r7
+0270 120000    1051            lcall   __gptrput
+0273 A3        1052            inc     dptr
+0274 E8        1053            mov     a,r0
+0275 120000    1054            lcall   __gptrput
+0278           1055   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:113: volts[1] = volts[1] - external_voltage_reference;
+0278 7404      1056            mov     a,#0x04
+027A 2A        1057            add     a,r2
+027B FA        1058            mov     r2,a
+027C E4        1059            clr     a
+027D 3B        1060            addc    a,r3
+027E FB        1061            mov     r3,a
+027F 8A82      1062            mov     dpl,r2
+0281 8B83      1063            mov     dph,r3
+0283 8CF0      1064            mov     b,r4
+0285 120000    1065            lcall   __gptrget
+0288 FD        1066            mov     r5,a
+0289 A3        1067            inc     dptr
+028A 120000    1068            lcall   __gptrget
+028D FE        1069            mov     r6,a
+028E A3        1070            inc     dptr
+028F 120000    1071            lcall   __gptrget
+0292 FF        1072            mov     r7,a
+0293 A3        1073            inc     dptr
+0294 120000    1074            lcall   __gptrget
+0297 F8        1075            mov     r0,a
+0298 C002      1076            push    ar2
+029A C003      1077            push    ar3
+029C C004      1078            push    ar4
+029E 74FD      1079            mov     a,#0xFD
+02A0 C0E0      1080            push    acc
+02A2 7487      1081            mov     a,#0x87
+02A4 C0E0      1082            push    acc
+02A6 74E4      1083            mov     a,#0xE4
+02A8 C0E0      1084            push    acc
+02AA 743F      1085            mov     a,#0x3F
+02AC C0E0      1086            push    acc
+02AE 8D82      1087            mov     dpl,r5
+02B0 8E83      1088            mov     dph,r6
+02B2 8FF0      1089            mov     b,r7
+02B4 E8        1090            mov     a,r0
+02B5 120000    1091            lcall   ___fssub
+02B8 AD82      1092            mov     r5,dpl
+02BA AE83      1093            mov     r6,dph
+02BC AFF0      1094            mov     r7,b
+02BE F8        1095            mov     r0,a
+02BF E581      1096            mov     a,sp
+02C1 24FC      1097            add     a,#0xfc
+02C3 F581      1098            mov     sp,a
+02C5 D004      1099            pop     ar4
+02C7 D003      1100            pop     ar3
+02C9 D002      1101            pop     ar2
+02CB 8A82      1102            mov     dpl,r2
+02CD 8B83      1103            mov     dph,r3
+02CF 8CF0      1104            mov     b,r4
+02D1 ED        1105            mov     a,r5
+02D2 120000    1106            lcall   __gptrput
+02D5 A3        1107            inc     dptr
+02D6 EE        1108            mov     a,r6
+02D7 120000    1109            lcall   __gptrput
+02DA A3        1110            inc     dptr
+02DB EF        1111            mov     a,r7
+02DC 120000    1112            lcall   __gptrput
+02DF A3        1113            inc     dptr
+02E0 E8        1114            mov     a,r0
+02E1           1115   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:115: return;
+02E1 020000    1116            ljmp    __gptrput
+02E4           1117   ;------------------------------------------------------------
+02E4           1118   ;Allocation info for local variables in function 'GetPosition2'
+02E4           1119   ;------------------------------------------------------------
+02E4           1120   ;pos                       Allocated with name '_GetPosition2_PARM_2'
+02E4           1121   ;mid                       Allocated with name '_GetPosition2_PARM_3'
+02E4           1122   ;volts                     Allocated with name '_GetPosition2_volts_1_101'
+02E4           1123   ;mid_x                     Allocated with name '_GetPosition2_mid_x_1_102'
+02E4           1124   ;mid_y                     Allocated with name '_GetPosition2_mid_y_1_102'
+02E4           1125   ;vx                        Allocated with name '_GetPosition2_vx_1_102'
+02E4           1126   ;vy                        Allocated with name '_GetPosition2_vy_1_102'
+02E4           1127   ;max                       Allocated to registers 
+02E4           1128   ;min                       Allocated to registers 
+02E4           1129   ;------------------------------------------------------------
+02E4           1130   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:119: void GetPosition2 (float volts[2], float pos[2], float mid[2]) {
+02E4           1131   ;        -----------------------------------------
+02E4           1132   ;         function GetPosition2
+02E4           1133   ;        -----------------------------------------
+02E4           1134   _GetPosition2:
+02E4 858298    1135            mov     _GetPosition2_volts_1_101,dpl
+02E7 858399    1136            mov     (_GetPosition2_volts_1_101 + 1),dph
+02EA 85F09A    1137            mov     (_GetPosition2_volts_1_101 + 2),b
+02ED           1138   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:123: float mid_x = mid[0];
+02ED AD38      1139            mov     r5,_GetPosition2_PARM_3
+02EF AE39      1140            mov     r6,(_GetPosition2_PARM_3 + 1)
+02F1 AF3A      1141            mov     r7,(_GetPosition2_PARM_3 + 2)
+02F3 8D82      1142            mov     dpl,r5
+02F5 8E83      1143            mov     dph,r6
+02F7 8FF0      1144            mov     b,r7
+02F9 120000    1145            lcall   __gptrget
+02FC F5E8      1146            mov     _GetPosition2_mid_x_1_102,a
+02FE A3        1147            inc     dptr
+02FF 120000    1148            lcall   __gptrget
+0302 F5E9      1149            mov     (_GetPosition2_mid_x_1_102 + 1),a
+0304 A3        1150            inc     dptr
+0305 120000    1151            lcall   __gptrget
+0308 F5EA      1152            mov     (_GetPosition2_mid_x_1_102 + 2),a
+030A A3        1153            inc     dptr
+030B 120000    1154            lcall   __gptrget
+030E F5EB      1155            mov     (_GetPosition2_mid_x_1_102 + 3),a
+0310           1156   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:124: float mid_y = mid[1];
+0310 7404      1157            mov     a,#0x04
+0312 2D        1158            add     a,r5
+0313 FD        1159            mov     r5,a
+0314 E4        1160            clr     a
+0315 3E        1161            addc    a,r6
+0316 FE        1162            mov     r6,a
+0317 8D82      1163            mov     dpl,r5
+0319 8E83      1164            mov     dph,r6
+031B 8FF0      1165            mov     b,r7
+031D 120000    1166            lcall   __gptrget
+0320 F538      1167            mov     _GetPosition2_mid_y_1_102,a
+0322 A3        1168            inc     dptr
+0323 120000    1169            lcall   __gptrget
+0326 F539      1170            mov     (_GetPosition2_mid_y_1_102 + 1),a
+0328 A3        1171            inc     dptr
+0329 120000    1172            lcall   __gptrget
+032C F53A      1173            mov     (_GetPosition2_mid_y_1_102 + 2),a
+032E A3        1174            inc     dptr
+032F 120000    1175            lcall   __gptrget
+0332 F53B      1176            mov     (_GetPosition2_mid_y_1_102 + 3),a
+0334           1177   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:127: float vx = volts[0];
+0334 859882    1178            mov     dpl,_GetPosition2_volts_1_101
+0337 859983    1179            mov     dph,(_GetPosition2_volts_1_101 + 1)
+033A 859AF0    1180            mov     b,(_GetPosition2_volts_1_101 + 2)
+033D 120000    1181            lcall   __gptrget
+0340 F588      1182            mov     _GetPosition2_vx_1_102,a
+0342 A3        1183            inc     dptr
+0343 120000    1184            lcall   __gptrget
+0346 F589      1185            mov     (_GetPosition2_vx_1_102 + 1),a
+0348 A3        1186            inc     dptr
+0349 120000    1187            lcall   __gptrget
+034C F58A      1188            mov     (_GetPosition2_vx_1_102 + 2),a
+034E A3        1189            inc     dptr
+034F 120000    1190            lcall   __gptrget
+0352 F58B      1191            mov     (_GetPosition2_vx_1_102 + 3),a
+0354           1192   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:128: float vy = volts[1];
+0354 7404      1193            mov     a,#0x04
+0356 2598      1194            add     a,_GetPosition2_volts_1_101
+0358 FC        1195            mov     r4,a
+0359 E4        1196            clr     a
+035A 3599      1197            addc    a,(_GetPosition2_volts_1_101 + 1)
+035C FD        1198            mov     r5,a
+035D AE9A      1199            mov     r6,(_GetPosition2_volts_1_101 + 2)
+035F 8C82      1200            mov     dpl,r4
+0361 8D83      1201            mov     dph,r5
+0363 8EF0      1202            mov     b,r6
+0365 120000    1203            lcall   __gptrget
+0368 F5D8      1204            mov     _GetPosition2_vy_1_102,a
+036A A3        1205            inc     dptr
+036B 120000    1206            lcall   __gptrget
+036E F5D9      1207            mov     (_GetPosition2_vy_1_102 + 1),a
+0370 A3        1208            inc     dptr
+0371 120000    1209            lcall   __gptrget
+0374 F5DA      1210            mov     (_GetPosition2_vy_1_102 + 2),a
+0376 A3        1211            inc     dptr
+0377 120000    1212            lcall   __gptrget
+037A F5DB      1213            mov     (_GetPosition2_vy_1_102 + 3),a
+037C           1214   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:132: if (pos[0] < mid_x) {
+037C AC88      1215            mov     r4,_GetPosition2_PARM_2
+037E AD89      1216            mov     r5,(_GetPosition2_PARM_2 + 1)
+0380 AE8A      1217            mov     r6,(_GetPosition2_PARM_2 + 2)
+0382 8C82      1218            mov     dpl,r4
+0384 8D83      1219            mov     dph,r5
+0386 8EF0      1220            mov     b,r6
+0388 120000    1221            lcall   __gptrget
+038B FF        1222            mov     r7,a
+038C A3        1223            inc     dptr
+038D 120000    1224            lcall   __gptrget
+0390 FA        1225            mov     r2,a
+0391 A3        1226            inc     dptr
+0392 120000    1227            lcall   __gptrget
+0395 FB        1228            mov     r3,a
+0396 A3        1229            inc     dptr
+0397 120000    1230            lcall   __gptrget
+039A F8        1231            mov     r0,a
+039B C004      1232            push    ar4
+039D C005      1233            push    ar5
+039F C006      1234            push    ar6
+03A1 C0E8      1235            push    _GetPosition2_mid_x_1_102
+03A3 C0E9      1236            push    (_GetPosition2_mid_x_1_102 + 1)
+03A5 C0EA      1237            push    (_GetPosition2_mid_x_1_102 + 2)
+03A7 C0EB      1238            push    (_GetPosition2_mid_x_1_102 + 3)
+03A9 8F82      1239            mov     dpl,r7
+03AB 8A83      1240            mov     dph,r2
+03AD 8BF0      1241            mov     b,r3
+03AF E8        1242            mov     a,r0
+03B0 120000    1243            lcall   ___fslt
+03B3 AA82      1244            mov     r2,dpl
+03B5 E581      1245            mov     a,sp
+03B7 24FC      1246            add     a,#0xfc
+03B9 F581      1247            mov     sp,a
+03BB D006      1248            pop     ar6
+03BD D005      1249            pop     ar5
+03BF D004      1250            pop     ar4
+03C1 EA        1251            mov     a,r2
+03C2 6000      1252            jz      L010002?
+03C4           1253   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:133: pos[0] = map2(vx, min, mid_x, -50.0, 0);
+03C4 7588FD    1254            mov     _map2_PARM_2,#0xFD
+03C7 758987    1255            mov     (_map2_PARM_2 + 1),#0x87
+03CA 758AE4    1256            mov     (_map2_PARM_2 + 2),#0xE4
+03CD 758BBF    1257            mov     (_map2_PARM_2 + 3),#0xBF
+03D0 85E848    1258            mov     _map2_PARM_3,_GetPosition2_mid_x_1_102
+03D3 85E949    1259            mov     (_map2_PARM_3 + 1),(_GetPosition2_mid_x_1_102 + 1)
+03D6 85EA4A    1260            mov     (_map2_PARM_3 + 2),(_GetPosition2_mid_x_1_102 + 2)
+03D9 85EB4B    1261            mov     (_map2_PARM_3 + 3),(_GetPosition2_mid_x_1_102 + 3)
+03DC 750800    1262            mov     _map2_PARM_4,#0x00
+03DF 750900    1263            mov     (_map2_PARM_4 + 1),#0x00
+03E2 750A48    1264            mov     (_map2_PARM_4 + 2),#0x48
+03E5 750BC2    1265            mov     (_map2_PARM_4 + 3),#0xC2
+03E8 75C800    1266            mov     _map2_PARM_5,#0x00
+03EB 75C900    1267            mov     (_map2_PARM_5 + 1),#0x00
+03EE 75CA00    1268            mov     (_map2_PARM_5 + 2),#0x00
+03F1 75CB00    1269            mov     (_map2_PARM_5 + 3),#0x00
+03F4 858882    1270            mov     dpl,_GetPosition2_vx_1_102
+03F7 858983    1271            mov     dph,(_GetPosition2_vx_1_102 + 1)
+03FA 858AF0    1272            mov     b,(_GetPosition2_vx_1_102 + 2)
+03FD E58B      1273            mov     a,(_GetPosition2_vx_1_102 + 3)
+03FF C004      1274            push    ar4
+0401 C005      1275            push    ar5
+0403 C006      1276            push    ar6
+0405 120000    1277            lcall   _map2
+0408 AA82      1278            mov     r2,dpl
+040A AB83      1279            mov     r3,dph
+040C AFF0      1280            mov     r7,b
+040E F8        1281            mov     r0,a
+040F D006      1282            pop     ar6
+0411 D005      1283            pop     ar5
+0413 D004      1284            pop     ar4
+0415 8C82      1285            mov     dpl,r4
+0417 8D83      1286            mov     dph,r5
+0419 8EF0      1287            mov     b,r6
+041B EA        1288            mov     a,r2
+041C 120000    1289            lcall   __gptrput
+041F A3        1290            inc     dptr
+0420 EB        1291            mov     a,r3
+0421 120000    1292            lcall   __gptrput
+0424 A3        1293            inc     dptr
+0425 EF        1294            mov     a,r7
+0426 120000    1295            lcall   __gptrput
+0429 A3        1296            inc     dptr
+042A E8        1297            mov     a,r0
+042B 120000    1298            lcall   __gptrput
+042E 8000      1299            sjmp    L010003?
+0430           1300   L010002?:
+0430           1301   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:137: pos[0] = map2(vx, mid_x, max, 0.0, 50.0);
+0430 85E888    1302            mov     _map2_PARM_2,_GetPosition2_mid_x_1_102
+0433 85E989    1303            mov     (_map2_PARM_2 + 1),(_GetPosition2_mid_x_1_102 + 1)
+0436 85EA8A    1304            mov     (_map2_PARM_2 + 2),(_GetPosition2_mid_x_1_102 + 2)
+0439 85EB8B    1305            mov     (_map2_PARM_2 + 3),(_GetPosition2_mid_x_1_102 + 3)
+043C 75486A    1306            mov     _map2_PARM_3,#0x6A
+043F 7549DE    1307            mov     (_map2_PARM_3 + 1),#0xDE
+0442 754AC1    1308            mov     (_map2_PARM_3 + 2),#0xC1
+0445 754B3F    1309            mov     (_map2_PARM_3 + 3),#0x3F
+0448 750800    1310            mov     _map2_PARM_4,#0x00
+044B 750900    1311            mov     (_map2_PARM_4 + 1),#0x00
+044E 750A00    1312            mov     (_map2_PARM_4 + 2),#0x00
+0451 750B00    1313            mov     (_map2_PARM_4 + 3),#0x00
+0454 75C800    1314            mov     _map2_PARM_5,#0x00
+0457 75C900    1315            mov     (_map2_PARM_5 + 1),#0x00
+045A 75CA48    1316            mov     (_map2_PARM_5 + 2),#0x48
+045D 75CB42    1317            mov     (_map2_PARM_5 + 3),#0x42
+0460 858882    1318            mov     dpl,_GetPosition2_vx_1_102
+0463 858983    1319            mov     dph,(_GetPosition2_vx_1_102 + 1)
+0466 858AF0    1320            mov     b,(_GetPosition2_vx_1_102 + 2)
+0469 E58B      1321            mov     a,(_GetPosition2_vx_1_102 + 3)
+046B C004      1322            push    ar4
+046D C005      1323            push    ar5
+046F C006      1324            push    ar6
+0471 120000    1325            lcall   _map2
+0474 AA82      1326            mov     r2,dpl
+0476 AB83      1327            mov     r3,dph
+0478 AFF0      1328            mov     r7,b
+047A F8        1329            mov     r0,a
+047B D006      1330            pop     ar6
+047D D005      1331            pop     ar5
+047F D004      1332            pop     ar4
+0481 8C82      1333            mov     dpl,r4
+0483 8D83      1334            mov     dph,r5
+0485 8EF0      1335            mov     b,r6
+0487 EA        1336            mov     a,r2
+0488 120000    1337            lcall   __gptrput
+048B A3        1338            inc     dptr
+048C EB        1339            mov     a,r3
+048D 120000    1340            lcall   __gptrput
+0490 A3        1341            inc     dptr
+0491 EF        1342            mov     a,r7
+0492 120000    1343            lcall   __gptrput
+0495 A3        1344            inc     dptr
+0496 E8        1345            mov     a,r0
+0497 120000    1346            lcall   __gptrput
+049A           1347   L010003?:
+049A           1348   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:141: if (pos[1] < mid_y) {
+049A 7404      1349            mov     a,#0x04
+049C 2C        1350            add     a,r4
+049D FC        1351            mov     r4,a
+049E E4        1352            clr     a
+049F 3D        1353            addc    a,r5
+04A0 FB        1354            mov     r3,a
+04A1 8E02      1355            mov     ar2,r6
+04A3 8C82      1356            mov     dpl,r4
+04A5 8B83      1357            mov     dph,r3
+04A7 8AF0      1358            mov     b,r2
+04A9 120000    1359            lcall   __gptrget
+04AC FD        1360            mov     r5,a
+04AD A3        1361            inc     dptr
+04AE 120000    1362            lcall   __gptrget
+04B1 FE        1363            mov     r6,a
+04B2 A3        1364            inc     dptr
+04B3 120000    1365            lcall   __gptrget
+04B6 FF        1366            mov     r7,a
+04B7 A3        1367            inc     dptr
+04B8 120000    1368            lcall   __gptrget
+04BB F8        1369            mov     r0,a
+04BC C002      1370            push    ar2
+04BE C003      1371            push    ar3
+04C0 C004      1372            push    ar4
+04C2 C038      1373            push    _GetPosition2_mid_y_1_102
+04C4 C039      1374            push    (_GetPosition2_mid_y_1_102 + 1)
+04C6 C03A      1375            push    (_GetPosition2_mid_y_1_102 + 2)
+04C8 C03B      1376            push    (_GetPosition2_mid_y_1_102 + 3)
+04CA 8D82      1377            mov     dpl,r5
+04CC 8E83      1378            mov     dph,r6
+04CE 8FF0      1379            mov     b,r7
+04D0 E8        1380            mov     a,r0
+04D1 120000    1381            lcall   ___fslt
+04D4 AD82      1382            mov     r5,dpl
+04D6 E581      1383            mov     a,sp
+04D8 24FC      1384            add     a,#0xfc
+04DA F581      1385            mov     sp,a
+04DC D004      1386            pop     ar4
+04DE D003      1387            pop     ar3
+04E0 D002      1388            pop     ar2
+04E2 ED        1389            mov     a,r5
+04E3 6000      1390            jz      L010005?
+04E5           1391   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:142: pos[1] = map2(vy, min, mid_y, -50.0, 0.0);
+04E5 7588FD    1392            mov     _map2_PARM_2,#0xFD
+04E8 758987    1393            mov     (_map2_PARM_2 + 1),#0x87
+04EB 758AE4    1394            mov     (_map2_PARM_2 + 2),#0xE4
+04EE 758BBF    1395            mov     (_map2_PARM_2 + 3),#0xBF
+04F1 853848    1396            mov     _map2_PARM_3,_GetPosition2_mid_y_1_102
+04F4 853949    1397            mov     (_map2_PARM_3 + 1),(_GetPosition2_mid_y_1_102 + 1)
+04F7 853A4A    1398            mov     (_map2_PARM_3 + 2),(_GetPosition2_mid_y_1_102 + 2)
+04FA 853B4B    1399            mov     (_map2_PARM_3 + 3),(_GetPosition2_mid_y_1_102 + 3)
+04FD 750800    1400            mov     _map2_PARM_4,#0x00
+0500 750900    1401            mov     (_map2_PARM_4 + 1),#0x00
+0503 750A48    1402            mov     (_map2_PARM_4 + 2),#0x48
+0506 750BC2    1403            mov     (_map2_PARM_4 + 3),#0xC2
+0509 75C800    1404            mov     _map2_PARM_5,#0x00
+050C 75C900    1405            mov     (_map2_PARM_5 + 1),#0x00
+050F 75CA00    1406            mov     (_map2_PARM_5 + 2),#0x00
+0512 75CB00    1407            mov     (_map2_PARM_5 + 3),#0x00
+0515 85D882    1408            mov     dpl,_GetPosition2_vy_1_102
+0518 85D983    1409            mov     dph,(_GetPosition2_vy_1_102 + 1)
+051B 85DAF0    1410            mov     b,(_GetPosition2_vy_1_102 + 2)
+051E E5DB      1411            mov     a,(_GetPosition2_vy_1_102 + 3)
+0520 C002      1412            push    ar2
+0522 C003      1413            push    ar3
+0524 C004      1414            push    ar4
+0526 120000    1415            lcall   _map2
+0529 AD82      1416            mov     r5,dpl
+052B AE83      1417            mov     r6,dph
+052D AFF0      1418            mov     r7,b
+052F F8        1419            mov     r0,a
+0530 D004      1420            pop     ar4
+0532 D003      1421            pop     ar3
+0534 D002      1422            pop     ar2
+0536 8C82      1423            mov     dpl,r4
+0538 8B83      1424            mov     dph,r3
+053A 8AF0      1425            mov     b,r2
+053C ED        1426            mov     a,r5
+053D 120000    1427            lcall   __gptrput
+0540 A3        1428            inc     dptr
+0541 EE        1429            mov     a,r6
+0542 120000    1430            lcall   __gptrput
+0545 A3        1431            inc     dptr
+0546 EF        1432            mov     a,r7
+0547 120000    1433            lcall   __gptrput
+054A A3        1434            inc     dptr
+054B E8        1435            mov     a,r0
+054C 020000    1436            ljmp    __gptrput
+054F           1437   L010005?:
+054F           1438   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:146: pos[1] = map2(vy, mid_y, max, 0.0, 50.0);
+054F 853888    1439            mov     _map2_PARM_2,_GetPosition2_mid_y_1_102
+0552 853989    1440            mov     (_map2_PARM_2 + 1),(_GetPosition2_mid_y_1_102 + 1)
+0555 853A8A    1441            mov     (_map2_PARM_2 + 2),(_GetPosition2_mid_y_1_102 + 2)
+0558 853B8B    1442            mov     (_map2_PARM_2 + 3),(_GetPosition2_mid_y_1_102 + 3)
+055B 75486A    1443            mov     _map2_PARM_3,#0x6A
+055E 7549DE    1444            mov     (_map2_PARM_3 + 1),#0xDE
+0561 754AC1    1445            mov     (_map2_PARM_3 + 2),#0xC1
+0564 754B3F    1446            mov     (_map2_PARM_3 + 3),#0x3F
+0567 750800    1447            mov     _map2_PARM_4,#0x00
+056A 750900    1448            mov     (_map2_PARM_4 + 1),#0x00
+056D 750A00    1449            mov     (_map2_PARM_4 + 2),#0x00
+0570 750B00    1450            mov     (_map2_PARM_4 + 3),#0x00
+0573 75C800    1451            mov     _map2_PARM_5,#0x00
+0576 75C900    1452            mov     (_map2_PARM_5 + 1),#0x00
+0579 75CA48    1453            mov     (_map2_PARM_5 + 2),#0x48
+057C 75CB42    1454            mov     (_map2_PARM_5 + 3),#0x42
+057F 85D882    1455            mov     dpl,_GetPosition2_vy_1_102
+0582 85D983    1456            mov     dph,(_GetPosition2_vy_1_102 + 1)
+0585 85DAF0    1457            mov     b,(_GetPosition2_vy_1_102 + 2)
+0588 E5DB      1458            mov     a,(_GetPosition2_vy_1_102 + 3)
+058A C002      1459            push    ar2
+058C C003      1460            push    ar3
+058E C004      1461            push    ar4
+0590 120000    1462            lcall   _map2
+0593 AD82      1463            mov     r5,dpl
+0595 AE83      1464            mov     r6,dph
+0597 AFF0      1465            mov     r7,b
+0599 F8        1466            mov     r0,a
+059A D004      1467            pop     ar4
+059C D003      1468            pop     ar3
+059E D002      1469            pop     ar2
+05A0 8C82      1470            mov     dpl,r4
+05A2 8B83      1471            mov     dph,r3
+05A4 8AF0      1472            mov     b,r2
+05A6 ED        1473            mov     a,r5
+05A7 120000    1474            lcall   __gptrput
+05AA A3        1475            inc     dptr
+05AB EE        1476            mov     a,r6
+05AC 120000    1477            lcall   __gptrput
+05AF A3        1478            inc     dptr
+05B0 EF        1479            mov     a,r7
+05B1 120000    1480            lcall   __gptrput
+05B4 A3        1481            inc     dptr
+05B5 E8        1482            mov     a,r0
+05B6 020000    1483            ljmp    __gptrput
+05B9           1484   ;------------------------------------------------------------
+05B9           1485   ;Allocation info for local variables in function 'main'
+05B9           1486   ;------------------------------------------------------------
+05B9           1487   ;mapped_range              Allocated to registers 
+05B9           1488   ;extract_range             Allocated to registers 
+05B9           1489   ;timeout_cnt               Allocated to registers 
+05B9           1490   ;sum_count                 Allocated to registers 
+05B9           1491   ;sum_freq                  Allocated to registers 
+05B9           1492   ;baseline_freq             Allocated to registers 
+05B9           1493   ;v                         Allocated with name '_main_v_1_108'
+05B9           1494   ;xy_pos                    Allocated with name '_main_xy_pos_1_108'
+05B9           1495   ;mid                       Allocated with name '_main_mid_1_108'
+05B9           1496   ;buff_x                    Allocated with name '_main_buff_x_1_108'
+05B9           1497   ;buff_y                    Allocated with name '_main_buff_y_1_108'
+05B9           1498   ;temp_buff                 Allocated with name '_main_temp_buff_1_108'
+05B9           1499   ;------------------------------------------------------------
+05B9           1500   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:151: void main(void)
+05B9           1501   ;        -----------------------------------------
+05B9           1502   ;         function main
+05B9           1503   ;        -----------------------------------------
+05B9           1504   _main:
+05B9           1505   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:170: LCD_4BIT();
+05B9 120000    1506            lcall   _LCD_4BIT
+05BC           1507   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:172: waitms(500);
+05BC 9001F4    1508            mov     dptr,#0x01F4
+05BF 120000    1509            lcall   _waitms
+05C2           1510   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:173: printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
+05C2 74D8      1511            mov     a,#__str_0
+05C4 C0E0      1512            push    acc
+05C6 74BC      1513            mov     a,#(__str_0 >> 8)
+05C8 C0E0      1514            push    acc
+05CA 7480      1515            mov     a,#0x80
+05CC C0E0      1516            push    acc
+05CE 120000    1517            lcall   _printf
+05D1 1581      1518            dec     sp
+05D3 1581      1519            dec     sp
+05D5 1581      1520            dec     sp
+05D7           1521   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:178: __FILE__, __DATE__, __TIME__);
+05D7           1522   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:177: "Compiled: %s, %s\n\n",
+05D7 7458      1523            mov     a,#__str_4
+05D9 C0E0      1524            push    acc
+05DB 74BD      1525            mov     a,#(__str_4 >> 8)
+05DD C0E0      1526            push    acc
+05DF 7480      1527            mov     a,#0x80
+05E1 C0E0      1528            push    acc
+05E3 7498      1529            mov     a,#__str_3
+05E5 C0E0      1530            push    acc
+05E7 74BD      1531            mov     a,#(__str_3 >> 8)
+05E9 C0E0      1532            push    acc
+05EB 7480      1533            mov     a,#0x80
+05ED C0E0      1534            push    acc
+05EF 74D8      1535            mov     a,#__str_2
+05F1 C0E0      1536            push    acc
+05F3 74BD      1537            mov     a,#(__str_2 >> 8)
+05F5 C0E0      1538            push    acc
+05F7 7480      1539            mov     a,#0x80
+05F9 C0E0      1540            push    acc
+05FB 7418      1541            mov     a,#__str_1
+05FD C0E0      1542            push    acc
+05FF 74BE      1543            mov     a,#(__str_1 >> 8)
+0601 C0E0      1544            push    acc
+0603 7480      1545            mov     a,#0x80
+0605 C0E0      1546            push    acc
+0607 120000    1547            lcall   _printf
+060A E581      1548            mov     a,sp
+060C 24F4      1549            add     a,#0xf4
+060E F581      1550            mov     sp,a
+0610           1551   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:180: InitPinADC(1, 4); // Configure P1.4 as analog input
+0610 756804    1552            mov     _InitPinADC_PARM_2,#0x04
+0613 758201    1553            mov     dpl,#0x01
+0616 120000    1554            lcall   _InitPinADC
+0619           1555   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:181: InitPinADC(1, 5); // Configure P1.5 as analog input
+0619 756805    1556            mov     _InitPinADC_PARM_2,#0x05
+061C 758201    1557            mov     dpl,#0x01
+061F 120000    1558            lcall   _InitPinADC
+0622           1559   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:182: InitADC();
+0622 120000    1560            lcall   _InitADC
+0625           1561   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:185: mid[0] = Volts_at_Pin(XPOS_PIN);
+0625 75820A    1562            mov     dpl,#0x0A
+0628 120000    1563            lcall   _Volts_at_Pin
+062B AA82      1564            mov     r2,dpl
+062D AB83      1565            mov     r3,dph
+062F ACF0      1566            mov     r4,b
+0631 FD        1567            mov     r5,a
+0632 8AA8      1568            mov     _main_mid_1_108,r2
+0634 8BA9      1569            mov     (_main_mid_1_108 + 1),r3
+0636 8CAA      1570            mov     (_main_mid_1_108 + 2),r4
+0638 8DAB      1571            mov     (_main_mid_1_108 + 3),r5
+063A           1572   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:186: mid[1] = Volts_at_Pin(YPOS_PIN);
+063A 75820B    1573            mov     dpl,#0x0B
+063D 120000    1574            lcall   _Volts_at_Pin
+0640 AA82      1575            mov     r2,dpl
+0642 AB83      1576            mov     r3,dph
+0644 ACF0      1577            mov     r4,b
+0646 FD        1578            mov     r5,a
+0647 8AAC      1579            mov     (_main_mid_1_108 + 0x0004),r2
+0649 8BAD      1580            mov     ((_main_mid_1_108 + 0x0004) + 1),r3
+064B 8CAE      1581            mov     ((_main_mid_1_108 + 0x0004) + 2),r4
+064D 8DAF      1582            mov     ((_main_mid_1_108 + 0x0004) + 3),r5
+064F           1583   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:188: LEDgetposition(mid);
+064F 90B2A8    1584            mov     dptr,#_main_mid_1_108
+0652 75F040    1585            mov     b,#0x40
+0655 120000    1586            lcall   _LEDgetposition
+0658           1587   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:189: printf("LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f \r\n", mid[0], mid[1]);
+0658 C0AC      1588            push    (_main_mid_1_108 + 0x0004)
+065A C0AD      1589            push    ((_main_mid_1_108 + 0x0004) + 1)
+065C C0AE      1590            push    ((_main_mid_1_108 + 0x0004) + 2)
+065E C0AF      1591            push    ((_main_mid_1_108 + 0x0004) + 3)
+0660 C0A8      1592            push    _main_mid_1_108
+0662 C0A9      1593            push    (_main_mid_1_108 + 1)
+0664 C0AA      1594            push    (_main_mid_1_108 + 2)
+0666 C0AB      1595            push    (_main_mid_1_108 + 3)
+0668 7498      1596            mov     a,#__str_5
+066A C0E0      1597            push    acc
+066C 74BE      1598            mov     a,#(__str_5 >> 8)
+066E C0E0      1599            push    acc
+0670 7480      1600            mov     a,#0x80
+0672 C0E0      1601            push    acc
+0674 120000    1602            lcall   _printf
+0677 E581      1603            mov     a,sp
+0679 24F5      1604            add     a,#0xf5
+067B F581      1605            mov     sp,a
+067D           1606   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:192: while(1)
+067D           1607   L011014?:
+067D           1608   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:194: waitms(50);
+067D 900032    1609            mov     dptr,#0x0032
+0680 120000    1610            lcall   _waitms
+0683           1611   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:196: v[0] = Volts_at_Pin(XPOS_PIN) ;
+0683 75820A    1612            mov     dpl,#0x0A
+0686 120000    1613            lcall   _Volts_at_Pin
+0689 AA82      1614            mov     r2,dpl
+068B AB83      1615            mov     r3,dph
+068D ACF0      1616            mov     r4,b
+068F FD        1617            mov     r5,a
+0690 8A18      1618            mov     _main_v_1_108,r2
+0692 8B19      1619            mov     (_main_v_1_108 + 1),r3
+0694 8C1A      1620            mov     (_main_v_1_108 + 2),r4
+0696 8D1B      1621            mov     (_main_v_1_108 + 3),r5
+0698           1622   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:197: v[1] = Volts_at_Pin(YPOS_PIN) ;
+0698 75820B    1623            mov     dpl,#0x0B
+069B 120000    1624            lcall   _Volts_at_Pin
+069E AA82      1625            mov     r2,dpl
+06A0 AB83      1626            mov     r3,dph
+06A2 ACF0      1627            mov     r4,b
+06A4 FD        1628            mov     r5,a
+06A5 8A1C      1629            mov     (_main_v_1_108 + 0x0004),r2
+06A7 8B1D      1630            mov     ((_main_v_1_108 + 0x0004) + 1),r3
+06A9 8C1E      1631            mov     ((_main_v_1_108 + 0x0004) + 2),r4
+06AB 8D1F      1632            mov     ((_main_v_1_108 + 0x0004) + 3),r5
+06AD           1633   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:201: GetPosition2(v, xy_pos, mid);
+06AD 758868    1634            mov     _GetPosition2_PARM_2,#_main_xy_pos_1_108
+06B0 758900    1635            mov     (_GetPosition2_PARM_2 + 1),#0x00
+06B3 758A40    1636            mov     (_GetPosition2_PARM_2 + 2),#0x40
+06B6 7538A8    1637            mov     _GetPosition2_PARM_3,#_main_mid_1_108
+06B9 753900    1638            mov     (_GetPosition2_PARM_3 + 1),#0x00
+06BC 753A40    1639            mov     (_GetPosition2_PARM_3 + 2),#0x40
+06BF 90B218    1640            mov     dptr,#_main_v_1_108
+06C2 75F040    1641            mov     b,#0x40
+06C5 120000    1642            lcall   _GetPosition2
+06C8           1643   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:203: printf("normalized values: xvolts: %7.5f, yvolts: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN));
+06C8 75820B    1644            mov     dpl,#0x0B
+06CB 120000    1645            lcall   _ADC_at_Pin
+06CE AA82      1646            mov     r2,dpl
+06D0 AB83      1647            mov     r3,dph
+06D2 75820A    1648            mov     dpl,#0x0A
+06D5 C002      1649            push    ar2
+06D7 C003      1650            push    ar3
+06D9 120000    1651            lcall   _ADC_at_Pin
+06DC AC82      1652            mov     r4,dpl
+06DE AD83      1653            mov     r5,dph
+06E0 C004      1654            push    ar4
+06E2 C005      1655            push    ar5
+06E4 7418      1656            mov     a,#__str_6
+06E6 C0E0      1657            push    acc
+06E8 74BF      1658            mov     a,#(__str_6 >> 8)
+06EA C0E0      1659            push    acc
+06EC 7480      1660            mov     a,#0x80
+06EE C0E0      1661            push    acc
+06F0 120000    1662            lcall   _printf
+06F3 E581      1663            mov     a,sp
+06F5 24F9      1664            add     a,#0xf9
+06F7 F581      1665            mov     sp,a
+06F9           1666   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:211: if (abs(xy_pos[0]) < 5) xy_pos[0]=0;
+06F9 856882    1667            mov     dpl,_main_xy_pos_1_108
+06FC 856983    1668            mov     dph,(_main_xy_pos_1_108 + 1)
+06FF 856AF0    1669            mov     b,(_main_xy_pos_1_108 + 2)
+0702 E56B      1670            mov     a,(_main_xy_pos_1_108 + 3)
+0704 120000    1671            lcall   ___fs2sint
+0707 120000    1672            lcall   _abs
+070A AA82      1673            mov     r2,dpl
+070C AB83      1674            mov     r3,dph
+070E C3        1675            clr     c
+070F EA        1676            mov     a,r2
+0710 9405      1677            subb    a,#0x05
+0712 EB        1678            mov     a,r3
+0713 6480      1679            xrl     a,#0x80
+0715 9480      1680            subb    a,#0x80
+0717 5000      1681            jnc     L011002?
+0719 756800    1682            mov     _main_xy_pos_1_108,#0x00
+071C 756900    1683            mov     (_main_xy_pos_1_108 + 1),#0x00
+071F 756A00    1684            mov     (_main_xy_pos_1_108 + 2),#0x00
+0722 756B00    1685            mov     (_main_xy_pos_1_108 + 3),#0x00
+0725           1686   L011002?:
+0725           1687   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:212: if (abs(xy_pos[1]) < 5) xy_pos[1]=0;
+0725 856C82    1688            mov     dpl,(_main_xy_pos_1_108 + 0x0004)
+0728 856D83    1689            mov     dph,((_main_xy_pos_1_108 + 0x0004) + 1)
+072B 856EF0    1690            mov     b,((_main_xy_pos_1_108 + 0x0004) + 2)
+072E E56F      1691            mov     a,((_main_xy_pos_1_108 + 0x0004) + 3)
+0730 120000    1692            lcall   ___fs2sint
+0733 120000    1693            lcall   _abs
+0736 AA82      1694            mov     r2,dpl
+0738 AB83      1695            mov     r3,dph
+073A C3        1696            clr     c
+073B EA        1697            mov     a,r2
+073C 9405      1698            subb    a,#0x05
+073E EB        1699            mov     a,r3
+073F 6480      1700            xrl     a,#0x80
+0741 9480      1701            subb    a,#0x80
+0743 5000      1702            jnc     L011004?
+0745 756C00    1703            mov     (_main_xy_pos_1_108 + 0x0004),#0x00
+0748 756D00    1704            mov     ((_main_xy_pos_1_108 + 0x0004) + 1),#0x00
+074B 756E00    1705            mov     ((_main_xy_pos_1_108 + 0x0004) + 2),#0x00
+074E 756F00    1706            mov     ((_main_xy_pos_1_108 + 0x0004) + 3),#0x00
+0751           1707   L011004?:
+0751           1708   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:213: if (xy_pos[0] > 50) xy_pos[0]=50;
+0751 E4        1709            clr     a
+0752 C0E0      1710            push    acc
+0754 C0E0      1711            push    acc
+0756 7448      1712            mov     a,#0x48
+0758 C0E0      1713            push    acc
+075A 7442      1714            mov     a,#0x42
+075C C0E0      1715            push    acc
+075E 856882    1716            mov     dpl,_main_xy_pos_1_108
+0761 856983    1717            mov     dph,(_main_xy_pos_1_108 + 1)
+0764 856AF0    1718            mov     b,(_main_xy_pos_1_108 + 2)
+0767 E56B      1719            mov     a,(_main_xy_pos_1_108 + 3)
+0769 120000    1720            lcall   ___fsgt
+076C AA82      1721            mov     r2,dpl
+076E E581      1722            mov     a,sp
+0770 24FC      1723            add     a,#0xfc
+0772 F581      1724            mov     sp,a
+0774 EA        1725            mov     a,r2
+0775 6000      1726            jz      L011006?
+0777 756800    1727            mov     _main_xy_pos_1_108,#0x00
+077A 756900    1728            mov     (_main_xy_pos_1_108 + 1),#0x00
+077D 756A48    1729            mov     (_main_xy_pos_1_108 + 2),#0x48
+0780 756B42    1730            mov     (_main_xy_pos_1_108 + 3),#0x42
+0783           1731   L011006?:
+0783           1732   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:214: if (xy_pos[1] > 50) xy_pos[1]=50;
+0783 E4        1733            clr     a
+0784 C0E0      1734            push    acc
+0786 C0E0      1735            push    acc
+0788 7448      1736            mov     a,#0x48
+078A C0E0      1737            push    acc
+078C 7442      1738            mov     a,#0x42
+078E C0E0      1739            push    acc
+0790 856C82    1740            mov     dpl,(_main_xy_pos_1_108 + 0x0004)
+0793 856D83    1741            mov     dph,((_main_xy_pos_1_108 + 0x0004) + 1)
+0796 856EF0    1742            mov     b,((_main_xy_pos_1_108 + 0x0004) + 2)
+0799 E56F      1743            mov     a,((_main_xy_pos_1_108 + 0x0004) + 3)
+079B 120000    1744            lcall   ___fsgt
+079E AA82      1745            mov     r2,dpl
+07A0 E581      1746            mov     a,sp
+07A2 24FC      1747            add     a,#0xfc
+07A4 F581      1748            mov     sp,a
+07A6 EA        1749            mov     a,r2
+07A7 6000      1750            jz      L011008?
+07A9 756C00    1751            mov     (_main_xy_pos_1_108 + 0x0004),#0x00
+07AC 756D00    1752            mov     ((_main_xy_pos_1_108 + 0x0004) + 1),#0x00
+07AF 756E48    1753            mov     ((_main_xy_pos_1_108 + 0x0004) + 2),#0x48
+07B2 756F42    1754            mov     ((_main_xy_pos_1_108 + 0x0004) + 3),#0x42
+07B5           1755   L011008?:
+07B5           1756   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:215: if (xy_pos[0] < -50) xy_pos[0]=-50;
+07B5 E4        1757            clr     a
+07B6 C0E0      1758            push    acc
+07B8 C0E0      1759            push    acc
+07BA 7448      1760            mov     a,#0x48
+07BC C0E0      1761            push    acc
+07BE 74C2      1762            mov     a,#0xC2
+07C0 C0E0      1763            push    acc
+07C2 856882    1764            mov     dpl,_main_xy_pos_1_108
+07C5 856983    1765            mov     dph,(_main_xy_pos_1_108 + 1)
+07C8 856AF0    1766            mov     b,(_main_xy_pos_1_108 + 2)
+07CB E56B      1767            mov     a,(_main_xy_pos_1_108 + 3)
+07CD 120000    1768            lcall   ___fslt
+07D0 AA82      1769            mov     r2,dpl
+07D2 E581      1770            mov     a,sp
+07D4 24FC      1771            add     a,#0xfc
+07D6 F581      1772            mov     sp,a
+07D8 EA        1773            mov     a,r2
+07D9 6000      1774            jz      L011010?
+07DB 756800    1775            mov     _main_xy_pos_1_108,#0x00
+07DE 756900    1776            mov     (_main_xy_pos_1_108 + 1),#0x00
+07E1 756A48    1777            mov     (_main_xy_pos_1_108 + 2),#0x48
+07E4 756BC2    1778            mov     (_main_xy_pos_1_108 + 3),#0xC2
+07E7           1779   L011010?:
+07E7           1780   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:216: if (xy_pos[1] < -50) xy_pos[1]=-50;
+07E7 E4        1781            clr     a
+07E8 C0E0      1782            push    acc
+07EA C0E0      1783            push    acc
+07EC 7448      1784            mov     a,#0x48
+07EE C0E0      1785            push    acc
+07F0 74C2      1786            mov     a,#0xC2
+07F2 C0E0      1787            push    acc
+07F4 856C82    1788            mov     dpl,(_main_xy_pos_1_108 + 0x0004)
+07F7 856D83    1789            mov     dph,((_main_xy_pos_1_108 + 0x0004) + 1)
+07FA 856EF0    1790            mov     b,((_main_xy_pos_1_108 + 0x0004) + 2)
+07FD E56F      1791            mov     a,((_main_xy_pos_1_108 + 0x0004) + 3)
+07FF 120000    1792            lcall   ___fslt
+0802 AA82      1793            mov     r2,dpl
+0804 E581      1794            mov     a,sp
+0806 24FC      1795            add     a,#0xfc
+0808 F581      1796            mov     sp,a
+080A EA        1797            mov     a,r2
+080B 6000      1798            jz      L011012?
+080D 756C00    1799            mov     (_main_xy_pos_1_108 + 0x0004),#0x00
+0810 756D00    1800            mov     ((_main_xy_pos_1_108 + 0x0004) + 1),#0x00
+0813 756E48    1801            mov     ((_main_xy_pos_1_108 + 0x0004) + 2),#0x48
+0816 756FC2    1802            mov     ((_main_xy_pos_1_108 + 0x0004) + 3),#0xC2
+0819           1803   L011012?:
+0819           1804   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\STM32L051-Sample-Codes\Servo_PWM\CrossIde1.c:218: sprintf(temp_buff, "%3d,%3d\r\n", (int)xy_pos[0], (int)xy_pos[1]);
+0819 856C82    1805            mov     dpl,(_main_xy_pos_1_108 + 0x0004)
+081C 856D83    1806            mov     dph,((_main_xy_pos_1_108 + 0x0004) + 1)
+081F 856EF0    1807            mov     b,((_main_xy_pos_1_108 + 0x0004) + 2)
+0822 E56F      1808            mov     a,((_main_xy_pos_1_108 + 0x0004) + 3)
+0824 120000    1809            lcall   ___fs2sint
+0827 AA82      1810            mov     r2,dpl
+0829 AB83      1811            mov     r3,dph
+082B 856882    1812            mov     dpl,_main_xy_pos_1_108
+082E 856983    1813            mov     dph,(_main_xy_pos_1_108 + 1)
+0831 856AF0    1814            mov     b,(_main_xy_pos_1_108 + 2)
+0834 E56B      1815            mov     a,(_main_xy_pos_1_108 + 3)
+0836 C002      1816            push    ar2
+0838 C003      1817            push    ar3
+083A 120000    1818            lcall   ___fs2sint
+083D AC82      1819            mov     r4,dpl
+083F AD83      1820            mov     r5,dph
+0841 C004      1821            push    ar4
+0843 C005      1822            push    ar5
+0845 7498      1823            mov     a,#__str_7
+0847 C0E0      1824            push    acc
+0849 74C1      1825            mov     a,#(__str_7 >> 8)
+084B C0E0      1826            push    acc
+084D 7480      1827            mov     a,#0x80
+084F C0E0      1828            push    acc
+0851 7498      1829            mov     a,#_main_temp_buff_1_108
+0853 C0E0      1830            push    acc
+0855 74B3      1831            mov     a,#(_main_temp_buff_1_108 >> 8)
+0857 C0E0      1832            push    acc
+0859 E4        1833            clr     a
+085A C0E0      1834            push    acc
+085C 120000    1835            lcall   _sprintf
+085F E581      1836            mov     a,sp
+0861 24F6      1837            add     a,#0xf6
+0863 F581      1838            mov     sp,a
+0865 020000    1839            ljmp    L011014?
+0868           1840            rseg R_CSEG
+0868           1841   
+0000           1842            rseg R_XINIT
+0000           1843   
+0000           1844            rseg R_CONST
+0000           1845   __str_0:
+0000 1B        1846            db 0x1B
+0001 5B324A    1847            db '[2J'
+0004 00        1848            db 0x00
+0005           1849   __str_1:
+0005 41444320  1850            db 'ADC test program'
+     74657374
+     2070726F
+     6772616D
+0015 0A        1851            db 0x0A
+0016 46696C65  1852            db 'File: %s'
+     3A202573
+001E 0A        1853            db 0x0A
+001F 436F6D70  1854            db 'Compiled: %s, %s'
+     696C6564
+     3A202573
+     2C202573
+002F 0A        1855            db 0x0A
+0030 0A        1856            db 0x0A
+0031 00        1857            db 0x00
+0032           1858   __str_2:
+0032 433A      1859            db 'C:'
+0034 5C        1860            db 0x5C
+0035 55736572  1861            db 'Users'
+     73
+003A 5C        1862            db 0x5C
+003B 6B657962  1863            db 'keybo'
+     6F
+0040 5C        1864            db 0x5C
+0041 446F6375  1865            db 'Documents'
+     6D656E74
+     73
+004A 5C        1866            db 0x5C
+004B 47697448  1867            db 'GitHub'
+     7562
+0051 5C        1868            db 0x5C
+0052 50726F6A  1869            db 'Project2ELEC291'
+     65637432
+     454C4543
+     323931
+0061 5C        1870            db 0x5C
+0062 53544D33  1871            db 'STM32L051-Sa'
+     324C3035
+     312D5361
+006E 6D706C65  1872            db 'mple-Codes'
+     2D436F64
+     6573
+0078 5C        1873            db 0x5C
+0079 53657276  1874            db 'Servo_PWM'
+     6F5F5057
+     4D
+0082 5C        1875            db 0x5C
+0083 43726F73  1876            db 'CrossIde1.c'
+     73496465
+     312E63
+008E 00        1877            db 0x00
+008F           1878   __str_3:
+008F 41707220  1879            db 'Apr  1 2024'
+     20312032
+     303234
+009A 00        1880            db 0x00
+009B           1881   __str_4:
+009B 31363A31  1882            db '16:17:26'
+     373A3236
+00A3 00        1883            db 0x00
+00A4           1884   __str_5:
+00A4 4C454420  1885            db 'LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f '
+     766F6C74
+     61676520
+     7265663A
+     20312E37
+     3835342C
+     206D6964
+     58766F6C
+     74733A20
+     25662C20
+     6D696459
+     766F6C74
+     733A2025
+     6620
+00DA 0D        1886            db 0x0D
+00DB 0A        1887            db 0x0A
+00DC 00        1888            db 0x00
+00DD           1889   __str_6:
+00DD 6E6F726D  1890            db 'normalized values: xvolts: %7.5f, yvolts: %7.5f'
+     616C697A
+     65642076
+     616C7565
+     733A2078
+     766F6C74
+     733A2025
+     372E3566
+     2C207976
+     6F6C7473
+     3A202537
+     2E3566
+010C 0D        1891            db 0x0D
+010D 0A        1892            db 0x0A
+010E 00        1893            db 0x00
+010F           1894   __str_7:
+010F 2533642C  1895            db '%3d,%3d'
+     253364
+0116 0D        1896            db 0x0D
+0117 0A        1897            db 0x0A
+0118 00        1898            db 0x00
+0119           1899   
+0003           1900            CSEG
+0003           1901   
+0003           1902   end

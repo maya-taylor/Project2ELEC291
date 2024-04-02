@@ -1,7 +1,7 @@
 0000              1   ;--------------------------------------------------------
 0000              2   ; File Created by C51
 0000              3   ; Version 1.0.0 #1170 (Feb 16 2022) (MSVC)
-0000              4   ; This file was generated Tue Mar 19 22:59:46 2024
+0000              4   ; This file was generated Sun Mar 31 16:58:56 2024
 0000              5   ;--------------------------------------------------------
                   5   $name working_joystick
                   6   $optc51 --model-small
@@ -592,95 +592,95 @@
 0000            592   ;Allocation info for local variables in function '_c51_external_startup'
 0000            593   ;------------------------------------------------------------
 0000            594   ;------------------------------------------------------------
-0000            595   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:32: char _c51_external_startup (void)
+0000            595   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:33: char _c51_external_startup (void)
 0000            596   ;        -----------------------------------------
 0000            597   ;         function _c51_external_startup
 0000            598   ;        -----------------------------------------
 0000            599   __c51_external_startup:
 0000            600            using   0
-0000            601   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:35: SFRPAGE = 0x00;
+0000            601   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:36: SFRPAGE = 0x00;
 0000 75A700     602            mov     _SFRPAGE,#0x00
-0003            603   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:36: WDTCN = 0xDE; //First key
+0003            603   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:37: WDTCN = 0xDE; //First key
 0003 7597DE     604            mov     _WDTCN,#0xDE
-0006            605   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:37: WDTCN = 0xAD; //Second key
+0006            605   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:38: WDTCN = 0xAD; //Second key
 0006 7597AD     606            mov     _WDTCN,#0xAD
-0009            607   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:39: VDM0CN=0x80;       // enable VDD monitor
+0009            607   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:40: VDM0CN=0x80;       // enable VDD monitor
 0009 75FF80     608            mov     _VDM0CN,#0x80
-000C            609   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:40: RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
+000C            609   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:41: RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
 000C 75EF06     610            mov     _RSTSRC,#0x06
-000F            611   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:47: SFRPAGE = 0x10;
+000F            611   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:48: SFRPAGE = 0x10;
 000F 75A710     612            mov     _SFRPAGE,#0x10
-0012            613   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:48: PFE0CN  = 0x20; // SYSCLK < 75 MHz.
+0012            613   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:49: PFE0CN  = 0x20; // SYSCLK < 75 MHz.
 0012 75C120     614            mov     _PFE0CN,#0x20
-0015            615   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:49: SFRPAGE = 0x00;
+0015            615   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:50: SFRPAGE = 0x00;
 0015 75A700     616            mov     _SFRPAGE,#0x00
-0018            617   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:70: CLKSEL = 0x00;
+0018            617   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:71: CLKSEL = 0x00;
 0018 75A900     618            mov     _CLKSEL,#0x00
-001B            619   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:71: CLKSEL = 0x00;
+001B            619   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:72: CLKSEL = 0x00;
 001B 75A900     620            mov     _CLKSEL,#0x00
-001E            621   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:72: while ((CLKSEL & 0x80) == 0);
+001E            621   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:73: while ((CLKSEL & 0x80) == 0);
 001E            622   L002001?:
 001E E5A9       623            mov     a,_CLKSEL
-0020 30E790     624            jnb     acc.7,L002001?
-0023            625   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:73: CLKSEL = 0x03;
+0020 30E778     624            jnb     acc.7,L002001?
+0023            625   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:74: CLKSEL = 0x03;
 0023 75A903     626            mov     _CLKSEL,#0x03
-0026            627   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:74: CLKSEL = 0x03;
+0026            627   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:75: CLKSEL = 0x03;
 0026 75A903     628            mov     _CLKSEL,#0x03
-0029            629   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:75: while ((CLKSEL & 0x80) == 0);
+0029            629   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:76: while ((CLKSEL & 0x80) == 0);
 0029            630   L002004?:
 0029 E5A9       631            mov     a,_CLKSEL
-002B 30E710     632            jnb     acc.7,L002004?
-002E            633   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:80: P0MDOUT |= 0x10; // Enable UART0 TX as push-pull output
+002B 30E7F8     632            jnb     acc.7,L002004?
+002E            633   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:81: P0MDOUT |= 0x10; // Enable UART0 TX as push-pull output
 002E 43A410     634            orl     _P0MDOUT,#0x10
-0031            635   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:81: XBR0     = 0x01; // Enable UART0 on P0.4(TX) and P0.5(RX)                     
+0031            635   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:82: XBR0     = 0x01; // Enable UART0 on P0.4(TX) and P0.5(RX)                     
 0031 75E101     636            mov     _XBR0,#0x01
-0034            637   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:82: XBR1     = 0X00;
+0034            637   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:83: XBR1     = 0X00;
 0034 75E200     638            mov     _XBR1,#0x00
-0037            639   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:83: XBR2     = 0x40; // Enable crossbar and weak pull-ups
+0037            639   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:84: XBR2     = 0x40; // Enable crossbar and weak pull-ups
 0037 75E340     640            mov     _XBR2,#0x40
-003A            641   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:89: SCON0 = 0x10;
+003A            641   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:90: SCON0 = 0x10;
 003A 759810     642            mov     _SCON0,#0x10
-003D            643   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:90: TH1 = 0x100-((SYSCLK/BAUDRATE)/(2L*12L));
+003D            643   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:91: TH1 = 0x100-((SYSCLK/BAUDRATE)/(2L*12L));
 003D 758DE6     644            mov     _TH1,#0xE6
-0040            645   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:91: TL1 = TH1;      // Init Timer1
+0040            645   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:92: TL1 = TH1;      // Init Timer1
 0040 858D8B     646            mov     _TL1,_TH1
-0043            647   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:92: TMOD &= ~0xf0;  // TMOD: timer 1 in 8-bit auto-reload
+0043            647   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:93: TMOD &= ~0xf0;  // TMOD: timer 1 in 8-bit auto-reload
 0043 53890F     648            anl     _TMOD,#0x0F
-0046            649   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:93: TMOD |=  0x20;                       
+0046            649   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:94: TMOD |=  0x20;                       
 0046 438920     650            orl     _TMOD,#0x20
-0049            651   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:94: TR1 = 1; // START Timer1
+0049            651   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:95: TR1 = 1; // START Timer1
 0049 D28E       652            setb    _TR1
-004B            653   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:95: TI = 1;  // Indicate TX0 ready
+004B            653   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:96: TI = 1;  // Indicate TX0 ready
 004B D299       654            setb    _TI
-004D            655   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:97: return 0;
+004D            655   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:98: return 0;
 004D 758200     656            mov     dpl,#0x00
 0050 22         657            ret
 0051            658   ;------------------------------------------------------------
 0051            659   ;Allocation info for local variables in function 'InitADC'
 0051            660   ;------------------------------------------------------------
 0051            661   ;------------------------------------------------------------
-0051            662   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:100: void InitADC (void)
+0051            662   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:101: void InitADC (void)
 0051            663   ;        -----------------------------------------
 0051            664   ;         function InitADC
 0051            665   ;        -----------------------------------------
 0051            666   _InitADC:
-0051            667   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:102: SFRPAGE = 0x00;
+0051            667   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:103: SFRPAGE = 0x00;
 0051 75A700     668            mov     _SFRPAGE,#0x00
-0054            669   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:103: ADEN=0; // Disable ADC
+0054            669   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:104: ADEN=0; // Disable ADC
 0054 C2EF       670            clr     _ADEN
-0056            671   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:108: (0x0 << 0) ; // Accumulate n conversions: 0x0: 1, 0x1:4, 0x2:8, 0x3:16, 0x4:32
+0056            671   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:109: (0x0 << 0) ; // Accumulate n conversions: 0x0: 1, 0x1:4, 0x2:8, 0x3:16, 0x4:32
 0056 75B280     672            mov     _ADC0CN1,#0x80
-0059            673   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:112: (0x0 << 2); // 0:SYSCLK ADCCLK = SYSCLK. 1:HFOSC0 ADCCLK = HFOSC0.
+0059            673   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:113: (0x0 << 2); // 0:SYSCLK ADCCLK = SYSCLK. 1:HFOSC0 ADCCLK = HFOSC0.
 0059 75BC20     674            mov     _ADC0CF0,#0x20
-005C            675   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:116: (0x1E << 0); // Conversion Tracking Time. Tadtk = ADTK / (Fsarclk)
+005C            675   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:117: (0x1E << 0); // Conversion Tracking Time. Tadtk = ADTK / (Fsarclk)
 005C 75B91E     676            mov     _ADC0CF1,#0x1E
-005F            677   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:125: (0x0 << 0) ; // TEMPE. 0: Disable the Temperature Sensor. 1: Enable the Temperature Sensor.
+005F            677   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:126: (0x0 << 0) ; // TEMPE. 0: Disable the Temperature Sensor. 1: Enable the Temperature Sensor.
 005F 75E800     678            mov     _ADC0CN0,#0x00
-0062            679   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:130: (0x1F << 0); // ADPWR. Power Up Delay Time. Tpwrtime = ((4 * (ADPWR + 1)) + 2) / (Fadcclk)
+0062            679   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:131: (0x1F << 0); // ADPWR. Power Up Delay Time. Tpwrtime = ((4 * (ADPWR + 1)) + 2) / (Fadcclk)
 0062 75DF3F     680            mov     _ADC0CF2,#0x3F
-0065            681   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:134: (0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: TIMER4, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
+0065            681   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:135: (0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: TIMER4, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
 0065 75B300     682            mov     _ADC0CN2,#0x00
-0068            683   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:136: ADEN=1; // Enable ADC
+0068            683   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:137: ADEN=1; // Enable ADC
 0068 D2EF       684            setb    _ADEN
 006A 22         685            ret
 006B            686   ;------------------------------------------------------------
@@ -689,40 +689,40 @@
 006B            689   ;us                        Allocated to registers r2 
 006B            690   ;i                         Allocated to registers r3 
 006B            691   ;------------------------------------------------------------
-006B            692   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:140: void Timer3us(unsigned char us)
+006B            692   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:141: void Timer3us(unsigned char us)
 006B            693   ;        -----------------------------------------
 006B            694   ;         function Timer3us
 006B            695   ;        -----------------------------------------
 006B            696   _Timer3us:
 006B AA82       697            mov     r2,dpl
-006D            698   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:145: CKCON0|=0b_0100_0000;
+006D            698   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:146: CKCON0|=0b_0100_0000;
 006D 438E40     699            orl     _CKCON0,#0x40
-0070            700   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:147: TMR3RL = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
+0070            700   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:148: TMR3RL = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
 0070 7592B8     701            mov     _TMR3RL,#0xB8
 0073 7593FF     702            mov     (_TMR3RL >> 8),#0xFF
-0076            703   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:148: TMR3 = TMR3RL;                 // Initialize Timer3 for first overflow
+0076            703   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:149: TMR3 = TMR3RL;                 // Initialize Timer3 for first overflow
 0076 859294     704            mov     _TMR3,_TMR3RL
 0079 859395     705            mov     (_TMR3 >> 8),(_TMR3RL >> 8)
-007C            706   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:150: TMR3CN0 = 0x04;                 // Sart Timer3 and clear overflow flag
+007C            706   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:151: TMR3CN0 = 0x04;                 // Sart Timer3 and clear overflow flag
 007C 759104     707            mov     _TMR3CN0,#0x04
-007F            708   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:151: for (i = 0; i < us; i++)       // Count <us> overflows
+007F            708   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:152: for (i = 0; i < us; i++)       // Count <us> overflows
 007F 7B00       709            mov     r3,#0x00
 0081            710   L004004?:
 0081 C3         711            clr     c
 0082 EB         712            mov     a,r3
 0083 9A         713            subb    a,r2
 0084 5000       714            jnc     L004007?
-0086            715   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:153: while (!(TMR3CN0 & 0x80));  // Wait for overflow
+0086            715   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:154: while (!(TMR3CN0 & 0x80));  // Wait for overflow
 0086            716   L004001?:
 0086 E591       717            mov     a,_TMR3CN0
-0088 30E710     718            jnb     acc.7,L004001?
-008B            719   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:154: TMR3CN0 &= ~(0x80);         // Clear overflow indicator
+0088 30E7F8     718            jnb     acc.7,L004001?
+008B            719   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:155: TMR3CN0 &= ~(0x80);         // Clear overflow indicator
 008B 53917F     720            anl     _TMR3CN0,#0x7F
-008E            721   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:151: for (i = 0; i < us; i++)       // Count <us> overflows
+008E            721   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:152: for (i = 0; i < us; i++)       // Count <us> overflows
 008E 0B         722            inc     r3
 008F 8000       723            sjmp    L004004?
 0091            724   L004007?:
-0091            725   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:156: TMR3CN0 = 0 ;                   // Stop Timer3 and clear overflow flag
+0091            725   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:157: TMR3CN0 = 0 ;                   // Stop Timer3 and clear overflow flag
 0091 759100     726            mov     _TMR3CN0,#0x00
 0094 22         727            ret
 0095            728   ;------------------------------------------------------------
@@ -732,14 +732,14 @@
 0095            732   ;j                         Allocated to registers r4 r5 
 0095            733   ;k                         Allocated to registers r6 
 0095            734   ;------------------------------------------------------------
-0095            735   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:159: void waitms (unsigned int ms)
+0095            735   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:160: void waitms (unsigned int ms)
 0095            736   ;        -----------------------------------------
 0095            737   ;         function waitms
 0095            738   ;        -----------------------------------------
 0095            739   _waitms:
 0095 AA82       740            mov     r2,dpl
 0097 AB83       741            mov     r3,dph
-0099            742   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:163: for(j=0; j<ms; j++)
+0099            742   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:164: for(j=0; j<ms; j++)
 0099 7C00       743            mov     r4,#0x00
 009B 7D00       744            mov     r5,#0x00
 009D            745   L005005?:
@@ -749,10 +749,10 @@
 00A0 ED         749            mov     a,r5
 00A1 9B         750            subb    a,r3
 00A2 5000       751            jnc     L005009?
-00A4            752   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:164: for (k=0; k<4; k++) Timer3us(250);
+00A4            752   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:165: for (k=0; k<4; k++) Timer3us(250);
 00A4 7E00       753            mov     r6,#0x00
 00A6            754   L005001?:
-00A6 BE0450     755            cjne    r6,#0x04,L005018?
+00A6 BE0438     755            cjne    r6,#0x04,L005018?
 00A9            756   L005018?:
 00A9 5000       757            jnc     L005007?
 00AB 7582FA     758            mov     dpl,#0xFA
@@ -770,9 +770,9 @@
 00C5 0E         770            inc     r6
 00C6 8000       771            sjmp    L005001?
 00C8            772   L005007?:
-00C8            773   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:163: for(j=0; j<ms; j++)
+00C8            773   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:164: for(j=0; j<ms; j++)
 00C8 0C         774            inc     r4
-00C9 BC0090     775            cjne    r4,#0x00,L005005?
+00C9 BC0078     775            cjne    r4,#0x00,L005005?
 00CC 0D         776            inc     r5
 00CD 8000       777            sjmp    L005005?
 00CF            778   L005009?:
@@ -784,86 +784,86 @@
 00D0            784   ;portno                    Allocated to registers r2 
 00D0            785   ;mask                      Allocated to registers r3 
 00D0            786   ;------------------------------------------------------------
-00D0            787   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:169: void InitPinADC (unsigned char portno, unsigned char pinno)
+00D0            787   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:170: void InitPinADC (unsigned char portno, unsigned char pinno)
 00D0            788   ;        -----------------------------------------
 00D0            789   ;         function InitPinADC
 00D0            790   ;        -----------------------------------------
 00D0            791   _InitPinADC:
 00D0 AA82       792            mov     r2,dpl
-00D2            793   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:173: mask=1<<pinno;
-00D2 8580F0     794            mov     b,_InitPinADC_PARM_2
+00D2            793   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:174: mask=1<<pinno;
+00D2 8568F0     794            mov     b,_InitPinADC_PARM_2
 00D5 05F0       795            inc     b
 00D7 7401       796            mov     a,#0x01
 00D9 8000       797            sjmp    L006013?
 00DB            798   L006011?:
 00DB 25E0       799            add     a,acc
 00DD            800   L006013?:
-00DD D5F050     801            djnz    b,L006011?
+00DD D5F038     801            djnz    b,L006011?
 00E0 FB         802            mov     r3,a
-00E1            803   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:175: SFRPAGE = 0x20;
+00E1            803   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:176: SFRPAGE = 0x20;
 00E1 75A720     804            mov     _SFRPAGE,#0x20
-00E4            805   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:176: switch (portno)
-00E4 BA0090     806            cjne    r2,#0x00,L006014?
+00E4            805   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:177: switch (portno)
+00E4 BA0078     806            cjne    r2,#0x00,L006014?
 00E7 8000       807            sjmp    L006001?
 00E9            808   L006014?:
-00E9 BA0110     809            cjne    r2,#0x01,L006015?
+00E9 BA01F8     809            cjne    r2,#0x01,L006015?
 00EC 8000       810            sjmp    L006002?
 00EE            811   L006015?:
-00EE            812   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:178: case 0:
-00EE BA0290     813            cjne    r2,#0x02,L006005?
+00EE            812   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:179: case 0:
+00EE BA0278     813            cjne    r2,#0x02,L006005?
 00F1 8000       814            sjmp    L006003?
 00F3            815   L006001?:
-00F3            816   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:179: P0MDIN &= (~mask); // Set pin as analog input
+00F3            816   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:180: P0MDIN &= (~mask); // Set pin as analog input
 00F3 EB         817            mov     a,r3
 00F4 F4         818            cpl     a
 00F5 FA         819            mov     r2,a
 00F6 52F1       820            anl     _P0MDIN,a
-00F8            821   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:180: P0SKIP |= mask; // Skip Crossbar decoding for this pin
+00F8            821   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:181: P0SKIP |= mask; // Skip Crossbar decoding for this pin
 00F8 EB         822            mov     a,r3
 00F9 42D4       823            orl     _P0SKIP,a
-00FB            824   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:181: break;
-00FB            825   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:182: case 1:
+00FB            824   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:182: break;
+00FB            825   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:183: case 1:
 00FB 8000       826            sjmp    L006005?
 00FD            827   L006002?:
-00FD            828   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:183: P1MDIN &= (~mask); // Set pin as analog input
+00FD            828   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:184: P1MDIN &= (~mask); // Set pin as analog input
 00FD EB         829            mov     a,r3
 00FE F4         830            cpl     a
 00FF FA         831            mov     r2,a
 0100 52F2       832            anl     _P1MDIN,a
-0102            833   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:184: P1SKIP |= mask; // Skip Crossbar decoding for this pin
+0102            833   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:185: P1SKIP |= mask; // Skip Crossbar decoding for this pin
 0102 EB         834            mov     a,r3
 0103 42D5       835            orl     _P1SKIP,a
-0105            836   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:185: break;
-0105            837   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:186: case 2:
+0105            836   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:186: break;
+0105            837   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:187: case 2:
 0105 8000       838            sjmp    L006005?
 0107            839   L006003?:
-0107            840   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:187: P2MDIN &= (~mask); // Set pin as analog input
+0107            840   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:188: P2MDIN &= (~mask); // Set pin as analog input
 0107 EB         841            mov     a,r3
 0108 F4         842            cpl     a
 0109 FA         843            mov     r2,a
 010A 52F3       844            anl     _P2MDIN,a
-010C            845   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:188: P2SKIP |= mask; // Skip Crossbar decoding for this pin
+010C            845   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:189: P2SKIP |= mask; // Skip Crossbar decoding for this pin
 010C EB         846            mov     a,r3
 010D 42CC       847            orl     _P2SKIP,a
-010F            848   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:192: }
+010F            848   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:193: }
 010F            849   L006005?:
-010F            850   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:193: SFRPAGE = 0x00;
+010F            850   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:194: SFRPAGE = 0x00;
 010F 75A700     851            mov     _SFRPAGE,#0x00
 0112 22         852            ret
 0113            853   ;------------------------------------------------------------
 0113            854   ;Allocation info for local variables in function 'TIMER0_Init'
 0113            855   ;------------------------------------------------------------
 0113            856   ;------------------------------------------------------------
-0113            857   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:196: void TIMER0_Init(void)
+0113            857   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:197: void TIMER0_Init(void)
 0113            858   ;        -----------------------------------------
 0113            859   ;         function TIMER0_Init
 0113            860   ;        -----------------------------------------
 0113            861   _TIMER0_Init:
-0113            862   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:198: TMOD&=0b_1111_0000; // Set the bits of Timer/Counter 0 to zero
+0113            862   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:199: TMOD&=0b_1111_0000; // Set the bits of Timer/Counter 0 to zero
 0113 5389F0     863            anl     _TMOD,#0xF0
-0116            864   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:199: TMOD|=0b_0000_0001; // Timer/Counter 0 used as a 16-bit timer
+0116            864   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:200: TMOD|=0b_0000_0001; // Timer/Counter 0 used as a 16-bit timer
 0116 438901     865            orl     _TMOD,#0x01
-0119            866   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:200: TR0=0; // Stop Timer/Counter 0
+0119            866   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:201: TR0=0; // Stop Timer/Counter 0
 0119 C28C       867            clr     _TR0
 011B 22         868            ret
 011C            869   ;------------------------------------------------------------
@@ -871,20 +871,20 @@
 011C            871   ;------------------------------------------------------------
 011C            872   ;pin                       Allocated to registers 
 011C            873   ;------------------------------------------------------------
-011C            874   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:203: unsigned int ADC_at_Pin(unsigned char pin)
+011C            874   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:204: unsigned int ADC_at_Pin(unsigned char pin)
 011C            875   ;        -----------------------------------------
 011C            876   ;         function ADC_at_Pin
 011C            877   ;        -----------------------------------------
 011C            878   _ADC_at_Pin:
 011C 8582BB     879            mov     _ADC0MX,dpl
-011F            880   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:206: ADINT = 0;
+011F            880   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:207: ADINT = 0;
 011F C2ED       881            clr     _ADINT
-0121            882   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:207: ADBUSY = 1;     // Convert voltage at the pin
+0121            882   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:208: ADBUSY = 1;     // Convert voltage at the pin
 0121 D2EC       883            setb    _ADBUSY
-0123            884   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:208: while (!ADINT); // Wait for conversion to complete
+0123            884   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:209: while (!ADINT); // Wait for conversion to complete
 0123            885   L008001?:
-0123 30ED10     886            jnb     _ADINT,L008001?
-0126            887   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:209: return (ADC0);
+0123 30EDF8     886            jnb     _ADINT,L008001?
+0126            887   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:210: return (ADC0);
 0126 85BD82     888            mov     dpl,_ADC0
 0129 85BE83     889            mov     dph,(_ADC0 >> 8)
 012C 22         890            ret
@@ -892,19 +892,19 @@
 012D            892   ;Allocation info for local variables in function 'Get_ADC'
 012D            893   ;------------------------------------------------------------
 012D            894   ;------------------------------------------------------------
-012D            895   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:212: unsigned int Get_ADC (void)
+012D            895   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:213: unsigned int Get_ADC (void)
 012D            896   ;        -----------------------------------------
 012D            897   ;         function Get_ADC
 012D            898   ;        -----------------------------------------
 012D            899   _Get_ADC:
-012D            900   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:214: ADINT = 0;
+012D            900   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:215: ADINT = 0;
 012D C2ED       901            clr     _ADINT
-012F            902   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:215: ADBUSY = 1;
+012F            902   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:216: ADBUSY = 1;
 012F D2EC       903            setb    _ADBUSY
-0131            904   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:216: while (!ADINT); // Wait for conversion to complete
+0131            904   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:217: while (!ADINT); // Wait for conversion to complete
 0131            905   L009001?:
-0131 30ED50     906            jnb     _ADINT,L009001?
-0134            907   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:217: return (ADC0);
+0131 30ED38     906            jnb     _ADINT,L009001?
+0134            907   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:218: return (ADC0);
 0134 85BD82     908            mov     dpl,_ADC0
 0137 85BE83     909            mov     dph,(_ADC0 >> 8)
 013A 22         910            ret
@@ -913,12 +913,12 @@
 013B            913   ;------------------------------------------------------------
 013B            914   ;pin                       Allocated to registers r2 
 013B            915   ;------------------------------------------------------------
-013B            916   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:221: float Volts_at_Pin(unsigned char pin)
+013B            916   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:222: float Volts_at_Pin(unsigned char pin)
 013B            917   ;        -----------------------------------------
 013B            918   ;         function Volts_at_Pin
 013B            919   ;        -----------------------------------------
 013B            920   _Volts_at_Pin:
-013B            921   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:223: return ((ADC_at_Pin(pin)*VDD)/0b_0011_1111_1111_1111);
+013B            921   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:224: return ((ADC_at_Pin(pin)*VDD)/0b_0011_1111_1111_1111);
 013B 120000     922            lcall   _ADC_at_Pin
 013E 120000     923            lcall   ___uint2fs
 0141 AA82       924            mov     r2,dpl
@@ -969,17 +969,17 @@
 0196            969   ;Allocation info for local variables in function 'LCD_pulse'
 0196            970   ;------------------------------------------------------------
 0196            971   ;------------------------------------------------------------
-0196            972   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:227: void LCD_pulse (void)
+0196            972   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:228: void LCD_pulse (void)
 0196            973   ;        -----------------------------------------
 0196            974   ;         function LCD_pulse
 0196            975   ;        -----------------------------------------
 0196            976   _LCD_pulse:
-0196            977   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:229: LCD_E=1;
+0196            977   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:230: LCD_E=1;
 0196 D296       978            setb    _P1_6
-0198            979   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:230: Timer3us(40);
+0198            979   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:231: Timer3us(40);
 0198 758228     980            mov     dpl,#0x28
 019B 120000     981            lcall   _Timer3us
-019E            982   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:231: LCD_E=0;
+019E            982   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:232: LCD_E=0;
 019E C296       983            clr     _P1_6
 01A0 22         984            ret
 01A1            985   ;------------------------------------------------------------
@@ -987,66 +987,66 @@
 01A1            987   ;------------------------------------------------------------
 01A1            988   ;x                         Allocated to registers r2 
 01A1            989   ;------------------------------------------------------------
-01A1            990   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:234: void LCD_byte (unsigned char x)
+01A1            990   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:235: void LCD_byte (unsigned char x)
 01A1            991   ;        -----------------------------------------
 01A1            992   ;         function LCD_byte
 01A1            993   ;        -----------------------------------------
 01A1            994   _LCD_byte:
 01A1 AA82       995            mov     r2,dpl
-01A3            996   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:237: ACC=x; //Send high nible
+01A3            996   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:238: ACC=x; //Send high nible
 01A3 8AE0       997            mov     _ACC,r2
-01A5            998   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:238: LCD_D7=ACC_7;
+01A5            998   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:239: LCD_D7=ACC_7;
 01A5 A2E7       999            mov     c,_ACC_7
 01A7 9290      1000            mov     _P1_0,c
-01A9           1001   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:239: LCD_D6=ACC_6;
+01A9           1001   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:240: LCD_D6=ACC_6;
 01A9 A2E6      1002            mov     c,_ACC_6
 01AB 9291      1003            mov     _P1_1,c
-01AD           1004   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:240: LCD_D5=ACC_5;
+01AD           1004   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:241: LCD_D5=ACC_5;
 01AD A2E5      1005            mov     c,_ACC_5
 01AF 9292      1006            mov     _P1_2,c
-01B1           1007   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:241: LCD_D4=ACC_4;
+01B1           1007   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:242: LCD_D4=ACC_4;
 01B1 A2E4      1008            mov     c,_ACC_4
 01B3 9293      1009            mov     _P1_3,c
-01B5           1010   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:242: LCD_pulse();
+01B5           1010   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:243: LCD_pulse();
 01B5 C002      1011            push    ar2
 01B7 120000    1012            lcall   _LCD_pulse
-01BA           1013   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:243: Timer3us(40);
+01BA           1013   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:244: Timer3us(40);
 01BA 758228    1014            mov     dpl,#0x28
 01BD 120000    1015            lcall   _Timer3us
 01C0 D002      1016            pop     ar2
-01C2           1017   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:244: ACC=x; //Send low nible
+01C2           1017   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:245: ACC=x; //Send low nible
 01C2 8AE0      1018            mov     _ACC,r2
-01C4           1019   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:245: LCD_D7=ACC_3;
+01C4           1019   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:246: LCD_D7=ACC_3;
 01C4 A2E3      1020            mov     c,_ACC_3
 01C6 9290      1021            mov     _P1_0,c
-01C8           1022   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:246: LCD_D6=ACC_2;
+01C8           1022   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:247: LCD_D6=ACC_2;
 01C8 A2E2      1023            mov     c,_ACC_2
 01CA 9291      1024            mov     _P1_1,c
-01CC           1025   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:247: LCD_D5=ACC_1;
+01CC           1025   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:248: LCD_D5=ACC_1;
 01CC A2E1      1026            mov     c,_ACC_1
 01CE 9292      1027            mov     _P1_2,c
-01D0           1028   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:248: LCD_D4=ACC_0;
+01D0           1028   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:249: LCD_D4=ACC_0;
 01D0 A2E0      1029            mov     c,_ACC_0
 01D2 9293      1030            mov     _P1_3,c
-01D4           1031   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:249: LCD_pulse();
+01D4           1031   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:250: LCD_pulse();
 01D4 020000    1032            ljmp    _LCD_pulse
 01D7           1033   ;------------------------------------------------------------
 01D7           1034   ;Allocation info for local variables in function 'WriteData'
 01D7           1035   ;------------------------------------------------------------
 01D7           1036   ;x                         Allocated to registers r2 
 01D7           1037   ;------------------------------------------------------------
-01D7           1038   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:253: void WriteData (unsigned char x)
+01D7           1038   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:254: void WriteData (unsigned char x)
 01D7           1039   ;        -----------------------------------------
 01D7           1040   ;         function WriteData
 01D7           1041   ;        -----------------------------------------
 01D7           1042   _WriteData:
 01D7 AA82      1043            mov     r2,dpl
-01D9           1044   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:255: LCD_RS=1;
+01D9           1044   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:256: LCD_RS=1;
 01D9 D297      1045            setb    _P1_7
-01DB           1046   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:256: LCD_byte(x);
+01DB           1046   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:257: LCD_byte(x);
 01DB 8A82      1047            mov     dpl,r2
 01DD 120000    1048            lcall   _LCD_byte
-01E0           1049   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:257: waitms(2);
+01E0           1049   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:258: waitms(2);
 01E0 900002    1050            mov     dptr,#0x0002
 01E3 020000    1051            ljmp    _waitms
 01E6           1052   ;------------------------------------------------------------
@@ -1054,53 +1054,53 @@
 01E6           1054   ;------------------------------------------------------------
 01E6           1055   ;x                         Allocated to registers r2 
 01E6           1056   ;------------------------------------------------------------
-01E6           1057   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:260: void WriteCommand (unsigned char x)
+01E6           1057   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:261: void WriteCommand (unsigned char x)
 01E6           1058   ;        -----------------------------------------
 01E6           1059   ;         function WriteCommand
 01E6           1060   ;        -----------------------------------------
 01E6           1061   _WriteCommand:
 01E6 AA82      1062            mov     r2,dpl
-01E8           1063   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:262: LCD_RS=0;
+01E8           1063   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:263: LCD_RS=0;
 01E8 C297      1064            clr     _P1_7
-01EA           1065   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:263: LCD_byte(x);
+01EA           1065   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:264: LCD_byte(x);
 01EA 8A82      1066            mov     dpl,r2
 01EC 120000    1067            lcall   _LCD_byte
-01EF           1068   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:264: waitms(5);
+01EF           1068   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:265: waitms(5);
 01EF 900005    1069            mov     dptr,#0x0005
 01F2 020000    1070            ljmp    _waitms
 01F5           1071   ;------------------------------------------------------------
 01F5           1072   ;Allocation info for local variables in function 'LCD_4BIT'
 01F5           1073   ;------------------------------------------------------------
 01F5           1074   ;------------------------------------------------------------
-01F5           1075   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:267: void LCD_4BIT (void)
+01F5           1075   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:268: void LCD_4BIT (void)
 01F5           1076   ;        -----------------------------------------
 01F5           1077   ;         function LCD_4BIT
 01F5           1078   ;        -----------------------------------------
 01F5           1079   _LCD_4BIT:
-01F5           1080   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:269: LCD_E=0; // Resting state of LCD's enable is zero
+01F5           1080   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:270: LCD_E=0; // Resting state of LCD's enable is zero
 01F5 C296      1081            clr     _P1_6
-01F7           1082   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:271: waitms(20);
+01F7           1082   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:272: waitms(20);
 01F7 900014    1083            mov     dptr,#0x0014
 01FA 120000    1084            lcall   _waitms
-01FD           1085   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:273: WriteCommand(0x33);
+01FD           1085   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:274: WriteCommand(0x33);
 01FD 758233    1086            mov     dpl,#0x33
 0200 120000    1087            lcall   _WriteCommand
-0203           1088   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:274: WriteCommand(0x33);
+0203           1088   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:275: WriteCommand(0x33);
 0203 758233    1089            mov     dpl,#0x33
 0206 120000    1090            lcall   _WriteCommand
-0209           1091   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:275: WriteCommand(0x32); // Change to 4-bit mode
+0209           1091   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:276: WriteCommand(0x32); // Change to 4-bit mode
 0209 758232    1092            mov     dpl,#0x32
 020C 120000    1093            lcall   _WriteCommand
-020F           1094   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:277: WriteCommand(0x28);
+020F           1094   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:278: WriteCommand(0x28);
 020F 758228    1095            mov     dpl,#0x28
 0212 120000    1096            lcall   _WriteCommand
-0215           1097   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:278: WriteCommand(0x0c);
+0215           1097   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:279: WriteCommand(0x0c);
 0215 75820C    1098            mov     dpl,#0x0C
 0218 120000    1099            lcall   _WriteCommand
-021B           1100   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:279: WriteCommand(0x01); // Clear screen command (takes some time)
+021B           1100   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:280: WriteCommand(0x01); // Clear screen command (takes some time)
 021B 758201    1101            mov     dpl,#0x01
 021E 120000    1102            lcall   _WriteCommand
-0221           1103   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:280: waitms(20); // Wait for clear screen command to finsih.
+0221           1103   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:281: waitms(20); // Wait for clear screen command to finsih.
 0221 900014    1104            mov     dptr,#0x0014
 0224 020000    1105            ljmp    _waitms
 0227           1106   ;------------------------------------------------------------
@@ -1110,7 +1110,7 @@
 0227           1110   ;string                    Allocated to registers r2 r3 r4 
 0227           1111   ;j                         Allocated to registers r5 r6 
 0227           1112   ;------------------------------------------------------------
-0227           1113   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:283: void LCDprint(char * string, unsigned char line, bit clear)
+0227           1113   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:284: void LCDprint(char * string, unsigned char line, bit clear)
 0227           1114   ;        -----------------------------------------
 0227           1115   ;         function LCDprint
 0227           1116   ;        -----------------------------------------
@@ -1118,9 +1118,9 @@
 0227 AA82      1118            mov     r2,dpl
 0229 AB83      1119            mov     r3,dph
 022B ACF0      1120            mov     r4,b
-022D           1121   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:286: WriteCommand(line==2?0xc0:0x80);
+022D           1121   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:287: WriteCommand(line==2?0xc0:0x80);
 022D 7402      1122            mov     a,#0x02
-022F B50090    1123            cjne    a,_LCDprint_PARM_2,L016013?
+022F B5E878    1123            cjne    a,_LCDprint_PARM_2,L016013?
 0232 7DC0      1124            mov     r5,#0xC0
 0234 8000      1125            sjmp    L016014?
 0236           1126   L016013?:
@@ -1131,13 +1131,13 @@
 023C C003      1131            push    ar3
 023E C004      1132            push    ar4
 0240 120000    1133            lcall   _WriteCommand
-0243           1134   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:287: waitms(5);
+0243           1134   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:288: waitms(5);
 0243 900005    1135            mov     dptr,#0x0005
 0246 120000    1136            lcall   _waitms
 0249 D004      1137            pop     ar4
 024B D003      1138            pop     ar3
 024D D002      1139            pop     ar2
-024F           1140   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:288: for(j=0; string[j]!=0; j++) WriteData(string[j]);// Write the message
+024F           1140   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:289: for(j=0; string[j]!=0; j++) WriteData(string[j]);// Write the message
 024F 7D00      1141            mov     r5,#0x00
 0251 7E00      1142            mov     r6,#0x00
 0253           1143   L016003?:
@@ -1167,12 +1167,12 @@
 027C D003      1167            pop     ar3
 027E D002      1168            pop     ar2
 0280 0D        1169            inc     r5
-0281 BD0010    1170            cjne    r5,#0x00,L016003?
+0281 BD00F8    1170            cjne    r5,#0x00,L016003?
 0284 0E        1171            inc     r6
 0285 8000      1172            sjmp    L016003?
 0287           1173   L016006?:
-0287           1174   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:289: if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
-0287 3060D0    1175            jnb     _LCDprint_PARM_3,L016011?
+0287           1174   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:290: if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
+0287 3048B8    1175            jnb     _LCDprint_PARM_3,L016011?
 028A 8D02      1176            mov     ar2,r5
 028C 8E03      1177            mov     ar3,r6
 028E           1178   L016007?:
@@ -1190,7 +1190,7 @@
 02A3 D003      1190            pop     ar3
 02A5 D002      1191            pop     ar2
 02A7 0A        1192            inc     r2
-02A8 BA0010    1193            cjne    r2,#0x00,L016007?
+02A8 BA00F8    1193            cjne    r2,#0x00,L016007?
 02AB 0B        1194            inc     r3
 02AC 8000      1195            sjmp    L016007?
 02AE           1196   L016011?:
@@ -1210,7 +1210,7 @@
 02AF           1210   ;tempe                     Allocated to registers r2 r3 r4 r5 
 02AF           1211   ;tempf                     Allocated to registers r2 r3 r4 r5 
 02AF           1212   ;------------------------------------------------------------
-02AF           1213   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:292: float map2(float x, float in_min, float in_max, float out_min, float out_max)
+02AF           1213   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:293: float map2(float x, float in_min, float in_max, float out_min, float out_max)
 02AF           1214   ;        -----------------------------------------
 02AF           1215   ;         function map2
 02AF           1216   ;        -----------------------------------------
@@ -1219,11 +1219,11 @@
 02B1 AB83      1219            mov     r3,dph
 02B3 ACF0      1220            mov     r4,b
 02B5 FD        1221            mov     r5,a
-02B6           1222   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:296: tempa = (x - in_min);
-02B6 C0B0      1223            push    _map2_PARM_2
-02B8 C0B1      1224            push    (_map2_PARM_2 + 1)
-02BA C0B2      1225            push    (_map2_PARM_2 + 2)
-02BC C0B3      1226            push    (_map2_PARM_2 + 3)
+02B6           1222   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:297: tempa = (x - in_min);
+02B6 C098      1223            push    _map2_PARM_2
+02B8 C099      1224            push    (_map2_PARM_2 + 1)
+02BA C09A      1225            push    (_map2_PARM_2 + 2)
+02BC C09B      1226            push    (_map2_PARM_2 + 3)
 02BE 8A82      1227            mov     dpl,r2
 02C0 8B83      1228            mov     dph,r3
 02C2 8CF0      1229            mov     b,r4
@@ -1236,7 +1236,7 @@
 02CF E581      1236            mov     a,sp
 02D1 24FC      1237            add     a,#0xfc
 02D3 F581      1238            mov     sp,a
-02D5           1239   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:297: printf("%f\r\n", tempa);
+02D5           1239   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:298: printf("%f\r\n", tempa);
 02D5 C002      1240            push    ar2
 02D7 C003      1241            push    ar3
 02D9 C004      1242            push    ar4
@@ -1245,7 +1245,7 @@
 02DF C003      1245            push    ar3
 02E1 C004      1246            push    ar4
 02E3 C005      1247            push    ar5
-02E5 7490      1248            mov     a,#__str_0
+02E5 7478      1248            mov     a,#__str_0
 02E7 C0E0      1249            push    acc
 02E9 74BE      1250            mov     a,#(__str_0 >> 8)
 02EB C0E0      1251            push    acc
@@ -1255,15 +1255,15 @@
 02F4 E581      1255            mov     a,sp
 02F6 24F9      1256            add     a,#0xf9
 02F8 F581      1257            mov     sp,a
-02FA           1258   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:298: tempb = (out_max - out_min);
-02FA C030      1259            push    _map2_PARM_4
-02FC C031      1260            push    (_map2_PARM_4 + 1)
-02FE C032      1261            push    (_map2_PARM_4 + 2)
-0300 C033      1262            push    (_map2_PARM_4 + 3)
-0302 85F082    1263            mov     dpl,_map2_PARM_5
-0305 85F183    1264            mov     dph,(_map2_PARM_5 + 1)
-0308 85F2F0    1265            mov     b,(_map2_PARM_5 + 2)
-030B E5F3      1266            mov     a,(_map2_PARM_5 + 3)
+02FA           1258   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:299: tempb = (out_max - out_min);
+02FA C018      1259            push    _map2_PARM_4
+02FC C019      1260            push    (_map2_PARM_4 + 1)
+02FE C01A      1261            push    (_map2_PARM_4 + 2)
+0300 C01B      1262            push    (_map2_PARM_4 + 3)
+0302 85D882    1263            mov     dpl,_map2_PARM_5
+0305 85D983    1264            mov     dph,(_map2_PARM_5 + 1)
+0308 85DAF0    1265            mov     b,(_map2_PARM_5 + 2)
+030B E5DB      1266            mov     a,(_map2_PARM_5 + 3)
 030D 120000    1267            lcall   ___fssub
 0310 AE82      1268            mov     r6,dpl
 0312 AF83      1269            mov     r7,dph
@@ -1272,7 +1272,7 @@
 0317 E581      1272            mov     a,sp
 0319 24FC      1273            add     a,#0xfc
 031B F581      1274            mov     sp,a
-031D           1275   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:299: printf("%f\r\n", tempb);
+031D           1275   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:300: printf("%f\r\n", tempb);
 031D C006      1276            push    ar6
 031F C007      1277            push    ar7
 0321 C000      1278            push    ar0
@@ -1281,7 +1281,7 @@
 0327 C007      1281            push    ar7
 0329 C000      1282            push    ar0
 032B C001      1283            push    ar1
-032D 7490      1284            mov     a,#__str_0
+032D 7478      1284            mov     a,#__str_0
 032F C0E0      1285            push    acc
 0331 74BE      1286            mov     a,#(__str_0 >> 8)
 0333 C0E0      1287            push    acc
@@ -1299,7 +1299,7 @@
 034C D004      1299            pop     ar4
 034E D003      1300            pop     ar3
 0350 D002      1301            pop     ar2
-0352           1302   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:300: tempc = tempa * tempb;
+0352           1302   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:301: tempc = tempa * tempb;
 0352 C006      1303            push    ar6
 0354 C007      1304            push    ar7
 0356 C000      1305            push    ar0
@@ -1316,7 +1316,7 @@
 036B E581      1316            mov     a,sp
 036D 24FC      1317            add     a,#0xfc
 036F F581      1318            mov     sp,a
-0371           1319   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:301: printf("%f\r\n", tempc);
+0371           1319   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:302: printf("%f\r\n", tempc);
 0371 C002      1320            push    ar2
 0373 C003      1321            push    ar3
 0375 C004      1322            push    ar4
@@ -1325,7 +1325,7 @@
 037B C003      1325            push    ar3
 037D C004      1326            push    ar4
 037F C005      1327            push    ar5
-0381 7490      1328            mov     a,#__str_0
+0381 7478      1328            mov     a,#__str_0
 0383 C0E0      1329            push    acc
 0385 74BE      1330            mov     a,#(__str_0 >> 8)
 0387 C0E0      1331            push    acc
@@ -1335,15 +1335,15 @@
 0390 E581      1335            mov     a,sp
 0392 24F9      1336            add     a,#0xf9
 0394 F581      1337            mov     sp,a
-0396           1338   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:302: tempd = (in_max - in_min);
-0396 C0B0      1339            push    _map2_PARM_2
-0398 C0B1      1340            push    (_map2_PARM_2 + 1)
-039A C0B2      1341            push    (_map2_PARM_2 + 2)
-039C C0B3      1342            push    (_map2_PARM_2 + 3)
-039E 857082    1343            mov     dpl,_map2_PARM_3
-03A1 857183    1344            mov     dph,(_map2_PARM_3 + 1)
-03A4 8572F0    1345            mov     b,(_map2_PARM_3 + 2)
-03A7 E573      1346            mov     a,(_map2_PARM_3 + 3)
+0396           1338   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:303: tempd = (in_max - in_min);
+0396 C098      1339            push    _map2_PARM_2
+0398 C099      1340            push    (_map2_PARM_2 + 1)
+039A C09A      1341            push    (_map2_PARM_2 + 2)
+039C C09B      1342            push    (_map2_PARM_2 + 3)
+039E 855882    1343            mov     dpl,_map2_PARM_3
+03A1 855983    1344            mov     dph,(_map2_PARM_3 + 1)
+03A4 855AF0    1345            mov     b,(_map2_PARM_3 + 2)
+03A7 E55B      1346            mov     a,(_map2_PARM_3 + 3)
 03A9 120000    1347            lcall   ___fssub
 03AC AE82      1348            mov     r6,dpl
 03AE AF83      1349            mov     r7,dph
@@ -1352,7 +1352,7 @@
 03B3 E581      1352            mov     a,sp
 03B5 24FC      1353            add     a,#0xfc
 03B7 F581      1354            mov     sp,a
-03B9           1355   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:303: printf("%f\r\n", tempd);
+03B9           1355   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:304: printf("%f\r\n", tempd);
 03B9 C006      1356            push    ar6
 03BB C007      1357            push    ar7
 03BD C000      1358            push    ar0
@@ -1361,7 +1361,7 @@
 03C3 C007      1361            push    ar7
 03C5 C000      1362            push    ar0
 03C7 C001      1363            push    ar1
-03C9 7490      1364            mov     a,#__str_0
+03C9 7478      1364            mov     a,#__str_0
 03CB C0E0      1365            push    acc
 03CD 74BE      1366            mov     a,#(__str_0 >> 8)
 03CF C0E0      1367            push    acc
@@ -1379,7 +1379,7 @@
 03E8 D004      1379            pop     ar4
 03EA D003      1380            pop     ar3
 03EC D002      1381            pop     ar2
-03EE           1382   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:304: tempe = (float)tempc/(float)tempd;
+03EE           1382   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:305: tempe = (float)tempc/(float)tempd;
 03EE C006      1383            push    ar6
 03F0 C007      1384            push    ar7
 03F2 C000      1385            push    ar0
@@ -1396,7 +1396,7 @@
 0407 E581      1396            mov     a,sp
 0409 24FC      1397            add     a,#0xfc
 040B F581      1398            mov     sp,a
-040D           1399   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:305: printf("%f\r\n", tempe);
+040D           1399   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:306: printf("%f\r\n", tempe);
 040D C002      1400            push    ar2
 040F C003      1401            push    ar3
 0411 C004      1402            push    ar4
@@ -1405,7 +1405,7 @@
 0417 C003      1405            push    ar3
 0419 C004      1406            push    ar4
 041B C005      1407            push    ar5
-041D 7490      1408            mov     a,#__str_0
+041D 7478      1408            mov     a,#__str_0
 041F C0E0      1409            push    acc
 0421 74BE      1410            mov     a,#(__str_0 >> 8)
 0423 C0E0      1411            push    acc
@@ -1419,11 +1419,11 @@
 0434 D004      1419            pop     ar4
 0436 D003      1420            pop     ar3
 0438 D002      1421            pop     ar2
-043A           1422   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:306: tempf = tempe+ out_min;
-043A C030      1423            push    _map2_PARM_4
-043C C031      1424            push    (_map2_PARM_4 + 1)
-043E C032      1425            push    (_map2_PARM_4 + 2)
-0440 C033      1426            push    (_map2_PARM_4 + 3)
+043A           1422   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:307: tempf = tempe+ out_min;
+043A C018      1423            push    _map2_PARM_4
+043C C019      1424            push    (_map2_PARM_4 + 1)
+043E C01A      1425            push    (_map2_PARM_4 + 2)
+0440 C01B      1426            push    (_map2_PARM_4 + 3)
 0442 8A82      1427            mov     dpl,r2
 0444 8B83      1428            mov     dph,r3
 0446 8CF0      1429            mov     b,r4
@@ -1436,7 +1436,7 @@
 0453 E581      1436            mov     a,sp
 0455 24FC      1437            add     a,#0xfc
 0457 F581      1438            mov     sp,a
-0459           1439   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:307: printf("%f\r\n", tempf);
+0459           1439   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:308: printf("%f\r\n", tempf);
 0459 C002      1440            push    ar2
 045B C003      1441            push    ar3
 045D C004      1442            push    ar4
@@ -1445,7 +1445,7 @@
 0463 C003      1445            push    ar3
 0465 C004      1446            push    ar4
 0467 C005      1447            push    ar5
-0469 7490      1448            mov     a,#__str_0
+0469 7478      1448            mov     a,#__str_0
 046B C0E0      1449            push    acc
 046D 74BE      1450            mov     a,#(__str_0 >> 8)
 046F C0E0      1451            push    acc
@@ -1459,7 +1459,7 @@
 0480 D004      1459            pop     ar4
 0482 D003      1460            pop     ar3
 0484 D002      1461            pop     ar2
-0486           1462   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:312: return tempf;
+0486           1462   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:313: return tempf;
 0486 8A82      1463            mov     dpl,r2
 0488 8B83      1464            mov     dph,r3
 048A 8CF0      1465            mov     b,r4
@@ -1479,27 +1479,27 @@
 048E           1479   ;buff_x                    Allocated with name '_GetPosition2_buff_x_1_77'
 048E           1480   ;buff_y                    Allocated with name '_GetPosition2_buff_y_1_77'
 048E           1481   ;------------------------------------------------------------
-048E           1482   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:315: void GetPosition2 (float volts[2], float pos[2]) {
+048E           1482   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:316: void GetPosition2 (float volts[2], float pos[2]) {
 048E           1483   ;        -----------------------------------------
 048E           1484   ;         function GetPosition2
 048E           1485   ;        -----------------------------------------
 048E           1486   _GetPosition2:
-048E           1487   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:326: float vx = volts[0];
+048E           1487   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:327: float vx = volts[0];
 048E AA82      1488            mov     r2,dpl
 0490 AB83      1489            mov     r3,dph
 0492 ACF0      1490            mov     r4,b
 0494 120000    1491            lcall   __gptrget
-0497 F550      1492            mov     _GetPosition2_vx_1_77,a
+0497 F538      1492            mov     _GetPosition2_vx_1_77,a
 0499 A3        1493            inc     dptr
 049A 120000    1494            lcall   __gptrget
-049D F551      1495            mov     (_GetPosition2_vx_1_77 + 1),a
+049D F539      1495            mov     (_GetPosition2_vx_1_77 + 1),a
 049F A3        1496            inc     dptr
 04A0 120000    1497            lcall   __gptrget
-04A3 F552      1498            mov     (_GetPosition2_vx_1_77 + 2),a
+04A3 F53A      1498            mov     (_GetPosition2_vx_1_77 + 2),a
 04A5 A3        1499            inc     dptr
 04A6 120000    1500            lcall   __gptrget
-04A9 F553      1501            mov     (_GetPosition2_vx_1_77 + 3),a
-04AB           1502   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:327: float vy = volts[1];
+04A9 F53B      1501            mov     (_GetPosition2_vx_1_77 + 3),a
+04AB           1502   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:328: float vy = volts[1];
 04AB 7404      1503            mov     a,#0x04
 04AD 2A        1504            add     a,r2
 04AE FA        1505            mov     r2,a
@@ -1510,20 +1510,20 @@
 04B4 8B83      1510            mov     dph,r3
 04B6 8CF0      1511            mov     b,r4
 04B8 120000    1512            lcall   __gptrget
-04BB F5A0      1513            mov     _GetPosition2_vy_1_77,a
+04BB F588      1513            mov     _GetPosition2_vy_1_77,a
 04BD A3        1514            inc     dptr
 04BE 120000    1515            lcall   __gptrget
-04C1 F5A1      1516            mov     (_GetPosition2_vy_1_77 + 1),a
+04C1 F589      1516            mov     (_GetPosition2_vy_1_77 + 1),a
 04C3 A3        1517            inc     dptr
 04C4 120000    1518            lcall   __gptrget
-04C7 F5A2      1519            mov     (_GetPosition2_vy_1_77 + 2),a
+04C7 F58A      1519            mov     (_GetPosition2_vy_1_77 + 2),a
 04C9 A3        1520            inc     dptr
 04CA 120000    1521            lcall   __gptrget
-04CD F5A3      1522            mov     (_GetPosition2_vy_1_77 + 3),a
-04CF           1523   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:329: if (pos[0] < mid_x) {
-04CF AAB0      1524            mov     r2,_GetPosition2_PARM_2
-04D1 ABB1      1525            mov     r3,(_GetPosition2_PARM_2 + 1)
-04D3 ACB2      1526            mov     r4,(_GetPosition2_PARM_2 + 2)
+04CD F58B      1522            mov     (_GetPosition2_vy_1_77 + 3),a
+04CF           1523   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:330: if (pos[0] < mid_x) {
+04CF AA98      1524            mov     r2,_GetPosition2_PARM_2
+04D1 AB99      1525            mov     r3,(_GetPosition2_PARM_2 + 1)
+04D3 AC9A      1526            mov     r4,(_GetPosition2_PARM_2 + 2)
 04D5 8A82      1527            mov     dpl,r2
 04D7 8B83      1528            mov     dph,r3
 04D9 8CF0      1529            mov     b,r4
@@ -1565,27 +1565,27 @@
 051D 7000      1565            jnz     L018011?
 051F 020000    1566            ljmp    L018002?
 0522           1567   L018011?:
-0522           1568   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:330: pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
-0522 75B000    1569            mov     _map2_PARM_2,#0x00
-0525 75B100    1570            mov     (_map2_PARM_2 + 1),#0x00
-0528 75B200    1571            mov     (_map2_PARM_2 + 2),#0x00
-052B 75B300    1572            mov     (_map2_PARM_2 + 3),#0x00
-052E 7570C1    1573            mov     _map2_PARM_3,#0xC1
-0531 7571E2    1574            mov     (_map2_PARM_3 + 1),#0xE2
-0534 757216    1575            mov     (_map2_PARM_3 + 2),#0x16
-0537 757340    1576            mov     (_map2_PARM_3 + 3),#0x40
-053A 753000    1577            mov     _map2_PARM_4,#0x00
-053D 753100    1578            mov     (_map2_PARM_4 + 1),#0x00
-0540 753248    1579            mov     (_map2_PARM_4 + 2),#0x48
-0543 7533C2    1580            mov     (_map2_PARM_4 + 3),#0xC2
-0546 75F000    1581            mov     _map2_PARM_5,#0x00
-0549 75F100    1582            mov     (_map2_PARM_5 + 1),#0x00
-054C 75F200    1583            mov     (_map2_PARM_5 + 2),#0x00
-054F 75F300    1584            mov     (_map2_PARM_5 + 3),#0x00
-0552 855082    1585            mov     dpl,_GetPosition2_vx_1_77
-0555 855183    1586            mov     dph,(_GetPosition2_vx_1_77 + 1)
-0558 8552F0    1587            mov     b,(_GetPosition2_vx_1_77 + 2)
-055B E553      1588            mov     a,(_GetPosition2_vx_1_77 + 3)
+0522           1568   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:331: pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
+0522 759800    1569            mov     _map2_PARM_2,#0x00
+0525 759900    1570            mov     (_map2_PARM_2 + 1),#0x00
+0528 759A00    1571            mov     (_map2_PARM_2 + 2),#0x00
+052B 759B00    1572            mov     (_map2_PARM_2 + 3),#0x00
+052E 7558C1    1573            mov     _map2_PARM_3,#0xC1
+0531 7559E2    1574            mov     (_map2_PARM_3 + 1),#0xE2
+0534 755A16    1575            mov     (_map2_PARM_3 + 2),#0x16
+0537 755B40    1576            mov     (_map2_PARM_3 + 3),#0x40
+053A 751800    1577            mov     _map2_PARM_4,#0x00
+053D 751900    1578            mov     (_map2_PARM_4 + 1),#0x00
+0540 751A48    1579            mov     (_map2_PARM_4 + 2),#0x48
+0543 751BC2    1580            mov     (_map2_PARM_4 + 3),#0xC2
+0546 75D800    1581            mov     _map2_PARM_5,#0x00
+0549 75D900    1582            mov     (_map2_PARM_5 + 1),#0x00
+054C 75DA00    1583            mov     (_map2_PARM_5 + 2),#0x00
+054F 75DB00    1584            mov     (_map2_PARM_5 + 3),#0x00
+0552 853882    1585            mov     dpl,_GetPosition2_vx_1_77
+0555 853983    1586            mov     dph,(_GetPosition2_vx_1_77 + 1)
+0558 853AF0    1587            mov     b,(_GetPosition2_vx_1_77 + 2)
+055B E53B      1588            mov     a,(_GetPosition2_vx_1_77 + 3)
 055D C002      1589            push    ar2
 055F C003      1590            push    ar3
 0561 C004      1591            push    ar4
@@ -1611,11 +1611,11 @@
 0587 A3        1611            inc     dptr
 0588 E8        1612            mov     a,r0
 0589 120000    1613            lcall   __gptrput
-058C           1614   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:331: printf("neg x\r\n");
+058C           1614   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:332: printf("neg x\r\n");
 058C C002      1615            push    ar2
 058E C003      1616            push    ar3
 0590 C004      1617            push    ar4
-0592 7450      1618            mov     a,#__str_1
+0592 7440      1618            mov     a,#__str_1
 0594 C0E0      1619            push    acc
 0596 74C0      1620            mov     a,#(__str_1 >> 8)
 0598 C0E0      1621            push    acc
@@ -1630,27 +1630,27 @@
 05AB D002      1630            pop     ar2
 05AD 020000    1631            ljmp    L018003?
 05B0           1632   L018002?:
-05B0           1633   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:335: pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
-05B0 75B0C1    1634            mov     _map2_PARM_2,#0xC1
-05B3 75B1E2    1635            mov     (_map2_PARM_2 + 1),#0xE2
-05B6 75B216    1636            mov     (_map2_PARM_2 + 2),#0x16
-05B9 75B340    1637            mov     (_map2_PARM_2 + 3),#0x40
-05BC 757033    1638            mov     _map2_PARM_3,#0x33
-05BF 757133    1639            mov     (_map2_PARM_3 + 1),#0x33
-05C2 757253    1640            mov     (_map2_PARM_3 + 2),#0x53
-05C5 757340    1641            mov     (_map2_PARM_3 + 3),#0x40
-05C8 753000    1642            mov     _map2_PARM_4,#0x00
-05CB 753100    1643            mov     (_map2_PARM_4 + 1),#0x00
-05CE 753200    1644            mov     (_map2_PARM_4 + 2),#0x00
-05D1 753300    1645            mov     (_map2_PARM_4 + 3),#0x00
-05D4 75F000    1646            mov     _map2_PARM_5,#0x00
-05D7 75F100    1647            mov     (_map2_PARM_5 + 1),#0x00
-05DA 75F248    1648            mov     (_map2_PARM_5 + 2),#0x48
-05DD 75F342    1649            mov     (_map2_PARM_5 + 3),#0x42
-05E0 855082    1650            mov     dpl,_GetPosition2_vx_1_77
-05E3 855183    1651            mov     dph,(_GetPosition2_vx_1_77 + 1)
-05E6 8552F0    1652            mov     b,(_GetPosition2_vx_1_77 + 2)
-05E9 E553      1653            mov     a,(_GetPosition2_vx_1_77 + 3)
+05B0           1633   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:336: pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
+05B0 7598C1    1634            mov     _map2_PARM_2,#0xC1
+05B3 7599E2    1635            mov     (_map2_PARM_2 + 1),#0xE2
+05B6 759A16    1636            mov     (_map2_PARM_2 + 2),#0x16
+05B9 759B40    1637            mov     (_map2_PARM_2 + 3),#0x40
+05BC 755833    1638            mov     _map2_PARM_3,#0x33
+05BF 755933    1639            mov     (_map2_PARM_3 + 1),#0x33
+05C2 755A53    1640            mov     (_map2_PARM_3 + 2),#0x53
+05C5 755B40    1641            mov     (_map2_PARM_3 + 3),#0x40
+05C8 751800    1642            mov     _map2_PARM_4,#0x00
+05CB 751900    1643            mov     (_map2_PARM_4 + 1),#0x00
+05CE 751A00    1644            mov     (_map2_PARM_4 + 2),#0x00
+05D1 751B00    1645            mov     (_map2_PARM_4 + 3),#0x00
+05D4 75D800    1646            mov     _map2_PARM_5,#0x00
+05D7 75D900    1647            mov     (_map2_PARM_5 + 1),#0x00
+05DA 75DA48    1648            mov     (_map2_PARM_5 + 2),#0x48
+05DD 75DB42    1649            mov     (_map2_PARM_5 + 3),#0x42
+05E0 853882    1650            mov     dpl,_GetPosition2_vx_1_77
+05E3 853983    1651            mov     dph,(_GetPosition2_vx_1_77 + 1)
+05E6 853AF0    1652            mov     b,(_GetPosition2_vx_1_77 + 2)
+05E9 E53B      1653            mov     a,(_GetPosition2_vx_1_77 + 3)
 05EB C002      1654            push    ar2
 05ED C003      1655            push    ar3
 05EF C004      1656            push    ar4
@@ -1676,11 +1676,11 @@
 0615 A3        1676            inc     dptr
 0616 E8        1677            mov     a,r0
 0617 120000    1678            lcall   __gptrput
-061A           1679   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:336: printf("pos x\r\n");
+061A           1679   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:337: printf("pos x\r\n");
 061A C002      1680            push    ar2
 061C C003      1681            push    ar3
 061E C004      1682            push    ar4
-0620 74D0      1683            mov     a,#__str_2
+0620 74C0      1683            mov     a,#__str_2
 0622 C0E0      1684            push    acc
 0624 74C0      1685            mov     a,#(__str_2 >> 8)
 0626 C0E0      1686            push    acc
@@ -1694,7 +1694,7 @@
 0637 D003      1694            pop     ar3
 0639 D002      1695            pop     ar2
 063B           1696   L018003?:
-063B           1697   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:339: if (pos[1] < mid_y) {
+063B           1697   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:340: if (pos[1] < mid_y) {
 063B 7404      1698            mov     a,#0x04
 063D 2A        1699            add     a,r2
 063E FD        1700            mov     r5,a
@@ -1753,30 +1753,30 @@
 06A0 7000      1753            jnz     L018012?
 06A2 020000    1754            ljmp    L018005?
 06A5           1755   L018012?:
-06A5           1756   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:340: pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
+06A5           1756   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:341: pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
 06A5 C002      1757            push    ar2
 06A7 C003      1758            push    ar3
 06A9 C004      1759            push    ar4
-06AB 75B000    1760            mov     _map2_PARM_2,#0x00
-06AE 75B100    1761            mov     (_map2_PARM_2 + 1),#0x00
-06B1 75B200    1762            mov     (_map2_PARM_2 + 2),#0x00
-06B4 75B300    1763            mov     (_map2_PARM_2 + 3),#0x00
-06B7 757050    1764            mov     _map2_PARM_3,#0x50
-06BA 757153    1765            mov     (_map2_PARM_3 + 1),#0x53
-06BD 75721B    1766            mov     (_map2_PARM_3 + 2),#0x1B
-06C0 757340    1767            mov     (_map2_PARM_3 + 3),#0x40
-06C3 753000    1768            mov     _map2_PARM_4,#0x00
-06C6 753100    1769            mov     (_map2_PARM_4 + 1),#0x00
-06C9 753248    1770            mov     (_map2_PARM_4 + 2),#0x48
-06CC 7533C2    1771            mov     (_map2_PARM_4 + 3),#0xC2
-06CF 75F000    1772            mov     _map2_PARM_5,#0x00
-06D2 75F100    1773            mov     (_map2_PARM_5 + 1),#0x00
-06D5 75F200    1774            mov     (_map2_PARM_5 + 2),#0x00
-06D8 75F300    1775            mov     (_map2_PARM_5 + 3),#0x00
-06DB 85A082    1776            mov     dpl,_GetPosition2_vy_1_77
-06DE 85A183    1777            mov     dph,(_GetPosition2_vy_1_77 + 1)
-06E1 85A2F0    1778            mov     b,(_GetPosition2_vy_1_77 + 2)
-06E4 E5A3      1779            mov     a,(_GetPosition2_vy_1_77 + 3)
+06AB 759800    1760            mov     _map2_PARM_2,#0x00
+06AE 759900    1761            mov     (_map2_PARM_2 + 1),#0x00
+06B1 759A00    1762            mov     (_map2_PARM_2 + 2),#0x00
+06B4 759B00    1763            mov     (_map2_PARM_2 + 3),#0x00
+06B7 755850    1764            mov     _map2_PARM_3,#0x50
+06BA 755953    1765            mov     (_map2_PARM_3 + 1),#0x53
+06BD 755A1B    1766            mov     (_map2_PARM_3 + 2),#0x1B
+06C0 755B40    1767            mov     (_map2_PARM_3 + 3),#0x40
+06C3 751800    1768            mov     _map2_PARM_4,#0x00
+06C6 751900    1769            mov     (_map2_PARM_4 + 1),#0x00
+06C9 751A48    1770            mov     (_map2_PARM_4 + 2),#0x48
+06CC 751BC2    1771            mov     (_map2_PARM_4 + 3),#0xC2
+06CF 75D800    1772            mov     _map2_PARM_5,#0x00
+06D2 75D900    1773            mov     (_map2_PARM_5 + 1),#0x00
+06D5 75DA00    1774            mov     (_map2_PARM_5 + 2),#0x00
+06D8 75DB00    1775            mov     (_map2_PARM_5 + 3),#0x00
+06DB 858882    1776            mov     dpl,_GetPosition2_vy_1_77
+06DE 858983    1777            mov     dph,(_GetPosition2_vy_1_77 + 1)
+06E1 858AF0    1778            mov     b,(_GetPosition2_vy_1_77 + 2)
+06E4 E58B      1779            mov     a,(_GetPosition2_vy_1_77 + 3)
 06E6 C004      1780            push    ar4
 06E8 C005      1781            push    ar5
 06EA C006      1782            push    ar6
@@ -1804,14 +1804,14 @@
 0714 A3        1804            inc     dptr
 0715 EB        1805            mov     a,r3
 0716 120000    1806            lcall   __gptrput
-0719           1807   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:341: printf("neg y\r\n");
+0719           1807   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:342: printf("neg y\r\n");
 0719 C002      1808            push    ar2
 071B C003      1809            push    ar3
 071D C004      1810            push    ar4
 071F C005      1811            push    ar5
 0721 C006      1812            push    ar6
 0723 C007      1813            push    ar7
-0725 7490      1814            mov     a,#__str_3
+0725 7480      1814            mov     a,#__str_3
 0727 C0E0      1815            push    acc
 0729 74C1      1816            mov     a,#(__str_3 >> 8)
 072B C0E0      1817            push    acc
@@ -1832,30 +1832,30 @@
 074A D002      1832            pop     ar2
 074C 020000    1833            ljmp    L018006?
 074F           1834   L018005?:
-074F           1835   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:344: pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
+074F           1835   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:345: pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
 074F C002      1836            push    ar2
 0751 C003      1837            push    ar3
 0753 C004      1838            push    ar4
-0755 75B050    1839            mov     _map2_PARM_2,#0x50
-0758 75B153    1840            mov     (_map2_PARM_2 + 1),#0x53
-075B 75B21B    1841            mov     (_map2_PARM_2 + 2),#0x1B
-075E 75B340    1842            mov     (_map2_PARM_2 + 3),#0x40
-0761 757033    1843            mov     _map2_PARM_3,#0x33
-0764 757133    1844            mov     (_map2_PARM_3 + 1),#0x33
-0767 757253    1845            mov     (_map2_PARM_3 + 2),#0x53
-076A 757340    1846            mov     (_map2_PARM_3 + 3),#0x40
-076D 753000    1847            mov     _map2_PARM_4,#0x00
-0770 753100    1848            mov     (_map2_PARM_4 + 1),#0x00
-0773 753200    1849            mov     (_map2_PARM_4 + 2),#0x00
-0776 753300    1850            mov     (_map2_PARM_4 + 3),#0x00
-0779 75F000    1851            mov     _map2_PARM_5,#0x00
-077C 75F100    1852            mov     (_map2_PARM_5 + 1),#0x00
-077F 75F248    1853            mov     (_map2_PARM_5 + 2),#0x48
-0782 75F342    1854            mov     (_map2_PARM_5 + 3),#0x42
-0785 85A082    1855            mov     dpl,_GetPosition2_vy_1_77
-0788 85A183    1856            mov     dph,(_GetPosition2_vy_1_77 + 1)
-078B 85A2F0    1857            mov     b,(_GetPosition2_vy_1_77 + 2)
-078E E5A3      1858            mov     a,(_GetPosition2_vy_1_77 + 3)
+0755 759850    1839            mov     _map2_PARM_2,#0x50
+0758 759953    1840            mov     (_map2_PARM_2 + 1),#0x53
+075B 759A1B    1841            mov     (_map2_PARM_2 + 2),#0x1B
+075E 759B40    1842            mov     (_map2_PARM_2 + 3),#0x40
+0761 755833    1843            mov     _map2_PARM_3,#0x33
+0764 755933    1844            mov     (_map2_PARM_3 + 1),#0x33
+0767 755A53    1845            mov     (_map2_PARM_3 + 2),#0x53
+076A 755B40    1846            mov     (_map2_PARM_3 + 3),#0x40
+076D 751800    1847            mov     _map2_PARM_4,#0x00
+0770 751900    1848            mov     (_map2_PARM_4 + 1),#0x00
+0773 751A00    1849            mov     (_map2_PARM_4 + 2),#0x00
+0776 751B00    1850            mov     (_map2_PARM_4 + 3),#0x00
+0779 75D800    1851            mov     _map2_PARM_5,#0x00
+077C 75D900    1852            mov     (_map2_PARM_5 + 1),#0x00
+077F 75DA48    1853            mov     (_map2_PARM_5 + 2),#0x48
+0782 75DB42    1854            mov     (_map2_PARM_5 + 3),#0x42
+0785 858882    1855            mov     dpl,_GetPosition2_vy_1_77
+0788 858983    1856            mov     dph,(_GetPosition2_vy_1_77 + 1)
+078B 858AF0    1857            mov     b,(_GetPosition2_vy_1_77 + 2)
+078E E58B      1858            mov     a,(_GetPosition2_vy_1_77 + 3)
 0790 C004      1859            push    ar4
 0792 C005      1860            push    ar5
 0794 C006      1861            push    ar6
@@ -1883,14 +1883,14 @@
 07BE A3        1883            inc     dptr
 07BF EB        1884            mov     a,r3
 07C0 120000    1885            lcall   __gptrput
-07C3           1886   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:345: printf("pos y\r\n");
+07C3           1886   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:346: printf("pos y\r\n");
 07C3 C002      1887            push    ar2
 07C5 C003      1888            push    ar3
 07C7 C004      1889            push    ar4
 07C9 C005      1890            push    ar5
 07CB C006      1891            push    ar6
 07CD C007      1892            push    ar7
-07CF 7410      1893            mov     a,#__str_4
+07CF 7400      1893            mov     a,#__str_4
 07D1 C0E0      1894            push    acc
 07D3 74C2      1895            mov     a,#(__str_4 >> 8)
 07D5 C0E0      1896            push    acc
@@ -1906,13 +1906,13 @@
 07EA D004      1906            pop     ar4
 07EC D003      1907            pop     ar3
 07EE D002      1908            pop     ar2
-07F0           1909   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:359: printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
+07F0           1909   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:360: printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
 07F0 D004      1910            pop     ar4
 07F2 D003      1911            pop     ar3
 07F4 D002      1912            pop     ar2
-07F6           1913   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:345: printf("pos y\r\n");
+07F6           1913   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:346: printf("pos y\r\n");
 07F6           1914   L018006?:
-07F6           1915   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:350: mov_x = pos[0];
+07F6           1915   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:351: mov_x = pos[0];
 07F6 8A82      1916            mov     dpl,r2
 07F8 8B83      1917            mov     dph,r3
 07FA 8CF0      1918            mov     b,r4
@@ -1927,7 +1927,7 @@
 080A A3        1927            inc     dptr
 080B 120000    1928            lcall   __gptrget
 080E F8        1929            mov     r0,a
-080F           1930   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:351: mov_y = pos[1];
+080F           1930   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:352: mov_y = pos[1];
 080F 8D82      1931            mov     dpl,r5
 0811 8E83      1932            mov     dph,r6
 0813 8FF0      1933            mov     b,r7
@@ -1942,7 +1942,7 @@
 0823 A3        1942            inc     dptr
 0824 120000    1943            lcall   __gptrget
 0827 F9        1944            mov     r1,a
-0828           1945   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:353: sprintf(buff_x, "%.4f", mov_x);
+0828           1945   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:354: sprintf(buff_x, "%.4f", mov_x);
 0828 C005      1946            push    ar5
 082A C006      1947            push    ar6
 082C C007      1948            push    ar7
@@ -1951,13 +1951,13 @@
 0832 C003      1951            push    ar3
 0834 C004      1952            push    ar4
 0836 C000      1953            push    ar0
-0838 7450      1954            mov     a,#__str_5
+0838 7440      1954            mov     a,#__str_5
 083A C0E0      1955            push    acc
 083C 74C2      1956            mov     a,#(__str_5 >> 8)
 083E C0E0      1957            push    acc
 0840 7480      1958            mov     a,#0x80
 0842 C0E0      1959            push    acc
-0844 74C0      1960            mov     a,#_GetPosition2_buff_x_1_77
+0844 74A8      1960            mov     a,#_GetPosition2_buff_x_1_77
 0846 C0E0      1961            push    acc
 0848 74B4      1962            mov     a,#(_GetPosition2_buff_x_1_77 >> 8)
 084A C0E0      1963            push    acc
@@ -1967,22 +1967,22 @@
 0852 E581      1967            mov     a,sp
 0854 24F6      1968            add     a,#0xf6
 0856 F581      1969            mov     sp,a
-0858           1970   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:354: LCDprint(buff_x, 1, 1);
-0858 750001    1971            mov     _LCDprint_PARM_2,#0x01
-085B D260      1972            setb    _LCDprint_PARM_3
-085D 90B4C0    1973            mov     dptr,#_GetPosition2_buff_x_1_77
+0858           1970   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:355: LCDprint(buff_x, 1, 1);
+0858 75E801    1971            mov     _LCDprint_PARM_2,#0x01
+085B D248      1972            setb    _LCDprint_PARM_3
+085D 90B4A8    1973            mov     dptr,#_GetPosition2_buff_x_1_77
 0860 75F000    1974            mov     b,#0x00
 0863 120000    1975            lcall   _LCDprint
-0866           1976   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:355: sprintf(buff_y, "%.4f", mov_y);
-0866 7450      1977            mov     a,#__str_5
+0866           1976   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:356: sprintf(buff_y, "%.4f", mov_y);
+0866 7440      1977            mov     a,#__str_5
 0868 C0E0      1978            push    acc
 086A 74C2      1979            mov     a,#(__str_5 >> 8)
 086C C0E0      1980            push    acc
 086E 7480      1981            mov     a,#0x80
 0870 C0E0      1982            push    acc
-0872 7410      1983            mov     a,#_GetPosition2_buff_y_1_77
+0872 74F8      1983            mov     a,#_GetPosition2_buff_y_1_77
 0874 C0E0      1984            push    acc
-0876 74B5      1985            mov     a,#(_GetPosition2_buff_y_1_77 >> 8)
+0876 74B4      1985            mov     a,#(_GetPosition2_buff_y_1_77 >> 8)
 0878 C0E0      1986            push    acc
 087A E4        1987            clr     a
 087B C0E0      1988            push    acc
@@ -1990,26 +1990,26 @@
 0880 E581      1990            mov     a,sp
 0882 24F6      1991            add     a,#0xf6
 0884 F581      1992            mov     sp,a
-0886           1993   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:356: LCDprint(buff_y, 2, 1);
-0886 750002    1994            mov     _LCDprint_PARM_2,#0x02
-0889 D260      1995            setb    _LCDprint_PARM_3
-088B 90B510    1996            mov     dptr,#_GetPosition2_buff_y_1_77
+0886           1993   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:357: LCDprint(buff_y, 2, 1);
+0886 75E802    1994            mov     _LCDprint_PARM_2,#0x02
+0889 D248      1995            setb    _LCDprint_PARM_3
+088B 90B4F8    1996            mov     dptr,#_GetPosition2_buff_y_1_77
 088E 75F000    1997            mov     b,#0x00
 0891 120000    1998            lcall   _LCDprint
-0894           1999   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:359: printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
-0894 7410      2000            mov     a,#_GetPosition2_buff_y_1_77
+0894           1999   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:360: printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
+0894 74F8      2000            mov     a,#_GetPosition2_buff_y_1_77
 0896 C0E0      2001            push    acc
-0898 74B5      2002            mov     a,#(_GetPosition2_buff_y_1_77 >> 8)
+0898 74B4      2002            mov     a,#(_GetPosition2_buff_y_1_77 >> 8)
 089A C0E0      2003            push    acc
 089C E4        2004            clr     a
 089D C0E0      2005            push    acc
-089F 74C0      2006            mov     a,#_GetPosition2_buff_x_1_77
+089F 74A8      2006            mov     a,#_GetPosition2_buff_x_1_77
 08A1 C0E0      2007            push    acc
 08A3 74B4      2008            mov     a,#(_GetPosition2_buff_x_1_77 >> 8)
 08A5 C0E0      2009            push    acc
 08A7 E4        2010            clr     a
 08A8 C0E0      2011            push    acc
-08AA 74D0      2012            mov     a,#__str_6
+08AA 74C0      2012            mov     a,#__str_6
 08AC C0E0      2013            push    acc
 08AE 74C2      2014            mov     a,#(__str_6 >> 8)
 08B0 C0E0      2015            push    acc
@@ -2027,20 +2027,20 @@
 08C0           2027   ;xy_pos                    Allocated with name '_main_xy_pos_1_83'
 08C0           2028   ;sloc0                     Allocated with name '_main_sloc0_1_0'
 08C0           2029   ;------------------------------------------------------------
-08C0           2030   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:429: void main (void)
+08C0           2030   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:430: void main (void)
 08C0           2031   ;        -----------------------------------------
 08C0           2032   ;         function main
 08C0           2033   ;        -----------------------------------------
 08C0           2034   _main:
-08C0           2035   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:438: TIMER0_Init();
+08C0           2035   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:439: TIMER0_Init();
 08C0 120000    2036            lcall   _TIMER0_Init
-08C3           2037   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:439: LCD_4BIT();
+08C3           2037   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:440: LCD_4BIT();
 08C3 120000    2038            lcall   _LCD_4BIT
-08C6           2039   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:441: waitms(500); // Give PuTTy a chance to start before sending
+08C6           2039   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:442: waitms(500); // Give PuTTy a chance to start before sending
 08C6 9001F4    2040            mov     dptr,#0x01F4
 08C9 120000    2041            lcall   _waitms
-08CC           2042   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:442: printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
-08CC 7410      2043            mov     a,#__str_7
+08CC           2042   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:443: printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
+08CC 7400      2043            mov     a,#__str_7
 08CE C0E0      2044            push    acc
 08D0 74C3      2045            mov     a,#(__str_7 >> 8)
 08D2 C0E0      2046            push    acc
@@ -2050,27 +2050,27 @@
 08DB 1581      2050            dec     sp
 08DD 1581      2051            dec     sp
 08DF 1581      2052            dec     sp
-08E1           2053   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:447: __FILE__, __DATE__, __TIME__);
-08E1           2054   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:446: "Compiled: %s, %s\n\n",
-08E1 7450      2055            mov     a,#__str_11
+08E1           2053   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:448: __FILE__, __DATE__, __TIME__);
+08E1           2054   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:447: "Compiled: %s, %s\n\n",
+08E1 7440      2055            mov     a,#__str_11
 08E3 C0E0      2056            push    acc
 08E5 74C3      2057            mov     a,#(__str_11 >> 8)
 08E7 C0E0      2058            push    acc
 08E9 7480      2059            mov     a,#0x80
 08EB C0E0      2060            push    acc
-08ED 7490      2061            mov     a,#__str_10
+08ED 7480      2061            mov     a,#__str_10
 08EF C0E0      2062            push    acc
 08F1 74C3      2063            mov     a,#(__str_10 >> 8)
 08F3 C0E0      2064            push    acc
 08F5 7480      2065            mov     a,#0x80
 08F7 C0E0      2066            push    acc
-08F9 74D0      2067            mov     a,#__str_9
+08F9 74C0      2067            mov     a,#__str_9
 08FB C0E0      2068            push    acc
 08FD 74C3      2069            mov     a,#(__str_9 >> 8)
 08FF C0E0      2070            push    acc
 0901 7480      2071            mov     a,#0x80
 0903 C0E0      2072            push    acc
-0905 7410      2073            mov     a,#__str_8
+0905 7400      2073            mov     a,#__str_8
 0907 C0E0      2074            push    acc
 0909 74C4      2075            mov     a,#(__str_8 >> 8)
 090B C0E0      2076            push    acc
@@ -2080,69 +2080,69 @@
 0914 E581      2080            mov     a,sp
 0916 24F4      2081            add     a,#0xf4
 0918 F581      2082            mov     sp,a
-091A           2083   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:449: InitPinADC(1, 4); // Configure P1.4 as analog input
-091A 758004    2084            mov     _InitPinADC_PARM_2,#0x04
+091A           2083   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:450: InitPinADC(1, 4); // Configure P1.4 as analog input
+091A 756804    2084            mov     _InitPinADC_PARM_2,#0x04
 091D 758201    2085            mov     dpl,#0x01
 0920 120000    2086            lcall   _InitPinADC
-0923           2087   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:450: InitPinADC(1, 5); // Configure P1.5 as analog input
-0923 758005    2088            mov     _InitPinADC_PARM_2,#0x05
+0923           2087   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:451: InitPinADC(1, 5); // Configure P1.5 as analog input
+0923 756805    2088            mov     _InitPinADC_PARM_2,#0x05
 0926 758201    2089            mov     dpl,#0x01
 0929 120000    2090            lcall   _InitPinADC
-092C           2091   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:451: InitADC();
+092C           2091   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:452: InitADC();
 092C 120000    2092            lcall   _InitADC
-092F           2093   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:479: while(1)
+092F           2093   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:480: while(1)
 092F           2094   L019002?:
-092F           2095   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:482: v[0] = Volts_at_Pin(XPOS_PIN) ;
+092F           2095   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:483: v[0] = Volts_at_Pin(XPOS_PIN) ;
 092F 75820A    2096            mov     dpl,#0x0A
 0932 120000    2097            lcall   _Volts_at_Pin
 0935 AA82      2098            mov     r2,dpl
 0937 AB83      2099            mov     r3,dph
 0939 ACF0      2100            mov     r4,b
 093B FD        2101            mov     r5,a
-093C 8AE0      2102            mov     _main_v_1_83,r2
-093E 8BE1      2103            mov     (_main_v_1_83 + 1),r3
-0940 8CE2      2104            mov     (_main_v_1_83 + 2),r4
-0942 8DE3      2105            mov     (_main_v_1_83 + 3),r5
-0944           2106   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:483: v[1] = Volts_at_Pin(YPOS_PIN) ;
+093C 8AC8      2102            mov     _main_v_1_83,r2
+093E 8BC9      2103            mov     (_main_v_1_83 + 1),r3
+0940 8CCA      2104            mov     (_main_v_1_83 + 2),r4
+0942 8DCB      2105            mov     (_main_v_1_83 + 3),r5
+0944           2106   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:484: v[1] = Volts_at_Pin(YPOS_PIN) ;
 0944 75820B    2107            mov     dpl,#0x0B
 0947 120000    2108            lcall   _Volts_at_Pin
 094A AA82      2109            mov     r2,dpl
 094C AB83      2110            mov     r3,dph
 094E ACF0      2111            mov     r4,b
 0950 FD        2112            mov     r5,a
-0951 8AE4      2113            mov     (_main_v_1_83 + 0x0004),r2
-0953 8BE5      2114            mov     ((_main_v_1_83 + 0x0004) + 1),r3
-0955 8CE6      2115            mov     ((_main_v_1_83 + 0x0004) + 2),r4
-0957 8DE7      2116            mov     ((_main_v_1_83 + 0x0004) + 3),r5
-0959           2117   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:490: GetPosition2(v, xy_pos);
-0959 75B030    2118            mov     _GetPosition2_PARM_2,#_main_xy_pos_1_83
-095C 75B100    2119            mov     (_GetPosition2_PARM_2 + 1),#0x00
-095F 75B240    2120            mov     (_GetPosition2_PARM_2 + 2),#0x40
-0962 90B3E0    2121            mov     dptr,#_main_v_1_83
+0951 8ACC      2113            mov     (_main_v_1_83 + 0x0004),r2
+0953 8BCD      2114            mov     ((_main_v_1_83 + 0x0004) + 1),r3
+0955 8CCE      2115            mov     ((_main_v_1_83 + 0x0004) + 2),r4
+0957 8DCF      2116            mov     ((_main_v_1_83 + 0x0004) + 3),r5
+0959           2117   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:491: GetPosition2(v, xy_pos);
+0959 759818    2118            mov     _GetPosition2_PARM_2,#_main_xy_pos_1_83
+095C 759900    2119            mov     (_GetPosition2_PARM_2 + 1),#0x00
+095F 759A40    2120            mov     (_GetPosition2_PARM_2 + 2),#0x40
+0962 90B3C8    2121            mov     dptr,#_main_v_1_83
 0965 75F040    2122            mov     b,#0x40
 0968 120000    2123            lcall   _GetPosition2
-096B           2124   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:492: printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
+096B           2124   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:493: printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
 096B 75820B    2125            mov     dpl,#0x0B
 096E 120000    2126            lcall   _Volts_at_Pin
-0971 858270    2127            mov     _main_sloc0_1_0,dpl
-0974 858371    2128            mov     (_main_sloc0_1_0 + 1),dph
-0977 85F072    2129            mov     (_main_sloc0_1_0 + 2),b
-097A F573      2130            mov     (_main_sloc0_1_0 + 3),a
+0971 858258    2127            mov     _main_sloc0_1_0,dpl
+0974 858359    2128            mov     (_main_sloc0_1_0 + 1),dph
+0977 85F05A    2129            mov     (_main_sloc0_1_0 + 2),b
+097A F55B      2130            mov     (_main_sloc0_1_0 + 3),a
 097C 75820A    2131            mov     dpl,#0x0A
 097F 120000    2132            lcall   _Volts_at_Pin
 0982 AE82      2133            mov     r6,dpl
 0984 AF83      2134            mov     r7,dph
 0986 AAF0      2135            mov     r2,b
 0988 FB        2136            mov     r3,a
-0989 C070      2137            push    _main_sloc0_1_0
-098B C071      2138            push    (_main_sloc0_1_0 + 1)
-098D C072      2139            push    (_main_sloc0_1_0 + 2)
-098F C073      2140            push    (_main_sloc0_1_0 + 3)
+0989 C058      2137            push    _main_sloc0_1_0
+098B C059      2138            push    (_main_sloc0_1_0 + 1)
+098D C05A      2139            push    (_main_sloc0_1_0 + 2)
+098F C05B      2140            push    (_main_sloc0_1_0 + 3)
 0991 C006      2141            push    ar6
 0993 C007      2142            push    ar7
 0995 C002      2143            push    ar2
 0997 C003      2144            push    ar3
-0999 7490      2145            mov     a,#__str_12
+0999 7480      2145            mov     a,#__str_12
 099B C0E0      2146            push    acc
 099D 74C4      2147            mov     a,#(__str_12 >> 8)
 099F C0E0      2148            push    acc
@@ -2152,7 +2152,7 @@
 09A8 E581      2152            mov     a,sp
 09AA 24F5      2153            add     a,#0xf5
 09AC F581      2154            mov     sp,a
-09AE           2155   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:494: waitms(500);
+09AE           2155   ;        C:\Users\keybo\Documents\GitHub\Project2ELEC291\Joystick-tester\working-joystick.c:495: waitms(500);
 09AE 9001F4    2156            mov     dptr,#0x01F4
 09B1 120000    2157            lcall   _waitms
 09B4 020000    2158            ljmp    L019002?
@@ -2255,13 +2255,13 @@
      2E63
 00C2 00        2227            db 0x00
 00C3           2228   __str_10:
-00C3 4D617220  2229            db 'Mar 19 2024'
-     31392032
+00C3 4D617220  2229            db 'Mar 31 2024'
+     33312032
      303234
 00CE 00        2230            db 0x00
 00CF           2231   __str_11:
-00CF 32323A35  2232            db '22:59:46'
-     393A3436
+00CF 31363A35  2232            db '16:58:56'
+     383A3536
 00D7 00        2233            db 0x00
 00D8           2234   __str_12:
 00D8 78766F6C  2235            db 'xvolts: %7.5f yvolts: %7.5f'
