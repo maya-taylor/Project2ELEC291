@@ -6,6 +6,7 @@
 
 #define SYSCLK 72000000
 #define BAUDRATE 115200L
+#define TIMER_0_FREQ 2000L // For a 0.5ms tick
 
 idata char buff[20];
 
@@ -96,6 +97,13 @@ void Timer3us(unsigned char us)
 		TMR3CN0 &= ~(0x80);         // Clear overflow indicator
 	}
 	TMR3CN0 = 0 ;                   // Stop Timer3 and clear overflow flag
+}
+
+void TIMER0_Init(void)
+{
+TMOD&=0b_1111_0000; // Set the bits of Timer/Counter 0 to zero
+TMOD|=0b_0000_0101; // Timer/Counter 0 used as a 16-bit counter
+TR0=0; // Stop Timer/Counter 0
 }
 
 void waitms (unsigned int ms)
@@ -229,20 +237,25 @@ void SendATCommand (char * s)
 	printf("Response: %s\r\n", buff);
 }
 
-void main (void)
+void main(void)
 {
 	unsigned int cnt;
 	float extract_num = 0.0;
 	float prev_num = 0.1;
 	int mapped_num; //for the beeping
-	float min_metal_detect = 170080.0; //frequency at which metal is detected
+	float min_metal_detect = 200; //frequency increase at which metal is detected
 	float mapped_range = 5.0; //1 to mapped_range+1
 	float extract_range = 800.0; //max range of beeping frequency
 	int timeout_cnt = 0;
+	int sum_count = 0; //count to keep track of first 10 vals
+	int sum_freq = 0; //where I am adding the frequencies into
+	int baseline_freq;
+
 	
 	waitms(500);
 	printf("\r\nJDY-40 test\r\n");
 	UART1_Init(9600);
+	TIMER0_Init();
 
 	// To configure the device (shown here using default values).
 	// For some changes to take effect, the JDY-40 needs to be power cycled.
@@ -314,25 +327,46 @@ void main (void)
 		//	}
 		//	printf("%d\r\n", mapped_num);
 		//}
-		//waitms_or_RI1(300);
-
-		if (P3_7==0)
-		{
-			putchar1('M');
-
+		    waitms_or_RI1(100);
+			sendstr1("RSVP\r\n");
+			putchar('.');
+			
 			timeout_cnt = 0;
 			while (1) 
 			{
 				if (RXU1()) break;
-				Timer3us(100);
+				waitms_or_RI1(1);
 				timeout_cnt++;
-				if (timeout_cnt>=1000) break;
+				if (timeout_cnt>=500){
+					printf("timeout \r\n");
+					break;
+				 }
 			}
 			if (RXU1()) 
 			{
 				getstr1(buff);
-				printf("RX: %s\r\n", buff);
+				if(strlen(buff)== 10)
+				{
+					//need to test sum_count part still but should work
+					printf("RX: %s\r\n", buff);
+					extract_num = atof(buff);
+					if(sum_count < 10)
+					{
+						sum_freq += extract_num;
+						sum_count++;
+					}
+					if(sum_count == 10)
+						baseline_freq = sum_freq/10;
+					if(sum_count > 10)
+					{
+						//now we can start detecting
+						if(extract_num > min_metal_detect + baseline_freq)
+							printf("Beep\r\n}");
+					}
+					
+				}
+				//printf("LR = %d\r\n", strlen(buff));
 			}
-		}
 	}
 }
+

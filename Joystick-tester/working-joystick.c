@@ -15,21 +15,28 @@
 #define SYSCLK 72000000L
 #define BAUDRATE 115200L
 #define SARCLK 18000000L
+
+//Input Pins
 #define XPOS_PIN QFP32_MUX_P1_4
 #define YPOS_PIN QFP32_MUX_P1_5
 
+//Output Pins
 #define LCD_RS P1_7
 #define LCD_E P1_6
 #define LCD_D4 P1_3
 #define LCD_D5 P1_2
 #define LCD_D6 P1_1
 #define LCD_D7 P1_0
+
+//Constants 
 #define CHARS_PER_LINE 16
 #define MAX_VOLTS 3.0349  //this should stay consistent but maybe requires calibration (HY)
 #define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
+#define VDD 3.3035 // The measured value of VDD in volts (experimentally derived)
 
-unsigned char overflow_count;
+unsigned char overflow_count; //timer overflow counter
 
+//Hardware Linking Setup 
 char _c51_external_startup (void)
 {
 	// Disable Watchdog with key sequence
@@ -98,6 +105,7 @@ char _c51_external_startup (void)
 	return 0;
 }
 
+//Initialize ADC 
 void InitADC (void)
 {
 	SFRPAGE = 0x00;
@@ -165,8 +173,6 @@ void waitms (unsigned int ms)
 		for (k=0; k<4; k++) Timer3us(250);
 }
 
-#define VDD 3.3035 // The measured value of VDD in volts
-
 void InitPinADC (unsigned char portno, unsigned char pinno)
 {
 	unsigned char mask;
@@ -218,12 +224,10 @@ unsigned int Get_ADC (void)
 	return (ADC0);
 }
 
-
 float Volts_at_Pin(unsigned char pin)
 {
 	 return ((ADC_at_Pin(pin)*VDD)/0b_0011_1111_1111_1111);
 }
-
 
 void LCD_pulse (void)
 {
@@ -290,34 +294,28 @@ void LCDprint(char * string, unsigned char line, bit clear)
 	if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
 }
 
-float map2(float x, float in_min, float in_max, float out_min, float out_max)
-{
-	float tempa, tempb, tempc, tempd, tempe, tempf;
-	
-	tempa = (x - in_min);
-	printf("%f\r\n", tempa);
-	tempb = (out_max - out_min);
-	printf("%f\r\n", tempb);
-	tempc = tempa * tempb;
-	printf("%f\r\n", tempc);
-	tempd = (in_max - in_min);
-	printf("%f\r\n", tempd);
-	tempe = (float)tempc/(float)tempd;
-	printf("%f\r\n", tempe);
-	tempf = tempe+ out_min;
-	printf("%f\r\n", tempf);
-	
-
-	
-	//float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  return tempf;
+/* Function: maps analog joystick voltage inputs to x or y positions
+ * Parameter: x -- value read from the ADC pin 
+ * Parameters: in_min, in_max -- range of possible input values
+ * Parameters: in_max, out_max -- range of possible output values
+ * Returns: mapped x or y value
+ */
+float mapper(float x, float in_min, float in_max, float out_min, float out_max)
+{	
+	float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  	return value;
 }
 
-void GetPosition2 (float volts[2], float pos[2]) {
+/* Function: convert voltage readings into (x, y) positioning WITH POLARITY controlled
+ *
+ *
+ *
+ */
+void GetPosition (float volts[2], float pos[2]) {
 	//float zero_x, zero_y, max_x, max_y;
     float mov_x = 0.0;
     float mov_y = 0.0;
-	// approx values
+	// approx values -- experimentally derived
 	float mid_x = 2.35759;
 	float mid_y = 2.42696;
 
@@ -328,21 +326,21 @@ void GetPosition2 (float volts[2], float pos[2]) {
 	float vy = volts[1];
 
 	if (pos[0] < mid_x) {
-		pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
+		pos[0] = mapper(vx, 0.0, mid_x, -50.0, 0);
 		printf("neg x\r\n");
 
 	}
 	else {
-		pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
+		pos[0] = mapper(vx, mid_x, 3.3, 0.0, 50.0);
 		printf("pos x\r\n");
 	}
 
 	if (pos[1] < mid_y) {
-		pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
+		pos[1] = mapper(vy, 0.0, mid_y, -50.0, 0.0);
 		printf("neg y\r\n");
 	}
 	else {
-		pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
+		pos[1] = mapper(vy, mid_y, 3.3, 0.0, 50.0);
 		printf("pos y\r\n");
 	}
 	// pos[0] = map2(vx, 0.0, 3.3, -50.0, 50.0);
@@ -360,81 +358,11 @@ void GetPosition2 (float volts[2], float pos[2]) {
     printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
 }
 
-/* 
- * Function: Gets the xy position based on the joystick; prints information on one line to the serial port
- * Parameter: volts -- voltage readings for x and y
- * Parameter: pos -- contain the computed x and y positions 
- * Returns: void 
- * 
- * Author: HY
- * Date: 18/03/2024
- */
-/*
-void GetPosition(float volts[2], float pos[2])
-{
-
-    float zero_x, zero_y, max_x, max_y;
-    float mov_x = 0.0;
-    float mov_y = 0.0;
-    char buff_x[17];
-    char buff_y[17];
-
-    //initial computations to help us find the zero
-    max_x = MAX_VOLTS * SQRT_2; //multiply by sqrt(2) to undo the rms 
-    max_y = MAX_VOLTS * SQRT_2;
-
-    zero_x = max_x / 2.0;
-    zero_y = max_y / 2.0;
-
-    if(volts[0] > zero_x) {
-        mov_x = (volts[0] - zero_x);
-        //printf("xgt zero %f\r\n", mov_x); //printf statements for debugging -- ignore unless needed
-    }
-    else if(volts[0] < zero_x) {
-        mov_x = -(zero_x - volts[0]);
-        //printf("xlt zero %f\r\n", mov_x);
-
-    }
-    else {
-        mov_x = 0.0;
-        //printf("xeq zero %f\r\n", mov_x);
-
-    }
-
-    if(volts[1] > zero_y) {
-        mov_y = (volts[1] - zero_y);
-        //printf("ygt zero %f\r\n", mov_y);
-    }
-    else if(volts[1] < zero_y) {
-        mov_y = -(zero_y - volts[1]);
-        //printf("ylt zero %f\r\n", mov_y);
-    }
-    else {
-        mov_y = 0.0;
-        //printf("yeq zero %f\r\n", mov_y);
-    }
-
-    //utilize that arrays are pointers so we don't have to use two different functions
-    pos[0] = mov_x;
-    pos[1] = mov_y;
-    //print to LCD
-    sprintf(buff_x, "%.4f", mov_x);
-    LCDprint(buff_x, 1, 1);
-    sprintf(buff_y, "%.4f", mov_y);
-    LCDprint(buff_y, 2, 1);
-    
-    //print to serial
-    printf("xpos: %s ypos: %s\r\n", buff_x, buff_y);
-}*/
 
 void main (void)
 {
-	//char l1buff[16];
-	//char l2buff[16];
-
 	float v[2];
     float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
-	//float adc[2]
     
 	TIMER0_Init();
 	LCD_4BIT();
@@ -451,44 +379,13 @@ void main (void)
 	InitPinADC(1, 5); // Configure P1.5 as analog input
     InitADC();
 
-	//ADC0MX=VREF_PIN;
-	//ADINT = 0;
-	//ADBUSY=1;
-	//while (!ADINT); // Wait for conversion to complete
-	//LCDprint("Hello World", 1,1);
-
-	/* UNTESTED CODE AL */
-
-	//	Maps from 0 to 3.30349
-
-    //(0,0) = (-x, -y), (3.30349/2, 3.30349/2) = (0,0);
-
-
-    
-
-   
-	/* 
-	[a1,a2] = [max_x,max_y]
-	[b1,b2] = [new_x,new_y]
-
-	t = 
-	*/
-
-
-	/* UNTESTED CODE AL */
-
 	while(1)
 	{		
 
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
 
-       
-		// printf("xvolts: %7.5f yvolts: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN));
-		// ADC 
-		//printf("xadc: %7.5f yadc: %7.5f\r\n", ADC_at_Pin(XPOS_PIN), ADC_at_Pin(YPOS_PIN))
-        
-        GetPosition2(v, xy_pos);
+        GetPosition(v, xy_pos);
        
 		printf("xvolts: %7.5f yvolts: %7.5f\r\n", Volts_at_Pin(XPOS_PIN), Volts_at_Pin(YPOS_PIN));
         
