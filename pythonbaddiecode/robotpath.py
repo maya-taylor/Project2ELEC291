@@ -20,6 +20,14 @@ canvas_scaling_factor = 0.5 # scaling final phasor magnitudes
 FORWARD_VELOCITY      = 15.0
 CW_VELOCITY      	  = 119.0
 
+# Configure the serial port
+ser = serial.Serial(
+    port='COM16',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_TWO,
+    bytesize=serial.EIGHTBITS
+)
 coordinates = {65: (0, 50), #A to N
                66: (0, 30),
                67: (0, 20),
@@ -96,8 +104,48 @@ import tkinter as tk
 import numpy as np
 import cmath # for vector math
 
-# Draw path and returns a phasor list
-# Draw path and returns a phasor list
+
+def on_option_select():
+    selected = selected_option.get()
+    result_label.config(text=f"Selected Option: {selected}")
+
+    if selected == 'Draw':
+       print("Draw Mode")
+    elif selected == 'Joystick':
+        print("Joystick Mode")
+    else:
+        print("Invalid Option")
+
+root = tk.Tk()
+root.title("Start by Manual Joystick Driving or Draw a Path")
+root.geometry("400x100")
+# Create a StringVar to hold the selected option
+selected_option = tk.StringVar()
+# Create the dropdown menu
+options = ["Joystick", "Draw"]
+dropdown = tk.OptionMenu(root, selected_option, *options)
+dropdown.pack(pady=10)
+# Add a button to display the selected option
+show_button = tk.Button(root, text="Show Selection", command=on_option_select)
+show_button.pack()
+# Label to display the selected option
+result_label = tk.Label(root, text="")
+result_label.pack()
+root.mainloop()
+# -- CHANGE MADE -- GL
+# Moved this code to the `on_option_select` command
+
+joystick_flag = 0 
+if selected_option.get() == 'Joystick':
+    joystick_flag = 1
+    print("Joystick Mode")
+elif selected_option.get() == 'Draw':
+    joystick_flag = 0
+    # root = tk.Tk()
+    # app = PathDrawer(root)
+    # root.mainloop()
+    
+
 class PathDrawer:
     def __init__(self, master):
         self.master = master
@@ -109,6 +157,14 @@ class PathDrawer:
         self.approx_points = [] # Approximated waypoints of the drawn path
         self.vectors_list = []  # Turning into lists of vectors
         self.phasors_list = []  # Angle for CW rotation as a list calculated from previous vector
+
+        # ser = serial.Serial(
+        #     port='COM16',
+        #     baudrate=9600,
+        #     parity=serial.PARITY_NONE,
+        #     stopbits=serial.STOPBITS_TWO,
+        #     bytesize=serial.EIGHTBITS
+        # )
 
         self.canvas.bind("<Button-1>", self.on_click)
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -216,8 +272,8 @@ class PathDrawer:
             # while executing current instruction robotpath in .c is blocking
             wait_time = wait_time * 1.05 + 0.2 
 
-            ser.write(phasor_ascii_char.encode()) # send over serial to JDY40
-            print(phasor)                         # print what character is sent
+            ser.write(f"{phasor_ascii_char}\r\n".encode())  # send over serial to JDY40
+            print(f"{phasor},{phasor_ascii_char}") # print what character is sent
             
             time.sleep(wait_time)                 # pause program while we wait for phasors to be sent over
 
@@ -255,47 +311,14 @@ class PathDrawer:
         self.data_points = [top_left, top_right, bottom_right, bottom_left, top_left]
         self.draw_lines()
 
-def on_option_select():
-    selected = selected_option.get()
-    result_label.config(text=f"Selected Option: {selected}")
-
-    if selected == 'Draw':
-        root = tk.Tk()
-        app = PathDrawer(root)
-        root.mainloop()
-    elif selected == 'Joystick':
-        print("Joystick Mode")
-    else:
-        print("Invalid Option")
-
-root = tk.Tk()
-root.title("Start by Manual Joystick Driving or Draw a Path")
-root.geometry("400x100")
-# Create a StringVar to hold the selected option
-selected_option = tk.StringVar()
-# Create the dropdown menu
-options = ["Joystick", "Draw"]
-dropdown = tk.OptionMenu(root, selected_option, *options)
-dropdown.pack(pady=10)
-# Add a button to display the selected option
-show_button = tk.Button(root, text="Show Selection", command=on_option_select)
-show_button.pack()
-# Label to display the selected option
-result_label = tk.Label(root, text="")
-result_label.pack()
-root.mainloop()
-# -- CHANGE MADE -- GL
-# Moved this code to the `on_option_select` command
-
-# joystick_flag = 0 
-
-# if selected_option.get() == 'Joystick':
-#     joystick_flag = 1
-#     print("Joystick Mode")
-# elif selected_option.get() == 'Draw':
-#     root = tk.Tk()
-#     app = PathDrawer(root)
-#     root.mainloop()
+# check if joystick_flag is zero
+if (joystick_flag == 0):
+    # Create an instance of the PathDrawer class
+    print("draw yay")
+    root = tk.Tk()
+    drawer = PathDrawer(root)   
+    # start main tkinter loop
+    root.mainloop()
 
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))
@@ -362,14 +385,6 @@ def update_joystick_position(xpos, ypos):
     plt.draw()
     plt.pause(0.002)
 
-# Configure the serial port
-ser = serial.Serial(
-    port='COM16',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_TWO,
-    bytesize=serial.EIGHTBITS
-)
 
 plt.ion()  # Turn on interactive mode for Matplotlib
 
@@ -385,9 +400,10 @@ def on_close(event):
 # Attach the close event handler to the figure
 fig.canvas.mpl_connect('close_event', on_close)
 
-plt.show()
+if(joystick_flag == 1):
+    plt.show()
 
-while True:
+while joystick_flag:
     try:
         # Read data from serial port
         strin = ser.readline()

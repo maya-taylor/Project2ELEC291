@@ -802,9 +802,9 @@ int main(void)
 	//stopCar_ms(1000); // this process is blocking
 	
 	// Path Finding test
-	stopCar_ms(2000);
-	int test_char = 'Å'; // forward
-	pathFindingDecoder(test_char);
+//	stopCar_ms(2000);
+//	int test_char = 'Å'; // forward
+//	pathFindingDecoder(test_char);
 	test_char = '³'; // 75cm and turns 90 degrees
 	pathFindingDecoder(test_char);
 	test_char = '³'; // 75cm and turns 90 degrees

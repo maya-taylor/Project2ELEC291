@@ -43,9 +43,6 @@
 #define level4_freq    1500
 #define level5_freq    1600
 
-// For normalizing joystick position 
-#define external_voltage_reference 1.7854  // in volts
-
 unsigned char overflow_count;
 
 idata char buff[20];
@@ -334,54 +331,29 @@ float map2(float x, float in_min, float in_max, float out_min, float out_max)
     return value;
 }
 
-void LEDgetposition (float volts[2]) {
+void GetPosition2 (float volts[2], float pos[2], float mid[2]) {
 
-    /* pseudocode - hannah
-	get the voltage difference between the led volts and the read volts
-	^do this for both x and y pins 
-	return these by passing by value (utilize array)
-	add an additional parameter in getpos2 that receives this array
-	set mid_x to arr[0]  and mid_y to arr[1]
-	but in this case run this function at the beginning to calibrate on each flash
-	if we were to recalibrate throughout were gonna need to modify and utilize pb or smt
-	*/
-
-	volts[0] = volts[0] - external_voltage_reference; //convert to midpoint
-	volts[1] = volts[1] - external_voltage_reference;
-
-    // read the LED voltage connected to AIN0 (REPLACE) on pin _ // 
-
-
-
-	return;
-
-}
-
-// NEEDS TO BE CHANGED
-void GetPosition2 (float volts[2], float pos[2]) {
-	//float zero_x, zero_y, max_x, max_y;
-    float mov_x = 0.0;
-    float mov_y = 0.0;
-	// approx values
-	float mid_x = 2.25;
-	float mid_y = 2.35;
-
+	float mid_x = mid[0];
+	float mid_y = mid[1];
 
 	float vx = volts[0];
 	float vy = volts[1];
 
+	float max = 3.3;
+	float min = 0.0;
+
 	if (pos[0] < mid_x) {
-		pos[0] = map2(vx, 0.0, mid_x, -50.0, 0);
+		pos[0] = map2(vx, min, mid_x, -50.0, 0);
 	}
 	else {
-		pos[0] = map2(vx, mid_x, 3.3, 0.0, 50.0);
+		pos[0] = map2(vx, mid_x, max, 0.0, 50.0);
 	}
 
 	if (pos[1] < mid_y) {
-		pos[1] = map2(vy, 0.0, mid_y, -50.0, 0.0);
+		pos[1] = map2(vy, min, mid_y, -50.0, 0.0);
 	}
 	else {
-		pos[1] = map2(vy, mid_y, 3.3, 0.0, 50.0);
+		pos[1] = map2(vy, mid_y, max, 0.0, 50.0);
 	}
 }
 
@@ -665,21 +637,20 @@ void main(void)
 	//mid[0] = Volts_at_Pin(XPOS_PIN);
 	//mid[1] = Volts_at_Pin(YPOS_PIN);
 
-    mid[0]=2.17;
-    mid[1]=2.30;
+    mid[0] = Volts_at_Pin(XPOS_PIN);;
+    mid[1] = Volts_at_Pin(YPOS_PIN);;
 
 	//LEDgetposition(mid);
+	printf("LED voltage ref: 1.7854, midXvolts: %f, midYvolts: %f \r\n", mid[1], mid[0]);
 
 	while(1)
 	{
 		waitms(50);
 		
-
-            
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
         
-        GetPosition2(v, xy_pos);
+        GetPosition2(v, xy_pos, mid);
 
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
 
