@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import simpledialog
 
 # voice recognition modules
-#import pyaudio
+import pyaudio
 import speech_recognition as sr
 import threading
 import os
@@ -246,6 +246,9 @@ class PathDrawer:
     def send_data(self):
         print("Phasors:") # send data to serial on a set time  
         ser.write("..\r\n".encode())  # send over serial to JDY40
+        time.sleep(0.1)
+        ser.write("..\r\n".encode())  # send over serial to JDY40
+        time.sleep(0.1)
         for phasor in self.phasors_list:
             phasor_ascii_char = self.polar_to_ascii(phasor[0], phasor[1])
             
@@ -256,14 +259,19 @@ class PathDrawer:
                 wait_time = abs(360-phasor[1]) / CCW_VELOCITY + phasor[0] / FORWARD_VELOCITY
             # adding a slight buffer so that new instruction isn't sent
             # while executing current instruction robotpath in .c is blocking
-            wait_time = wait_time * 1.10 + 0.2
+            wait_time = wait_time * 1.2 + 0.25
             # wait_time = 1
 
             ser.write(f"{phasor_ascii_char*2}\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.01)
+            ser.write(f"{phasor_ascii_char*2}\r\n".encode())
             print(f"Sent string = {phasor_ascii_char*2}\r\n".encode())      # check this string
             print(f"{phasor},{phasor_ascii_char}, wait = {wait_time}") # print what character is sent
             
-            time.sleep(wait_time)                 # pause program while we wait for phasors to be sent over
+            time.sleep(wait_time)   
+        time.sleep(0.1)              # pause program while we wait for phasors to be sent over
+        ser.write(",,\r\n".encode()) 
+        time.sleep(0.1)
         ser.write(",,\r\n".encode())  # send over serial to JDY40
         print("Finished!")
 
@@ -314,17 +322,17 @@ class VoiceControl:
             self.GUI_on = False # Terminal
 
         # # Get the directory of the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        mic_on_path = os.path.join(script_dir, "mic_on.png")
-        mic_off_path = os.path.join(script_dir, "mic_off.png")
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+        # mic_on_path = os.path.join(script_dir, "mic_on.png")
+        # mic_off_path = os.path.join(script_dir, "mic_off.png")
 
-        # Load microphone icons
-        self.icon_off = Image.open(mic_off_path)
-        self.icon_on = Image.open(mic_on_path)
-        self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS)
-        self.icon_on = self.icon_on.resize((80, 80), Image.LANCZOS)
-        self.icon_photo_off = ImageTk.PhotoImage(self.icon_off)
-        self.icon_photo_on = ImageTk.PhotoImage(self.icon_on)
+        # # Load microphone icons
+        # self.icon_off = Image.open(mic_off_path)
+        # self.icon_on = Image.open(mic_on_path)
+        # self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS)
+        # self.icon_on = self.icon_on.resize((80, 80), Image.LANCZOS)
+        # self.icon_photo_off = ImageTk.PhotoImage(self.icon_off)
+        # self.icon_photo_on = ImageTk.PhotoImage(self.icon_on)
         
         if (self.GUI_on is True):
             # Create voice recording button
