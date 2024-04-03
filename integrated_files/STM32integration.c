@@ -68,7 +68,7 @@ void emergency_stop () {
 	char buff[5];
 	waitms(1000);
 	PathFind_Flag = 0;
-	GPIOA->ODR ^= BIT0; // Toggle PA8
+	GPIOA->ODR |= BIT7;
 	
 	pwm1 = 0;
 	pwm2 = 0;
@@ -81,7 +81,7 @@ void emergency_stop () {
 			//printf("%s", buff);
 			if (buff[0]=='?')
 			{	
-				GPIOA->ODR ^= BIT0; // Toggle PA8 
+				GPIOA->ODR &= ~BIT7; 
 				printf("Restart :)\r\n");
 				waitms(500);
 				return;
@@ -574,8 +574,8 @@ void Hardware_Init(void)
 	GPIOA->OTYPER &= ~BIT4; // Push-pull
     GPIOA->MODER = (GPIOA->MODER & ~(BIT10|BIT11)) | BIT10; // Make pin PA5 output (page 200 of RM0451, two bits used to configure: bit0=1, bit1=0)
 	GPIOA->OTYPER &= ~BIT5; // Push-pull
-	GPIOA->MODER = (GPIOA->MODER & ~(BIT12|BIT13)) | BIT12; // Make pin PA6 output (page 200 of RM0451, two bits used to configure: bit0=1, bit1=0)
-	GPIOA->OTYPER &= ~BIT0; // Push-pull
+	GPIOA->MODER = (GPIOA->MODER & ~(BIT14|BIT15)) | BIT14; // Make pin PA6 output (page 200 of RM0451, two bits used to configure: bit0=1, bit1=0)
+	GPIOA->OTYPER &= ~BIT7; // Push-pull
 
 	// Set up timer
 	RCC->APB1ENR |= BIT0;   // turn on clock for timer2 (UM: page 177)
@@ -766,8 +766,9 @@ int main(void)
 	// = = = = = = = = = Main Loop = = = = = = = 
 	while (1) {
 		// insert joystick reading 
-		GPIOA->ODR ^= BIT0; // Toggle PA8
-		waitms(500);
+		  
+
+
 		if (ReceivedBytes2()>0)
 		{
 			egets2(buff, sizeof(buff)-1);

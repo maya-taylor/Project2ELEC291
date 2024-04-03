@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import simpledialog
 
 # voice recognition modules
-# import pyaudio
+#import pyaudio
 import speech_recognition as sr
 import threading
 import os
