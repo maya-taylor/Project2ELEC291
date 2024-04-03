@@ -321,10 +321,10 @@ class VoiceControl:
         else :
             self.GUI_on = False # Terminal
 
-        # # Get the directory of the script
-        # script_dir = os.path.dirname(os.path.abspath(__file__))
-        # mic_on_path = os.path.join(script_dir, "mic_on.png")
-        # mic_off_path = os.path.join(script_dir, "mic_off.png")
+        # Get the directory of the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        mic_on_path = os.path.join(script_dir, "mic_on.png")
+        mic_off_path = os.path.join(script_dir, "mic_off.png")
 
         # # Load microphone icons
         # self.icon_off = Image.open(mic_off_path)
@@ -390,8 +390,6 @@ class VoiceControl:
         if self.is_pressed:
             self.record_button.config(image=self.icon_photo_on)
   
-            # defining a function to run as a multithreaded process
-            # makes it so that speech recognition runs in the background
             with sr.Microphone() as source:
                 self.text_label.config(text="Listening...")
                 self.master.update_idletasks()
@@ -401,7 +399,7 @@ class VoiceControl:
                 self.master.update_idletasks()
                 try:
                     # Recognize speech using Google Speech Recognition
-                    self.text = self.recognizer.recognize_google(audio_data)
+                    self.text = self.recognizer.recognize_google(audio_data).lower()
                     self.text_label.config(text=f"You said: {self.text}")
                     self.master.update_idletasks()
                     # Wait for the recognition thread to finish
@@ -423,6 +421,7 @@ class VoiceControl:
 
     def send_voice_data(self):
       # matching against "drive straight" 
+        voice_char = ' '
         if "straight" in self.text:
             voice_char = '&'
         if "forward" in self.text:
@@ -438,18 +437,31 @@ class VoiceControl:
         if "right" in self.text:
             voice_char = '-'
 
-        if "square" in self.text:
+        if "Square" in self.text:
             voice_char = '/'
-        if "circle" in self.text:
+        if "Circle" in self.text:
             voice_char = "'"
 
-        if "figure" in self.text:
+        if "Figure" in self.text:
             voice_char = '"'
-        if "eight" in self.text:
+        if "8" in self.text:
             voice_char = '"'
 
         print("char_sent = ",voice_char)
-        ser.write(f"{letter*2}\r\n".encode())  # send over serial to JDY40
+        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+            ser.write("..\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.01)
+            ser.write("..\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.01)
+        ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
+        time.sleep(0.01)
+        ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
+        time.sleep(0.01)
+        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.01)
+            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.01)
 
     def on_closing(self):
         self.master.destroy()
