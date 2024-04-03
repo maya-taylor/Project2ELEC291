@@ -838,16 +838,22 @@ int main(void)
 					PathFind_Flag = 1;
 				else if(dirc == ',')
 					PathFind_Flag = 0;
-                else if (dirc == '')
+                else if (dirc == '>')
+                    wasd_flag = 1;
+                else if (dirc == '<')
+                    wasd_flag = 0;
 				
 				//Runs joystick commands if pathfinding is off
-				if (PathFind_Flag == 0){	
+				if (PathFind_Flag == 0 && wasd_flag == 0){	
 					setPWM(dirc); 		// use character `dirc` to directly set PWM values
 					ButtonCommand(dirc);
 			    }
 				else if (PathFind_Flag == 1){
 					pathFindingDecoder(dirc);
 				}
+                else if (wasd_flag == 1) {
+                    // check
+                }
 
 				//Checks for toggle variable for pathfinding mode
 

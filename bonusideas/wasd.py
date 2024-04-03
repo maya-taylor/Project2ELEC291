@@ -5,6 +5,7 @@ import serial
 import curses
 
 # Initialize serial port
+'''
 ser = serial.Serial(
     port='/dev/cu.usbserial-D30APJ7X',  # Change this to your serial port
     baudrate=115200,
@@ -12,6 +13,9 @@ ser = serial.Serial(
     stopbits=serial.STOPBITS_TWO,
     bytesize=serial.EIGHTBITS
 )
+'''
+# for jdy
+ser = serial.Serial('COM16', 9600, timeout = 1)
 
 key_to_coords = {
     ord('w'): ('C'),  # forward mid, char 'C'
@@ -22,8 +26,11 @@ key_to_coords = {
 
 # Print letter to serial port / terminal
 def send_letter(letter):
-    #ser.write(letter.encode()) # change this if you want to print to serial
+    #ser.write(letter.encode('ascii')) # change this if you want to print to serial
+    
+    #jdy
     print(letter+"\r\n")
+
 
 # Main loop
 try:

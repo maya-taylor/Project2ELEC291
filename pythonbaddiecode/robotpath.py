@@ -303,13 +303,17 @@ class PathDrawer:
 class VoiceControl:
     def __init__(self, master):
         self.master = master
-        self.GUI_on = True # True for GUI ; False for terminal
         self.is_pressed = True # boolean to track if button is pressed or not presesd
 
         self.text = ''
         self.recognizer = sr.Recognizer()
 
-        # Get the directory of the script
+        if (joystick_flag == 2):
+            self.GUI_on = True # GUI 
+        else :
+            self.GUI_on = False # Terminal
+
+        # # Get the directory of the script
         script_dir = os.path.dirname(os.path.abspath(__file__))
         mic_on_path = os.path.join(script_dir, "mic_on.png")
         mic_off_path = os.path.join(script_dir, "mic_off.png")
@@ -336,8 +340,11 @@ class VoiceControl:
             # Create text label
             self.text_label = tk.Label(self.master, text="")
             self.text_label.pack()
+
+            self.text_label.config(text="Muted")
         # terimnal code, only creates a button GUI
         else:
+            print("Terminal Activated")
             self.record_button_terminal = tk.Button(
                 self.master,
                 text="Send Voice Command",
@@ -348,7 +355,6 @@ class VoiceControl:
             pass
 
 
-        self.text_label.config(text="Muted")
         # define behaviour for when the window is closed
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -368,45 +374,46 @@ class VoiceControl:
             except sr.RequestError as e:
                     print(f"Could not request results from Google Speech Recognition service; {e}")     
 
-            self.send_data() # then send the data
+            self.send_voice_data() # then send the data
             print("Data Sent!")
             print("")
 
     def on_mic_press_GUI(self):
-        global recognition_thread
-
         if self.is_pressed:
             self.record_button.config(image=self.icon_photo_on)
-            # self.text_label.config(text="Listening...")
+  
             # defining a function to run as a multithreaded process
             # makes it so that speech recognition runs in the background
-            def recognize_speech():
-                with sr.Microphone() as source:
-                    self.text_label.config(text="Listening...")
-                    audio_data = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
-                    self.text_label.config(text="Reconizing...")
-                    try:
-                        # Recognize speech using Google Speech Recognition
-                        self.text = self.recognizer.recognize_google(audio_data)
-                        self.text_label.config(text=f"You said: {self.text}")
-                    except sr.UnknownValueError:
-                        self.text_label.config(text="Speech Recognition could not understand audio")
-                    except sr.RequestError as e:
-                        self.text_label.config(text=f"Could not request results from Google Speech Recognition service; {e}")
-            
-            recognition_thread = threading.Thread(target=recognize_speech)
-            recognition_thread.start()
+            with sr.Microphone() as source:
+                self.text_label.config(text="Listening...")
+                self.master.update_idletasks()
+
+                audio_data = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                self.text_label.config(text="Reconizing...")
+                self.master.update_idletasks()
+                try:
+                    # Recognize speech using Google Speech Recognition
+                    self.text = self.recognizer.recognize_google(audio_data)
+                    self.text_label.config(text=f"You said: {self.text}")
+                    self.master.update_idletasks()
+                    # Wait for the recognition thread to finish
+                    time.sleep(2)
+                    self.send_voice_data()
+                    self.text_label.config(text = "Command Sent!")
+                except sr.UnknownValueError:
+                    self.text_label.config(text="Speech Recognition could not understand audio")
+                    self.master.update_idletasks()
+                except sr.RequestError as e:
+                    self.text_label.config(text=f"Could not request results from Google Speech Recognition service; {e}")
+                    self.master.update_idletasks()
+
         else:
             self.record_button.config(image=self.icon_photo_off)
             self.text_label.config(text="Muted")
 
-            # Stop the recognition thread if needed
-            if recognition_thread and recognition_thread.is_alive():
-                recognition_thread.join()
-
         self.is_pressed = not self.is_pressed
 
-    def send_data(self):
+    def send_voice_data(self):
       # matching against "drive straight" 
         if "straight" in self.text:
             voice_char = '&'
@@ -432,6 +439,8 @@ class VoiceControl:
             voice_char = '"'
         if "eight" in self.text:
             voice_char = '"'
+
+        print("char_sent = ",voice_char)
         ser.write(f"{letter*2}\r\n".encode())  # send over serial to JDY40
 
     def on_closing(self):
@@ -451,10 +460,6 @@ if (joystick_flag == 0):
 if (joystick_flag == 2 or joystick_flag == 3):
     root = tk.Tk()
     voiceController = VoiceControl(root)
-    if (joystick_flag == 2):
-        voiceController.GUI_on = True # GUI 
-    else :
-        voiceController.GUI_on = False # Terminal
 
     root.mainloop()
 

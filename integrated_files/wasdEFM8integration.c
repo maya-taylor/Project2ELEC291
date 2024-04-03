@@ -29,19 +29,13 @@
 #define DEFAULT_F 15500L // 
 
 // threshold values for many Hz above baseline frequency for different metal strengths
-#define metalLevel_min 200
-#define metalLevel_1   300
-#define metalLevel_2   400
-#define metalLevel_3   500
-#define metalLevel_4   600
-#define metalLevel_5   700
+#define metalLevel_1   1300
+#define metalLevel_2   1400
+#define metalLevel_3   1500
+#define metalLevel_4   1600
+#define metalLevel_5   1700
 
-// buzzer frequencies for each strength level
-#define level1_freq    1200   
-#define level2_freq    1300
-#define level3_freq    1400
-#define level4_freq    1500
-#define level5_freq    1600
+
 
 unsigned char overflow_count;
 
@@ -504,7 +498,6 @@ void loadTimer2(unsigned long int freq) {
 
 
 */
-
 char matchRange(int x, int y) {
    char result;
 
@@ -588,6 +581,7 @@ void main(void)
 	xdata char buff_x[17];
     xdata char buff_y[17];
 	xdata char temp_buff[4];
+	int ToggleJoyStick = 0;
 	float mid[2];
     char mapped_dir;
 
@@ -644,10 +638,10 @@ void main(void)
 	while(1)
 	{
 		//waitms(50);
-		
+		//if(ToggleJoyStick == 0){
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
-        
+	
         GetPosition2(v, xy_pos, mid);
 
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
@@ -657,10 +651,6 @@ void main(void)
 		//BUTTON MAPPINGS
 		// EMERGENCY STOP -. MAYBE MAP THIS TO THE JOYCON BUTTONé
 
-		
-		// SQUARE
-		// FIGURE EIGHT
-		// 
 		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
     	LCDprint(buff_x, 1, 1);
 	    sprintf(buff_y, "y=%.2f, pos=%c", xy_pos[1], mapped_dir);
@@ -669,6 +659,7 @@ void main(void)
         sprintf(temp_buff, "%c\r\n", mapped_dir);
         sendstr1(temp_buff);
         
+
 		//for Emergency Stop
 		if(P2_1 == 0)
 		{
@@ -678,19 +669,67 @@ void main(void)
 			{
 				while(P2_1 == 0);
 				printf("--EMERGENCY--\r\n");
-				sendstr1("€€\r\n");
+				sendstr1("??\r\n");
 				//sendstr1("€\r\n");
 
 			}
 
 		}
 
-		waitms(10);
+		if(P3_3 == 0)
+		{
+			//this is the emergency stop character
+			waitms(10);
+			if(P3_3 == 0)
+			{
+				while(P3_3 == 0);
+				printf("--SQUARE--\r\n");
+				sendstr1("//\r\n");
+				//sendstr1("€\r\n");
+
+			}
+		}
+
+		if(P3_1 == 0)
+		{
+			//this is the emergency stop character
+			waitms(10);
+			if(P3_1 == 0)
+			{
+				while(P3_1 == 0);
+				printf("--CIRCLE--\r\n");
+				sendstr1("''\r\n");
+				//sendstr1("€\r\n");
+
+			}
+		}
+
+		if(P2_6 == 0)
+		{
+			//this is the emergency stop character
+			waitms(10);
+			if(P2_6 == 0)
+			{
+				while(P2_6 == 0);
+				printf("--FIGURE8--\r\n");
+				sendstr1("\"""\r\n");
+
+				//sendstr1("€\r\n");
+
+			}
+
+		}
+
+		
+
+		waitms(10); // testing metal detecting reading
 
 		sendstr1("m\r\n");
 		
 		putchar('.');
 			
+		//waitms(10);
+
 		timeout_cnt = 0;
 		while (1) 
 		{
@@ -704,6 +743,7 @@ void main(void)
 		}
 		if (RXU1()) 
 		{
+			printf("got\r\n");
 			getstr1(buff);
             printf("%s\r\n", buff);
             if(strlen(buff) == 2)
@@ -736,6 +776,11 @@ void main(void)
             		TR2 = 0; 		// Stop timer 2
  					BUZZER_OUT = 0;
 					metal_lev = 0;
+
+					//if(buff[0] == '.')
+					//	ToggleJoyStick = 1;
+					//else if(buff[0] == ',')
+					//	ToggleJoyStick = 0;
             	}
             }
             
