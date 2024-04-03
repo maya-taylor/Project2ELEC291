@@ -17,7 +17,8 @@ info   : loci with higher metal density (a.k.a., frequency difference is bigger)
 note: may have to divide all the plots by a factor of 50 since the ascii table is 
 '''
 
-FILE = 'filename.csv' #edit!!!
+
+FILE = 'serial_data_log.csv' #edit!!!
 
 # RGB values for light colors
 lightorange = (255/255, 204/255, 153/255)
@@ -61,6 +62,9 @@ L4F = 500
 L5F = 700
 LOW_STRENGTH = 0
 
+
+#dummy data file generation, used for testing
+'''
 def dummy_data_gen(rows):
     data = []
     for _ in range(rows):
@@ -84,7 +88,7 @@ def dummy_file_gen(filename, data, rows):
         
         for i in range(rows):
             writer.writerow(data[i])
-
+'''
 def process_csv(filename):
     # Open the CSV file
     with open(filename, 'r') as file:
@@ -180,9 +184,10 @@ def process_csv(filename):
 
 
 #testing:
-num_rows = 30
-dummy_data = dummy_data_gen(num_rows)
-dummy_file_gen(FILE, dummy_data, num_rows)
+#num_rows = 30
+#dummy_data = dummy_data_gen(num_rows)
+#dummy_file_gen(FILE, dummy_data, num_rows)
+
 
 coords, strengths = process_csv(FILE)
 

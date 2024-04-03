@@ -3,7 +3,7 @@ import csv
 
 # Configure the serial port
 ser = serial.Serial(
-    port='COM6',  # Change this to your serial port
+    port='COM16',  # Change this to your serial port
     baudrate=9600,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
@@ -11,7 +11,7 @@ ser = serial.Serial(
 )
 
 # Open a CSV file for writing
-csv_file = open('serial_data.csv', 'w', newline='')
+csv_file = open('serial_data_log.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file)
 
 try:

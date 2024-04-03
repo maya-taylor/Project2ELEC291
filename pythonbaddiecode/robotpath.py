@@ -11,6 +11,7 @@ import speech_recognition as sr
 import threading
 import os
 from PIL import Image, ImageTk
+import curses
 
 # velocity at full is 0.8 second per breadboard
 # 0.5 breadboards per second
@@ -35,6 +36,7 @@ ser = serial.Serial(
     stopbits=serial.STOPBITS_TWO,
     bytesize=serial.EIGHTBITS
 )
+
 coordinates = {65: (0, 50), #A to N
                66: (0, 30),
                67: (0, 20),
@@ -95,6 +97,8 @@ def on_option_select():
         print("Voice Control Mode")
     elif selected == 'Voice Control(Terminal)':
         print("Voice Control Mode")
+    elif selected == 'Keyboard':
+        print("Keyboard Mode")
     else:
         print("Invalid Option")
 
@@ -104,7 +108,7 @@ root.geometry("400x100")
 # Create a StringVar to hold the selected option
 selected_option = tk.StringVar()
 # Create the dropdown menu
-options = ["Joystick", "Draw", "Voice Control(GUI)", "Voice Control(Terminal)"] # adding a voice control option
+options = ["Joystick", "Draw", "Voice Control(GUI)", "Voice Control(Terminal)", "Keyboard"] # adding a voice control option
 dropdown = tk.OptionMenu(root, selected_option, *options)
 dropdown.pack(pady=10)
 # Add a button to display the selected option
@@ -130,6 +134,8 @@ elif selected_option.get() == 'Voice Control(GUI)':
     joystick_flag = 2
 elif selected_option.get() == 'Voice Control(Terminal)':
     joystick_flag = 3
+elif selected_option.get() == 'Keyboard':
+    joystick_flag = 4
     
 
 class PathDrawer:
@@ -326,7 +332,7 @@ class VoiceControl:
         mic_on_path = os.path.join(script_dir, "mic_on.png")
         mic_off_path = os.path.join(script_dir, "mic_off.png")
 
-        # # Load microphone icons
+        # # Load microphone icons -- images are fake why
         # self.icon_off = Image.open(mic_off_path)
         # self.icon_on = Image.open(mic_on_path)
         # self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS)
@@ -439,6 +445,11 @@ class VoiceControl:
 
         if "Square" in self.text:
             voice_char = '/'
+        if "square" in self.text:
+            voice_char = '/'
+        if "where" in self.text:
+            voice_char = '/'
+            
         if "Circle" in self.text:
             voice_char = "'"
 
@@ -449,14 +460,20 @@ class VoiceControl:
 
         print("char_sent = ",voice_char)
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+            print("sent . and ,")
             ser.write("..\r\n".encode())  # send over serial to JDY40
             time.sleep(0.01)
             ser.write("..\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.1)
+        if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
+            ser.write(",,\r\n".encode())  # send over serial to JDY40
             time.sleep(0.01)
+            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            time.sleep(0.1)
         ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
         time.sleep(0.01)
         ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
-        time.sleep(0.01)
+        time.sleep(5)
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
             ser.write(",,\r\n".encode())  # send over serial to JDY40
             time.sleep(0.01)
@@ -480,8 +497,75 @@ if (joystick_flag == 0):
 if (joystick_flag == 2 or joystick_flag == 3):
     root = tk.Tk()
     voiceController = VoiceControl(root)
-
     root.mainloop()
+
+    joystick_flag = 1
+
+if (joystick_flag == 4):
+    # WASD mode
+    
+    key_to_coords = {
+        ord('w'): ('C'),  # forward mid, char 'C'
+        ord('a'): ('J'),  # CCW in place mid (Left), char 'J'
+        ord('s'): ('E'),  # backward mid, char 'E'
+        ord('d'): ('H'),  # CW in place mid (Right), char 'H'
+    }
+
+    # Print letter to serial port / terminal
+    def send_letter(letter):
+        #ser.write(letter.encode()) # change this if you want to print to serial
+        print(letter)
+
+    # Main loop
+    try:
+        # Initialize curses
+        stdscr = curses.initscr()
+        curses.noecho()  # Turn off echoing of keys
+        stdscr.keypad(True)  # Enable keypad mode
+        curses.cbreak()  # React to keys immediately without waiting for Enter key
+
+        while True:
+            x, y = 0, 0
+            
+            # Get user input
+            key = stdscr.getch()
+
+            # Check for keypresses
+            if key in key_to_coords:
+                send_letter(key_to_coords[key])
+
+            # Check for diagonal movements
+            # NW Diagonal
+            if key == ord('w') and stdscr.getch() == ord('a'):
+                send_letter('L')
+
+            # SW Diagonal
+            elif key == ord('a') and stdscr.getch() == ord('s'):
+                send_letter('N')
+
+            # SE Diagonal
+            elif key == ord('s') and stdscr.getch() == ord('d'):
+                send_letter('M')
+
+            # NE Diagonal
+            elif key == ord('d') and stdscr.getch() == ord('w'):
+                send_letter('K')
+
+            # Wait for 1 second to reduce errors
+            #time.sleep(1)
+
+    except KeyboardInterrupt:
+        pass
+
+    finally:
+        # Cleanup curses
+        curses.initscr()
+        curses.nocbreak()
+        stdscr.keypad(False)
+        curses.echo()
+        curses.endwin()
+
+        ser.close()  # Close the serial port when done
 
     joystick_flag = 1
 

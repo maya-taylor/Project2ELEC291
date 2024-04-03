@@ -638,7 +638,6 @@ void main(void)
 	while(1)
 	{
 		//waitms(50);
-		//if(ToggleJoyStick == 0){
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
 	
@@ -657,9 +656,11 @@ void main(void)
     	LCDprint(buff_y, 2, 1);
 		
         sprintf(temp_buff, "%c\r\n", mapped_dir);
-        sendstr1(temp_buff);
-        
-
+		if(ToggleJoyStick == 0){
+			 sendstr1(temp_buff);
+		}
+       
+    
 		//for Emergency Stop
 		if(P2_1 == 0)
 		{
@@ -723,7 +724,7 @@ void main(void)
 		
 
 		waitms(10); // testing metal detecting reading
-
+		
 		sendstr1("m\r\n");
 		
 		putchar('.');
@@ -743,45 +744,42 @@ void main(void)
 		}
 		if (RXU1()) 
 		{
-			printf("got\r\n");
+			//printf("got\r\n");
 			getstr1(buff);
             printf("%s\r\n", buff);
-            if(strlen(buff) == 2)
-            {
-            	if(buff[0] != 'z')
-            	{
-            		if(buff[0] == 'a') {
-            			loadTimer2(metalLevel_1);
-						metal_lev = 1;
-					}
-            		else if(buff[0] == 'b') {
-            			loadTimer2(metalLevel_2);
-						metal_lev = 2;
-					}
-            		else if(buff[0] == 'c') {
-            			loadTimer2(metalLevel_3);
-						metal_lev = 3;
-					}
-            		else if(buff[0] == 'd') {
-            			loadTimer2(metalLevel_4);
-						metal_lev = 4;
-					}
-            		else if(buff[0] == 'e') {
-            			loadTimer2(metalLevel_5);
-						metal_lev = 5;
-					}
-            	}
-            	else
-            	{
-            		TR2 = 0; 		// Stop timer 2
- 					BUZZER_OUT = 0;
-					metal_lev = 0;
 
-					//if(buff[0] == '.')
-					//	ToggleJoyStick = 1;
-					//else if(buff[0] == ',')
-					//	ToggleJoyStick = 0;
-            	}
+            if(buff[0] != 'z')
+            {
+            	if(buff[0] == 'a') {
+            		loadTimer2(metalLevel_1);
+					metal_lev = 1;	
+				}
+            	else if(buff[0] == 'b') {
+            		loadTimer2(metalLevel_2);
+					metal_lev = 2;
+				}
+            	else if(buff[0] == 'c') {
+            		loadTimer2(metalLevel_3);
+					metal_lev = 3;
+				}
+            	else if(buff[0] == 'd') {
+            		loadTimer2(metalLevel_4);
+					metal_lev = 4;
+				}
+            	else if(buff[0] == 'e') {
+            		loadTimer2(metalLevel_5);
+					metal_lev = 5;
+				}
+				else if(buff[0] == '>')
+					ToggleJoyStick = 1;
+				else if(buff[0] == '<')
+					ToggleJoyStick = 0;
+            }
+            else
+            {
+            	TR2 = 0; 		// Stop timer 2
+ 				BUZZER_OUT = 0;
+				metal_lev = 0;
             }
             
         }
