@@ -23,7 +23,7 @@
 #define F_CPU 32000000L
 #define AVG_NUM 5
 
-#define S_MANUAL 				1 // maybe keep
+#define S_MANUAL 				1 
 #define S_SQUARE 				2
 #define S_FIGURE8 				3
 #define S_PATH   				4
@@ -42,6 +42,7 @@ volatile unsigned char pwm1 = 0, pwm2 = 0;
 volatile int timerCount_100us = 0;
 volatile int timerCount_ms = 0;
 volatile int PathFind_Flag = 0;
+volatile int e_stopped = 0;
 // volatile int timerCount_s = 0;
 
 void Delay_us(unsigned char us)
@@ -62,6 +63,32 @@ void waitms (unsigned int ms)
 		for (k=0; k<4; k++) Delay_us(250);
 }
 
+void emergency_stop () {
+	printf("E-stop :(\r\n");
+	char buff[5];
+	waitms(1000);
+	PathFind_Flag = 0;
+	while(1){
+		pwm1 = 0;
+		pwm2 = 0;
+		GPIOA->ODR &= ~BIT2; // pin is GND
+		GPIOA->ODR &= ~BIT4; // pin is GND
+		
+		if (ReceivedBytes2()>0)
+		{
+			egets2(buff, sizeof(buff)-1);
+			//printf("%s", buff);
+			if (buff[0]=='?')
+			{	
+				printf("Restart :)\r\n");
+				waitms(500);
+				return;
+			}
+		}
+	
+	}
+}
+
 void stopMotors (void) {
 	pwm1 = 0;
 	pwm2 = 0;
@@ -74,17 +101,18 @@ void stopCar_ms (int milliSeconds) {
 	timerCount_ms = 0;
 	// then turn off motors
 	while (timerCount_ms < (milliSeconds)) {
-		// printf("millis passed %d\n", timerCount_ms); // debug for testing purposes
-		pwm1 = 0;
-		pwm2 = 0;
-		GPIOA->ODR &= ~BIT2; // pin is GND
-		GPIOA->ODR &= ~BIT4; // pin is GND
+		stopMotors();
 	}
 }
 
-
+// return 1 if new char is ? -- execute eStop
 int check_estop() {
-	
+	char buff[4];
+
+	if (ReceivedBytes2()>0) {
+		egets2(buff, sizeof(buff)-1);
+		return (buff[0] == '?'); // saving on an if statement since it's a boolean
+	}			
 }
 
 // this process is blocking
@@ -92,13 +120,18 @@ void forward (int cm) {
 	timerCount_ms=0;
 	//char buff[4];
 	
+	
 
 	// motors go forward at max speed
 	int milliSeconds = cm / FORWARD_VELOCITY*1000.0; // calculation assuming instant acceleration and const. velocity
 	// 
 	// new calcuation for time would take into account acceleration up to a max velocity
 	while (timerCount_ms < milliSeconds) {
-		
+		if (check_estop()) {
+			e_stopped = 1;
+			emergency_stop();
+			break; // break will exit the loop and forward() terminates
+		}
 		pwm1 = 4; // right motor (slower is faster)
 		pwm2 = 0; // left motor  (slower is faster)
 		GPIOA->ODR |= BIT2; // pin is GND
@@ -117,6 +150,8 @@ void CW_turn(int degrees) {
 	// int milliseconds = degrees/CW_VELOCITY*1000.0;
 
 	// new calculation
+	// checking if degrees is less than 90, this corresponds to the amount of time
+	// it takes for the car to get up to 118 degrees / sec (max angular velocity)
 	if (degrees < 90) {
 		milliseconds = sqrt(2*degrees/ANGULAR_ACCELERATION) * 1000;
 	}
@@ -126,6 +161,11 @@ void CW_turn(int degrees) {
 	}
 
 	while (timerCount_ms < milliseconds) {
+		if (check_estop()) {
+			e_stopped = 1;
+			emergency_stop();
+			break;
+		}
 		pwm2 = 20; 			 	// left forward (lower is faster)
 		GPIOA->ODR |= BIT4;  	// pin is at 5V
 		pwm1 = 80; 		 		// right backwards
@@ -151,6 +191,11 @@ void CCW_turn (int degrees) {
 	}
 	
 	while (timerCount_ms < milliseconds) {
+		if (check_estop()) {
+			e_stopped = 1;
+			emergency_stop();
+			break;
+		}
 		pwm2 = 80; 				// left forward (lower is faster)
 		GPIOA->ODR &= ~BIT4; 	// pin is at 5V
 		pwm1 = 20; 				// right backwards
@@ -164,10 +209,15 @@ void diag_left (int degrees) {
 
 	int milliseconds = degrees/DIAG_VELOCITY_LEFT*1000.0;
 	while (timerCount_ms < milliseconds) {
-			pwm2 = 40; 			 	// left forward slow
-			GPIOA->ODR |= BIT4;  	// pin is at 5V
-			pwm1 = 0; 		 		// right forward fast
-			GPIOA->ODR |= BIT2; 	// pin is 5V
+		if (check_estop()) {
+			e_stopped = 1;
+			emergency_stop();
+			break;
+		}
+		pwm2 = 40; 			 	// left forward slow
+		GPIOA->ODR |= BIT4;  	// pin is at 5V
+		pwm1 = 0; 		 		// right forward fast
+		GPIOA->ODR |= BIT2; 	// pin is 5V
 	}
 	stopMotors();
 }
@@ -177,39 +227,17 @@ void diag_right (int degrees) {
 
 	int milliseconds = degrees/DIAG_VELOCITY_RIGHT*1000.0;
 	while (timerCount_ms < milliseconds) {
-			pwm2 = 0; 			 	// left forward fast
-			GPIOA->ODR |= BIT4;  	// pin is at 5V
-			pwm1 = 40; 		 		// right forward slow
-			GPIOA->ODR |= BIT2; 	// pin is 5V
+		if (check_estop()) {
+			e_stopped = 1;
+			emergency_stop();
+			break;
+		}
+		pwm2 = 0; 			 	// left forward fast
+		GPIOA->ODR |= BIT4;  	// pin is at 5V
+		pwm1 = 40; 		 		// right forward slow
+		GPIOA->ODR |= BIT2; 	// pin is 5V
 	}
 	stopMotors();
-}
-
-void emergency_stop () {
-	char buff[5];
-	waitms(1000);
-	while(1){
-		pwm1 = 0;
-		pwm2 = 0;
-		GPIOA->ODR &= ~BIT2; // pin is GND
-		GPIOA->ODR &= ~BIT4; // pin is GND
-		
-		if (ReceivedBytes2()>0)
-		{
-			egets2(buff, sizeof(buff)-1);
-			//printf("%s", buff);
-			if (buff[0]=='?')
-			{
-				waitms(500);
-				return;
-			}
-		}
-	
-	}
-}
-
-void str_line () {
-	forward(60);
 }
 
 void circle () {
@@ -221,71 +249,39 @@ void square () {
 	for (int i = 0; i < 4; i++) {
 		forward(20);
 		stopCar_ms(10); 
+		if (e_stopped) {
+			e_stopped = 0;
+			break;
+		}
 
 		CW_turn(88);
 		stopCar_ms(10); 
+		if (e_stopped) {
+			e_stopped = 0;
+			break;
+		}
 	}
 }
 
 // Drives in a figrue 8 path
 void figure8(void) {
 	diag_left(280);
+	if (e_stopped) {
+		e_stopped = 0;
+		return;
+	}
 	forward(20);
+	if (e_stopped) {
+		e_stopped = 0;
+		return;
+	}
 	diag_right(280);
+	if (e_stopped) {
+		e_stopped = 0;
+		return;
+	}
 	forward(20);
 }
-
-
-// Follows a path that is created by drawing on a GUI in python
-void path(void) {
-
-}
-
-// void testCases (void) {
-// 		// Forward max speed for 10s
-// 		// int x = 0;
-// 		// int y = 50;
-// 		// motor_testHandler(x,y,10);
-
-// 		forward(60); // go forward 1m
-// 		stop(10);
-
-// 		CW_turn(360); // CW turn 360 degrees
-// 		stop(10);
-
-// 		CW_turn(360); // CCW turn 360 degrees
-// 		stop();
-// }
-
-/* Robot Controller
-	NOTE: This FSM is blocking. 
-	This means that for non-manual states, the robot will not respond to any inputs, including emergency stop, 
-	until the action is finished.
-	
-	State 0 -- Default:
-		- runs motor control loop 
-*/
-// void robot_control_FSM(int robot_state, int x, int y) {
-	
-// 	switch (robot_state) {
-// 		case S_MANUAL:
-// 			motorControlLoop (x,y);
-// 			break;
-// 		case S_SQUARE: 
-// 			square(50); // draws a 50cmx50cm square
-// 			break;
-// 		case S_FIGURE8: 
-// 			figure8();
-// 			break;
-// 		case S_PATH:
-// 			path(); 
-// 			break;
-// 		default:
-// 			motorControlLoop(x,y);
-
-// 		robot_state = S_MANUAL; // set back to default after exiting the FSM. 
-// 	}
-// }
 
 // Interrupt service routines are the same as normal
 // subroutines (or C funtions) in Cortex-M microcontrollers.
@@ -527,9 +523,7 @@ void ButtonCommand (char letter){
 
     switch(letter){
         case '?':
-			printf("Emergency stop :(\r\n");
             emergency_stop();
-			printf("Restart :)\r\n");
             break;
         case '/':
             square();
@@ -786,7 +780,7 @@ int main(void)
 				T= 1.0*count/(F_CPU*100.0); // Since we have the time of 200 periods, we need to divide by 200
 				f=1.0/T;
 				
-				waitms(1);
+				waitms(5);
 				
 				//printf("count = %d, f=%.2f\r\n",count, f);
 				

@@ -5,6 +5,8 @@ from matplotlib.widgets import Button
 import tkinter as tk
 from tkinter import simpledialog
 
+import robot_speech # python speech recognition
+
 # voice recognition modules
 # import pyaudio
 # import speech_recognition as sr
@@ -122,6 +124,8 @@ elif selected_option.get() == 'Draw':
     # root = tk.Tk()
     # app = PathDrawer(root)
     # root.mainloop()
+elif selected_option.get() == 'Voice Control':
+    joystick_flag = 2
     
 
 class PathDrawer:
@@ -137,14 +141,6 @@ class PathDrawer:
         self.phasors_list = []  # Angle for CW rotation as a list calculated from previous vector
 
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-        # ser = serial.Serial(
-        #     port='COM16',
-        #     baudrate=9600,
-        #     parity=serial.PARITY_NONE,
-        #     stopbits=serial.STOPBITS_TWO,
-        #     bytesize=serial.EIGHTBITS
-        # )
 
         self.canvas.bind("<Button-1>", self.on_click)
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -300,6 +296,68 @@ class PathDrawer:
     def on_closing(self):
         self.master.destroy()  # Destroy the Tkinter window
 
+class voiceRecognitionGUI:
+    def __init__(self, master):
+        self.master = master
+        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white") # canvas value previously 400, changed down to 120
+        self.canvas.pack()
+
+        master.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        self.master.destroy()  # Destroy the Tkinter window
+
+def send_voice_command():
+    # use the audio file as the audio source
+    recognizer = sr.Recognizer()
+
+    # Capture audio from the microphone
+    with sr.Microphone() as source:
+        print("Listening...")
+        
+        audio = recognizer.listen(source, timeout=3,phrase_time_limit=3)
+
+    # Recognize speech using Google Speech Recognition
+    try:
+        print("Recognizing...")
+        text = recognizer.recognize_google(audio).lower() #lower case audio
+        print(f"You said: {text}")
+    except sr.UnknownValueError:
+        print("Could not understand audio")
+    except sr.RequestError as e:
+        print(f"Could not request results; {e}")
+
+    # do NLP on `text`
+
+    # matching against "drive straight" 
+    if "straight" in text:
+        voice_char = '&'
+    if "forward" in text:
+        voice_char = '&'
+
+    if "backward" in text:
+        voice_char = '{'
+    if "back" in text:
+        voice_char = '{'
+
+    if "left" in text:
+        voice_char = '|'
+    if "right" in text:
+        voice_char = '-'
+
+    if "square" in text:
+        voice_char = '/'
+    if "circle" in text:
+        voice_char = "'"
+
+    if "figure" in text:
+        voice_char = '"'
+    if "eight" in text:
+        voice_char = '"'
+
+    ser.write(f"{voice_char}\r\n".encode())
+
+
 # check if joystick_flag is zero
 if (joystick_flag == 0):
     # Create an instance of the PathDrawer class
@@ -307,13 +365,13 @@ if (joystick_flag == 0):
     root = tk.Tk()
     drawer = PathDrawer(root)   
     # start main tkinter loop
-    root.mainloop()
-    # root.destroy()
-    
+    root.mainloop()    
 
     joystick_flag = 1
 
-
+if (joystick_flag == 2):
+    send_voice_command()
+    joystick_flag = 1
 
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))
