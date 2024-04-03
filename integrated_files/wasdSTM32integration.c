@@ -42,6 +42,8 @@ volatile unsigned char pwm1 = 0, pwm2 = 0;
 volatile int timerCount_100us = 0;
 volatile int timerCount_ms = 0;
 volatile int PathFind_Flag = 0;
+//ADDED
+volatile int wasd_flag = 0;
 volatile int e_stopped = 0;
 // volatile int timerCount_s = 0;
 
@@ -827,6 +829,7 @@ int main(void)
 				}
 			}
 			//changing if statement to receive position instead of M being sent
+            // ADDED/CHANGED
 			else // remote sent pos data
 			{
 				dirc = buff[0];
@@ -835,6 +838,7 @@ int main(void)
 					PathFind_Flag = 1;
 				else if(dirc == ',')
 					PathFind_Flag = 0;
+                else if (dirc == '')
 				
 				//Runs joystick commands if pathfinding is off
 				if (PathFind_Flag == 0){	

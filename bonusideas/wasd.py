@@ -6,7 +6,7 @@ import curses
 
 # Initialize serial port
 ser = serial.Serial(
-    port='COM16',  # Change this to your serial port
+    port='/dev/cu.usbserial-D30APJ7X',  # Change this to your serial port
     baudrate=115200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_TWO,
@@ -23,7 +23,7 @@ key_to_coords = {
 # Print letter to serial port / terminal
 def send_letter(letter):
     #ser.write(letter.encode()) # change this if you want to print to serial
-    print(letter)
+    print(letter+"\r\n")
 
 # Main loop
 try:

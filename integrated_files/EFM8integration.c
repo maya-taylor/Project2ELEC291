@@ -581,6 +581,7 @@ void main(void)
 	xdata char buff_x[17];
     xdata char buff_y[17];
 	xdata char temp_buff[4];
+	int ToggleJoyStick = 0;
 	float mid[2];
     char mapped_dir;
 
@@ -637,10 +638,10 @@ void main(void)
 	while(1)
 	{
 		//waitms(50);
-		
+		//if(ToggleJoyStick == 0){
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
-        
+	
         GetPosition2(v, xy_pos, mid);
 
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
@@ -650,10 +651,6 @@ void main(void)
 		//BUTTON MAPPINGS
 		// EMERGENCY STOP -. MAYBE MAP THIS TO THE JOYCON BUTTONé
 
-		
-		// SQUARE
-		// FIGURE EIGHT
-		// 
 		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
     	LCDprint(buff_x, 1, 1);
 	    sprintf(buff_y, "y=%.2f, pos=%c", xy_pos[1], mapped_dir);
@@ -662,6 +659,7 @@ void main(void)
         sprintf(temp_buff, "%c\r\n", mapped_dir);
         sendstr1(temp_buff);
         
+
 		//for Emergency Stop
 		if(P2_1 == 0)
 		{
@@ -778,6 +776,11 @@ void main(void)
             		TR2 = 0; 		// Stop timer 2
  					BUZZER_OUT = 0;
 					metal_lev = 0;
+
+					//if(buff[0] == '.')
+					//	ToggleJoyStick = 1;
+					//else if(buff[0] == ',')
+					//	ToggleJoyStick = 0;
             	}
             }
             

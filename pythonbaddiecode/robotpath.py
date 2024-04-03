@@ -5,12 +5,12 @@ from matplotlib.widgets import Button
 import tkinter as tk
 from tkinter import simpledialog
 
-import robot_speech # python speech recognition
-
 # voice recognition modules
 # import pyaudio
-# import speech_recognition as sr
-
+import speech_recognition as sr
+import threading
+import os
+from PIL import Image, ImageTk
 
 # velocity at full is 0.8 second per breadboard
 # 0.5 breadboards per second
@@ -91,7 +91,9 @@ def on_option_select():
        print("Draw Mode")
     elif selected == 'Joystick':
         print("Joystick Mode")
-    elif selected == 'Voice Control':
+    elif selected == 'Voice Control(GUI)':
+        print("Voice Control Mode")
+    elif selected == 'Voice Control(Terminal)':
         print("Voice Control Mode")
     else:
         print("Invalid Option")
@@ -102,7 +104,7 @@ root.geometry("400x100")
 # Create a StringVar to hold the selected option
 selected_option = tk.StringVar()
 # Create the dropdown menu
-options = ["Joystick", "Draw", "Voice Control"] # adding a voice control option
+options = ["Joystick", "Draw", "Voice Control(GUI)", "Voice Control(Terminal)"] # adding a voice control option
 dropdown = tk.OptionMenu(root, selected_option, *options)
 dropdown.pack(pady=10)
 # Add a button to display the selected option
@@ -124,8 +126,10 @@ elif selected_option.get() == 'Draw':
     # root = tk.Tk()
     # app = PathDrawer(root)
     # root.mainloop()
-elif selected_option.get() == 'Voice Control':
+elif selected_option.get() == 'Voice Control(GUI)':
     joystick_flag = 2
+elif selected_option.get() == 'Voice Control(Terminal)':
+    joystick_flag = 3
     
 
 class PathDrawer:
@@ -296,67 +300,142 @@ class PathDrawer:
     def on_closing(self):
         self.master.destroy()  # Destroy the Tkinter window
 
-class voiceRecognitionGUI:
+class VoiceControl:
     def __init__(self, master):
         self.master = master
-        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white") # canvas value previously 400, changed down to 120
-        self.canvas.pack()
+        self.GUI_on = True # True for GUI ; False for terminal
+        self.is_pressed = True # boolean to track if button is pressed or not presesd
 
+        self.text = ''
+        self.recognizer = sr.Recognizer()
+
+        # Get the directory of the script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        mic_on_path = os.path.join(script_dir, "mic_on.png")
+        mic_off_path = os.path.join(script_dir, "mic_off.png")
+
+        # Load microphone icons
+        self.icon_off = Image.open(mic_off_path)
+        self.icon_on = Image.open(mic_on_path)
+        self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS)
+        self.icon_on = self.icon_on.resize((80, 80), Image.LANCZOS)
+        self.icon_photo_off = ImageTk.PhotoImage(self.icon_off)
+        self.icon_photo_on = ImageTk.PhotoImage(self.icon_on)
+        
+        if (self.GUI_on is True):
+            # Create voice recording button
+            self.record_button = tk.Button(
+                self.master, 
+                image=self.icon_photo_off, 
+                command=self.on_mic_press_GUI, # on button perssed
+                bd = 0, #Remove button border
+                highlightthickness=0) #Remove Button Shadow
+
+            self.record_button.pack()
+        
+            # Create text label
+            self.text_label = tk.Label(self.master, text="")
+            self.text_label.pack()
+        # terimnal code, only creates a button GUI
+        else:
+            self.record_button_terminal = tk.Button(
+                self.master,
+                text="Send Voice Command",
+                command = self.on_mic_press_terminal
+            )
+
+            self.record_button_terminal.pack()
+            pass
+
+
+        self.text_label.config(text="Muted")
+        # define behaviour for when the window is closed
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+    def on_mic_press_terminal(self):
+        # on press, it will then record speech then send over terminal
+        with sr.Microphone() as source:
+            print("Listening...")
+            audio_data = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+            print("Reconizing...")
+
+            try:
+                # Recognize speech using Google Speech Recognition
+                self.text = self.recognizer.recognize_google(audio_data)
+                print(f"You said: {self.text}")
+            except sr.UnknownValueError:
+                    print("Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                    print(f"Could not request results from Google Speech Recognition service; {e}")     
+
+            self.send_data() # then send the data
+            print("Data Sent!")
+            print("")
+
+    def on_mic_press_GUI(self):
+        global recognition_thread
+
+        if self.is_pressed:
+            self.record_button.config(image=self.icon_photo_on)
+            # self.text_label.config(text="Listening...")
+            # defining a function to run as a multithreaded process
+            # makes it so that speech recognition runs in the background
+            def recognize_speech():
+                with sr.Microphone() as source:
+                    self.text_label.config(text="Listening...")
+                    audio_data = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                    self.text_label.config(text="Reconizing...")
+                    try:
+                        # Recognize speech using Google Speech Recognition
+                        self.text = self.recognizer.recognize_google(audio_data)
+                        self.text_label.config(text=f"You said: {self.text}")
+                    except sr.UnknownValueError:
+                        self.text_label.config(text="Speech Recognition could not understand audio")
+                    except sr.RequestError as e:
+                        self.text_label.config(text=f"Could not request results from Google Speech Recognition service; {e}")
+            
+            recognition_thread = threading.Thread(target=recognize_speech)
+            recognition_thread.start()
+        else:
+            self.record_button.config(image=self.icon_photo_off)
+            self.text_label.config(text="Muted")
+
+            # Stop the recognition thread if needed
+            if recognition_thread and recognition_thread.is_alive():
+                recognition_thread.join()
+
+        self.is_pressed = not self.is_pressed
+
+    def send_data(self):
+      # matching against "drive straight" 
+        if "straight" in self.text:
+            voice_char = '&'
+        if "forward" in self.text:
+            voice_char = '&'
+
+        if "backward" in self.text:
+            voice_char = '{'
+        if "back" in self.text:
+            voice_char = '{'
+
+        if "left" in self.text:
+            voice_char = '|'
+        if "right" in self.text:
+            voice_char = '-'
+
+        if "square" in self.text:
+            voice_char = '/'
+        if "circle" in self.text:
+            voice_char = "'"
+
+        if "figure" in self.text:
+            voice_char = '"'
+        if "eight" in self.text:
+            voice_char = '"'
+        ser.write(f"{letter*2}\r\n".encode())  # send over serial to JDY40
+
     def on_closing(self):
-        self.master.destroy()  # Destroy the Tkinter window
-
-def send_voice_command():
-    # use the audio file as the audio source
-    recognizer = sr.Recognizer()
-
-    # Capture audio from the microphone
-    with sr.Microphone() as source:
-        print("Listening...")
-        
-        audio = recognizer.listen(source, timeout=3,phrase_time_limit=3)
-
-    # Recognize speech using Google Speech Recognition
-    try:
-        print("Recognizing...")
-        text = recognizer.recognize_google(audio).lower() #lower case audio
-        print(f"You said: {text}")
-    except sr.UnknownValueError:
-        print("Could not understand audio")
-    except sr.RequestError as e:
-        print(f"Could not request results; {e}")
-
-    # do NLP on `text`
-
-    # matching against "drive straight" 
-    if "straight" in text:
-        voice_char = '&'
-    if "forward" in text:
-        voice_char = '&'
-
-    if "backward" in text:
-        voice_char = '{'
-    if "back" in text:
-        voice_char = '{'
-
-    if "left" in text:
-        voice_char = '|'
-    if "right" in text:
-        voice_char = '-'
-
-    if "square" in text:
-        voice_char = '/'
-    if "circle" in text:
-        voice_char = "'"
-
-    if "figure" in text:
-        voice_char = '"'
-    if "eight" in text:
-        voice_char = '"'
-
-    ser.write(f"{voice_char}\r\n".encode())
-
+        self.master.destroy()
 
 # check if joystick_flag is zero
 if (joystick_flag == 0):
@@ -369,8 +448,16 @@ if (joystick_flag == 0):
 
     joystick_flag = 1
 
-if (joystick_flag == 2):
-    send_voice_command()
+if (joystick_flag == 2 or joystick_flag == 3):
+    root = tk.Tk()
+    voiceController = VoiceControl(root)
+    if (joystick_flag == 2):
+        voiceController.GUI_on = True # GUI 
+    else :
+        voiceController.GUI_on = False # Terminal
+
+    root.mainloop()
+
     joystick_flag = 1
 
 def get_coordinates(letter):
