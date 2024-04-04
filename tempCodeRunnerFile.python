@@ -1,3 +1,53 @@
+text = "Ford turn left driving a figure 8 than a circle"
 
-if 'ight' in "Eight":
-    print("figure 8 detected")
+voice_char = ""
+wait_times = []
+square_keywords = ["Square", "square", "where"]
+forward_keywords = ["straight", "forward", "traight", "orward", "bored"]
+circle_keywords = ["circle"]
+figure8_keywords = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
+left_keywords = ["left"]
+right_keywords = ["right"]
+backwards_keywords = ["back", "backwards", "turn around", "return"]
+
+# go forward
+if (any(keyword in text for keyword in forward_keywords)):
+    voice_char += '&'
+    wait_times.append(1.5)
+
+# go back
+if (any(keyword in text for keyword in backwards_keywords)):
+    voice_char += '{'
+    wait_times.append(2)
+
+# turns
+if (any(keyword in text for keyword in left_keywords)):
+    voice_char += '|'
+    wait_times.append(2)
+
+if (any(keyword in text for keyword in right_keywords)):
+    voice_char += '-'
+    wait_times.append(2)
+
+if (any(keyword in text for keyword in square_keywords)):
+# move in a square
+    voice_char += '/'
+    wait_times.append(8)
+
+if (any(keyword in text for keyword in circle_keywords)):
+    voice_char += "'"
+    wait_times.append(390/35*1.05+1.0)
+
+
+if (any(keyword in text for keyword in figure8_keywords)):
+    voice_char += '"'
+    wait_times.append(285*2/35+2.5)
+
+# print the char sent for debugging
+# print("charString = ",voice_char)
+# print("wait times = ", wait_times)
+
+for i in range (0, len(voice_char)):
+    print(voice_char[i])     
+    print(i)   
+

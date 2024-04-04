@@ -28,13 +28,13 @@ CW_VELOCITY      	  = 119.0
 CCW_VELOCITY      	  = 119.0
 
 # Configure the serial port
-ser = serial.Serial(
-    port='COM16',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_TWO,
-    bytesize=serial.EIGHTBITS
-)
+# ser = serial.Serial(
+#     port='COM16',
+#     baudrate=9600,
+#     parity=serial.PARITY_NONE,
+#     stopbits=serial.STOPBITS_TWO,
+#     bytesize=serial.EIGHTBITS
+# )
 
 # Coordinates to map to for A to N going from EFM8 to STM
 coordinates = {65: (0, 50),     #A to N
@@ -434,71 +434,80 @@ class VoiceControl:
     # Detectable Phrases 
     def send_voice_data(self):
         # move forward
-        voice_char = ' '
-        if "straight" in self.text:
-            voice_char = '&'
-        if "forward" in self.text:
-            voice_char = '&'
+        command_string = ""
+        wait_times = []
+        square_keywords = ["Square", "square", "where"]
+        forward_keywords = ["straight", "forward", "traight", "orward", "bored", "Ford"]
+        circle_keywords = ["circle"]
+        figure8_keywords = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
+        left_keywords = ["left"]
+        right_keywords = ["right"]
+        backwards_keywords = ["back", "backwards", "turn around", "return"]
+
+        # go forward
+        if (any(keyword in self.text for keyword in forward_keywords)):
+            command_string += '&'
+            wait_times.append(1.5)
 
         # go back
-        if "backward" in self.text:
-            voice_char = '{'
-        if "back" in self.text:
-            voice_char = '{'
+        if (any(keyword in self.text for keyword in backwards_keywords)):
+            command_string += '{'
+            wait_times.append(2)
 
         # turns
-        if "left" in self.text:
-            voice_char = '|'
-        if "right" in self.text:
-            voice_char = '-'
+        if (any(keyword in self.text for keyword in left_keywords)):
+            command_string += '|'
+            wait_times.append(2)
 
-        # move in a square
-        if "Square" in self.text:
-            voice_char = '/'
-        if "square" in self.text:
-            voice_char = '/'
-        if "where" in self.text:
-            voice_char = '/'
+        if (any(keyword in self.text for keyword in right_keywords)):
+            command_string += '-'
+            wait_times.append(2)
         
-        # move in a circle
-        if "Circle" in self.text:
-            voice_char = "'"
+        if (any(keyword in self.text for keyword in square_keywords)):
+        # move in a square
+            command_string += '/'
+            wait_times.append(8)
+        
+        if (any(keyword in self.text for keyword in circle_keywords)):
+            command_string += "'"
+            wait_times.append(390/35*1.05+1.0)
 
-        # move in a figure 8
-        if "Figure" in self.text:
-            voice_char = '"'
-        if "igure" in self.text:
-            voice_char = '"'
-        if "8" in self.text:
-            voice_char = '"'
-        if "ight" in self.text:
-            voice_char = '"'
+        
+        if (any(keyword in self.text for keyword in figure8_keywords)):
+            command_string += '"'
+            wait_times.append(285*2/35+2.5)
 
         # print the char sent for debugging
-        print("char_sent = ",voice_char)
+        print("command_string = ",command_string)
+        print("wait times = ", wait_times)
+        print("Sending...")
+        for i in range(0, len(command_string)):
+            voice_char = command_string[i]
+            wait_time = wait_times[i]
 
-        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
-            print("sent . and ,")
-            ser.write("..\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
-            ser.write("..\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.1)
-        if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.1)
+            if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+                print("sent . and ,")
+                ser.write("..\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write("..\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.1)
+            if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.1)
 
-        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
-        time.sleep(0.01)
-        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
-        time.sleep(5)
+            ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
+            time.sleep(0.01)
+            ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
+            time.sleep(wait_time)
+            print("voice_char= ", voice_char)
 
-        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
+            if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
 
     def on_closing(self):
         self.master.destroy()
