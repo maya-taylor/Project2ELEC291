@@ -31,13 +31,13 @@ CW_VELOCITY      	  = 119.0
 CCW_VELOCITY      	  = 119.0
 
 # Configure the serial port
-ser = serial.Serial(
-    port='COM16',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_TWO,
-    bytesize=serial.EIGHTBITS
-)
+# ser = serial.Serial(
+#     port='COM16',
+#     baudrate=9600,
+#     parity=serial.PARITY_NONE,
+#     stopbits=serial.STOPBITS_TWO,
+#     bytesize=serial.EIGHTBITS
+# )
 
 # Coordinates to map to for A to N going from EFM8 to STM
 coordinates = {65: (0, 50),     #A to N
@@ -536,7 +536,7 @@ if (joystick_flag == 4):
 
     # Sends letter to JDY-40
     def send_letter(letter):        
-        ser.write(f"{letter*2}\r\n".encode()) 
+        # ser.write(f"{letter*2}\r\n".encode()) 
         print(letter+"\r\n")
 
     try:

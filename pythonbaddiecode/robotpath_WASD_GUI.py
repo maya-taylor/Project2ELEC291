@@ -28,13 +28,13 @@ CW_VELOCITY      	  = 119.0
 CCW_VELOCITY      	  = 119.0
 
 # Configure the serial port
-# ser = serial.Serial(
-#     port='COM16',
-#     baudrate=9600,
-#     parity=serial.PARITY_NONE,
-#     stopbits=serial.STOPBITS_TWO,
-#     bytesize=serial.EIGHTBITS
-# )
+ser = serial.Serial(
+    port='COM16',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_TWO,
+    bytesize=serial.EIGHTBITS
+)
 
 # Coordinates to map to for A to N going from EFM8 to STM
 coordinates = {65: (0, 50),     #A to N
@@ -467,7 +467,11 @@ class VoiceControl:
         # move in a figure 8
         if "Figure" in self.text:
             voice_char = '"'
+        if "igure" in self.text:
+            voice_char = '"'
         if "8" in self.text:
+            voice_char = '"'
+        if "ight" in self.text:
             voice_char = '"'
 
         # print the char sent for debugging
@@ -503,9 +507,9 @@ class KeybordControl:
     def __init__(self, root):
         self.root = root
         self.root.title("Keybord Control")
-        self.root.configure(bg="#222222")  # Set background color to dark gray
+        self.root.configure(bg="#222222")  # Set background color to dark gray for a darkmode keyboard
         
-        # Define the keys on the virtual keyboard (only WASD)
+        # Define the keys on the virtual keyboard
         self.keys = [
             ['Q', 'W', 'E'],
             ['A', 'S', 'D'],
@@ -518,17 +522,20 @@ class KeybordControl:
         ('s'): ('E'),            # S 
         ('d'): ('H'),            # E
         ('q'): ('L'),            # NW
-        ('e'): ('N'),           # NE
+        ('e'): ('N'),            # NE
         ('z'):('M'),             # SW
         ('c'):('K')              # SE
         }
 
         self.key = ''
+        self.time_elapsed = 0
 
         # Create a dictionary to store the labels
         self.labels = {}
 
         # Create and place the keys on the virtual keyboard
+        # Places each level in a grid configuration 
+        # https://www.pythonguis.com/tutorials/create-ui-with-tkinter-grid-layout-manager/
         for i, row in enumerate(self.keys):
             for j, key in enumerate(row):
                 label = tk.Label(root, text=key, width=10, height=5, relief="flat", font=("Helvetica", 16), bg="#555555", fg="black")
@@ -536,32 +543,36 @@ class KeybordControl:
                 self.labels[key] = label  # Store the label in the dictionary
 
         # Bind key press and release events to the root window
+        # The frame widget in Tkinter has allows you to bind an event object to a callable
+        # Character of keypress is obtained using `.char` attribute on the event
         root.bind("<KeyPress>", self.on_key_press)
         root.bind("<KeyRelease>", self.on_key_release)
+        
+        time.sleep(0.1)
 
     def on_key_press(self, event):
         # Handle key press event
-        self.key = event.keysym.upper()
-        # print(f"Key pressed: {key}")
+        self.key = event.char.upper()
         if self.key in self.labels:
             self.labels[self.key].config(bg="#e3e3e3", fg="black")  # Change label color to indicate key press
         
         if self.key.lower() in self.key_to_command:
             self.key = self.key_to_command[self.key.lower()]
             self.send_letter()       
-
-
+    
     def on_key_release(self, event):
         # Handle key release event
-        self.key = event.keysym.upper()
+        self.time_elapsed = time.time() # set current time
+        self.key = event.char.upper()
         if self.key in self.labels:
             self.labels[self.key].config(bg="#555555", fg="black")  # Restore label color to default
 
-        self.key = 'Z'
+        self.key = 'Z' # This makes it so that the car stops on keyboard release
         self.send_letter()
+        # print("Stop!!")
 
     def send_letter(self):
-        # ser.write(f"{letter*2}\r\n".encode()) 
+        # ser.write(f"{self.key*2}\r\n".encode()) 
         print(self.key+"\r\n")
     
 # Joystick Flag
@@ -585,9 +596,19 @@ if (joystick_flag == 2 or joystick_flag == 3):
 
 # If 4, use keyboard commands
 if (joystick_flag == 4):
+    ser.write(f">>\n\n".encode())            # Tell the robot we are beginning keyboard control
+    time.sleep(0.01)
+    ser.write(f">>\n\n".encode())           
+    time.sleep(0.1)
     root = tk.Tk()
     voiceController = KeybordControl(root)
     root.mainloop()
+
+    # Tell the robot we are returning control from keyboard
+    ser.write(f"<<\n\n".encode())
+    time.sleep(0.01)
+    ser.write(f"<<\n\n".encode())
+    time.sleep(0.1)
 
     joystick_flag = 1 # set flag to 1 so that joystick mode will open
 
