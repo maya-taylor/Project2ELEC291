@@ -1,34 +1,37 @@
 
 // Controller code - using new position mapping to characters
 
+//include libraries
+#include               <EFM8LB1.h>
+#include               <stdlib.h>
+#include               <stdio.h>
+#include               <string.h>
+#include               <math.h>
 
-#include <EFM8LB1.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#define SYSCLK         72000000
+#define BAUDRATE       115200L
+#define SARCLK         18000000L
+#define DEFAULT_F      15500L // 
 
-#define SYSCLK 72000000
-#define BAUDRATE 115200L
-#define SARCLK 18000000L
-#define XPOS_PIN QFP32_MUX_P1_4
-#define YPOS_PIN QFP32_MUX_P1_5
+//pin constants
+#define XPOS_PIN       QFP32_MUX_P1_4 //analog input for x coords
+#define YPOS_PIN       QFP32_MUX_P1_5 //analog input for y coords
 
-#define LCD_RS P1_7
-#define LCD_E P1_6
-#define LCD_D4 P1_3
-#define LCD_D5 P1_2
-#define LCD_D6 P1_1
-#define LCD_D7 P1_0
+#define LCD_RS         P1_7
+#define LCD_E          P1_6
+#define LCD_D4         P1_3
+#define LCD_D5 		   P1_2
+#define LCD_D6 		   P1_1
+#define LCD_D7         P1_0
+
+#define BUZZER_OUT     P0_2  // sets buzzer output to pin 1.1
+
+//computational constants
 #define CHARS_PER_LINE 16
-#define MAX_VOLTS 3.3049  //this should stay consistent but maybe requires calibration (HY)
-#define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
+#define MAX_VOLTS      3.3049  //maximum voltage reading possible from joystick
+#define SQRT_2         1.41421356237 //saves computation time by using a constant 
 
-// Buzzer sound
-#define BUZZER_OUT P0_2  // sets buzzer output to pin 1.1
-#define DEFAULT_F 15500L // 
-
-// threshold values for many Hz above baseline frequency for different metal strengths
+// threshold values for how many Hz above baseline frequency for different metal strengths
 #define metalLevel_1   1300
 #define metalLevel_2   1400
 #define metalLevel_3   1500
@@ -36,10 +39,9 @@
 #define metalLevel_5   1700
 
 
-
-unsigned char overflow_count;
-
-idata char buff[20];
+//global variable initializations
+unsigned char          overflow_count;
+idata char             buff[20];
 
 char _c51_external_startup (void)
 {
@@ -120,6 +122,7 @@ char _c51_external_startup (void)
 	return 0;
 }
 
+//interrupt service routine for buzzer sound output
 void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 {
 	TF2H = 0; // Clear Timer2 interrupt flag
@@ -130,9 +133,9 @@ void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 void InitADC (void)
 {
 	SFRPAGE = 0x00;
-	ADEN=0; // Disable ADC
+	ADEN    = 0; // Disable ADC
 	
-	ADC0CN1=
+	ADC0CN1 =
 		(0x2 << 6) | // 0x0: 10-bit, 0x1: 12-bit, 0x2: 14-bit
         (0x0 << 3) | // 0x0: No shift. 0x1: Shift right 1 bit. 0x2: Shift right 2 bits. 0x3: Shift right 3 bits.		
 		(0x0 << 0) ; // Accumulate n conversions: 0x0: 1, 0x1:4, 0x2:8, 0x3:16, 0x4:32
@@ -163,7 +166,7 @@ void InitADC (void)
 		(0x0 << 7) | // PACEN. 0x0: The ADC accumulator is over-written.  0x1: The ADC accumulator adds to results.
 		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: TIMER4, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
 
-	ADEN=1; // Enable ADC
+	ADEN = 1; // Enable ADC
 }
 
 // Uses Timer3 to delay <us> micro-seconds. 
@@ -486,23 +489,23 @@ void loadTimer2(unsigned long int freq) {
 
 /*
 	Function:
-		If freq is above a threshold(baseline + min_metal_detect), play sound
+ 		If freq is above a threshold(baseline + min_metal_detect), play sound
 		Frequency of sound is dependent on amount above baseline
 		Different threshold levels are given by 
 		`metalLevel_x`which corresponds to `levelx_freq`
 
-	Params:
+	Parameters:
 		detectedFreq - measured frequency of circuit
 		min_metal_detect - minimum value above baseline for us to consider there's a coin
 		baselinefreq - measured baseline frequency
-
-
 */
-char matchRange(int x, int y) {
+char matchRange (int x, int y) 
+{
    char result;
 
     // Handling Y dimension within X range
-    if (x >= -5 && x <= 5) {
+    if (x >= -5 && x <= 5) 
+	{
         if (y >= 45)
             result = 'A';
         else if (y >= 30 && y <= 45)
@@ -518,7 +521,9 @@ char matchRange(int x, int y) {
         else
             result = 'Z'; // Default case if Y doesn't match any range
     }
-    else if (x >= 40) {
+
+    else if (x >= 40) 
+	{
         // Handling Y dimension within X range
         if (y >= 5) 
 			result = 'K';
@@ -529,7 +534,8 @@ char matchRange(int x, int y) {
         else
             result = 'Z'; // Default case if Y doesn't match any range
     }
-    else if (x <= -40) {
+    else if (x <= -40) 
+	{
         // Handling Y dimension within X range
 		if (y <= -5)
 			result = 'N';
@@ -542,7 +548,8 @@ char matchRange(int x, int y) {
         else
             result = 'Z'; // Default case if Y doesn't match any range
     }
-    else if (x >= 5 && x <= 40) {
+    else if (x >= 5 && x <= 40) 
+	{
         // Handling Y dimension within X range
         if (y >= -5 && y <= 5)
             result = 'H';
@@ -553,7 +560,8 @@ char matchRange(int x, int y) {
         else
             result = 'Z'; // Default case if Y doesn't match any range
     }
-    else if (x >= -40 && x <= -5) {
+    else if (x >= -40 && x <= -5) 
+	{
         // Handling Y dimension within X range
         if (y >= -5 && y <= 5)
             result = 'J';
@@ -574,21 +582,22 @@ char matchRange(int x, int y) {
 // Initialization is done externally by c51? - GL
 void main(void)
 {
-	int timeout_cnt = 0;
-	int metal_lev = 0;
-	float v[2];
-    float xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (HY)
+	float      v[2];
+    float      xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (
+	float      mid[2];
+    char       mapped_dir;
 	xdata char buff_x[17];
     xdata char buff_y[17];
 	xdata char temp_buff[4];
-	int ToggleJoyStick = 0;
-	float mid[2];
-    char mapped_dir;
+
+	int        ToggleJoyStick = 0;
+	int        timeout_cnt = 0;
+	int        metal_lev = 0;
+	
 
 	// TIMER0_Init(); commented out since I'll be using TIMER2 ISR - GL
 	
 	LCD_4BIT();
-	
 	waitms(500);
 	printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
 	

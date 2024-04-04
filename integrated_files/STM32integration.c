@@ -8,11 +8,11 @@
 #include "../Common/Include/serial.h"
 #include "UART2.h"
 
-#define F_CPU 32000000L
-#define DEF_F 10000L // a 100us tick
+#define F_CPU  32000000L
+#define DEF_F  10000L // a 100us tick
 #define SYSCLK 32000000L
 
-#define PI 3.141592654
+#define PI                      3.141592654
 #define FORWARD_ACCELERATION    77.355 // calculated via solving x = a * t^2
 #define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
 #define ANGULAR_ACCELERATION    77.355 // calculated via solving theta = a * t^2, a is our anglular acceleration
@@ -20,8 +20,8 @@
 #define CCW_VELOCITY     		110.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
 #define DIAG_VELOCITY_LEFT		35.0 // diagonal velocity for forward left
 #define DIAG_VELOCITY_RIGHT		34.0 // diagonal velocity for forward right
-#define F_CPU 32000000L
-#define AVG_NUM 5
+#define F_CPU                   32000000L
+#define AVG_NUM                 5
 
 #define S_MANUAL 				1 
 #define S_SQUARE 				2
@@ -48,11 +48,11 @@ volatile int e_stopped = 0;
 void Delay_us(unsigned char us)
 {
 	// For SysTick info check the STM32L0xxx Cortex-M0 programming manual page 85.
-	SysTick->LOAD = (F_CPU/(1000000L/us)) - 1;  // set reload register, counter rolls over from zero, hence -1
-	SysTick->VAL = 0; // load the SysTick counter
+	SysTick->LOAD  = (F_CPU/(1000000L/us)) - 1;  // set reload register, counter rolls over from zero, hence -1
+	SysTick->VAL   = 0; // load the SysTick counter
 	SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk; // Enable SysTick IRQ and SysTick Timer 
 	while((SysTick->CTRL & BIT16)==0); // Bit 16 is the COUNTFLAG.  True when counter rolls over from zero.
-	SysTick->CTRL = 0x00; // Disable Systick counter
+	SysTick->CTRL  = 0x00; // Disable Systick counter
 }
 
 void waitms (unsigned int ms)

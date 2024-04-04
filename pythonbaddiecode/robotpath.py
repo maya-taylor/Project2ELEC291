@@ -91,7 +91,7 @@ import cmath # for vector math
 def on_option_select():
     selected = selected_option.get()
     result_label.config(text=f"Selected Option: {selected}")
-
+    # Select mode of operation
     if selected == 'Draw':
        print("Draw Mode")
     elif selected == 'Joystick':
@@ -114,25 +114,21 @@ selected_option = tk.StringVar()
 options = ["Joystick", "Draw", "Voice Control(GUI)", "Voice Control(Terminal)", "Keyboard"] # adding a voice control option
 dropdown = tk.OptionMenu(root, selected_option, *options)
 dropdown.pack(pady=10)
-# Add a button to display the selected option
+# Button to display the selected option
 show_button = tk.Button(root, text="Show Selection", command=on_option_select)
 show_button.pack()
 # Label to display the selected option
 result_label = tk.Label(root, text="")
 result_label.pack()
 root.mainloop()
-# -- CHANGE MADE -- GL
-# Moved this code to the `on_option_select` command
 
-joystick_flag = 0 # should change this to a state variable?
+
+joystick_flag = 0 
 if selected_option.get() == 'Joystick':
     joystick_flag = 1
     print("Joystick Mode")
 elif selected_option.get() == 'Draw':
     joystick_flag = 0
-    # root = tk.Tk()
-    # app = PathDrawer(root)
-    # root.mainloop()
 elif selected_option.get() == 'Voice Control(GUI)':
     joystick_flag = 2
 elif selected_option.get() == 'Voice Control(Terminal)':
@@ -164,7 +160,7 @@ class PathDrawer:
         self.send_button = tk.Button(self.master, text="Send", command=self.send_data)   # call send data command on press
         self.send_button.pack(side=tk.LEFT)
 
-        # Custom paths button
+        # Draw Square
         self.square_button = tk.Button(self.master, text="Draw squre", command=self.draw_square)
         self.square_button.pack(side=tk.LEFT)
 
@@ -175,14 +171,14 @@ class PathDrawer:
         self.num_segments_entry = tk.Entry(self.master)
         self.num_segments_entry.pack(side=tk.LEFT)
         self.num_segments_entry.insert(tk.END, "5")
-
+    # Click to begin drawing
     def on_click(self, event):
         self.data_points.append((event.x, event.y))
-
+    # Drag to draw line and find endpoint
     def on_drag(self, event):
         self.data_points.append((event.x, event.y))
         self.draw_lines()
-
+    # Join the points together
     def draw_lines(self):
         self.canvas.delete("line")
         if len(self.data_points) >= 2:
@@ -190,7 +186,7 @@ class PathDrawer:
                 x0, y0 = self.data_points[i]
                 x1, y1 = self.data_points[i + 1]
                 self.canvas.create_line(x0, y0, x1, y1, tags="line")
-
+    # Clear all points
     def clear_canvas(self):
         self.canvas.delete("all")
         self.data_points = []
@@ -225,9 +221,11 @@ class PathDrawer:
             x1, y1 = approx_points[i + 1]
             self.canvas.create_line(x0, y0, x1, y1, tags="line")
 
+        # convert values to vectors and phasors
         self.convert_to_vectors()
         self.convert_to_phasors()
 
+    # Convert points to vectors
     def convert_to_vectors(self):
         self.vectors_list = []
         prev_point = self.approx_points[0]
@@ -239,6 +237,7 @@ class PathDrawer:
             self.vectors_list.append((int(magnitude), int(phase*180/np.pi)))
             prev_point = point
 
+    # Convert points to phasors
     def convert_to_phasors(self):
         self.phasors_list = []
         prev_vector = [0, 90]
@@ -252,6 +251,7 @@ class PathDrawer:
         
         print("Phasors List:", self.phasors_list)
 
+    # Send data to the JDY-40
     def send_data(self):
         print("Phasors:") # send data to serial on a set time  
         ser.write("..\r\n".encode())  # send over serial to JDY40
@@ -274,7 +274,7 @@ class PathDrawer:
             ser.write(f"{phasor_ascii_char*2}\r\n".encode())  # send over serial to JDY40
             time.sleep(0.01)
             ser.write(f"{phasor_ascii_char*2}\r\n".encode())
-            print(f"Sent string = {phasor_ascii_char*2}\r\n".encode())      # check this string
+            print(f"Sent string = {phasor_ascii_char*2}\r\n".encode())      # check the string sent
             print(f"{phasor},{phasor_ascii_char}, wait = {wait_time}") # print what character is sent
             
             time.sleep(wait_time)   
@@ -284,6 +284,7 @@ class PathDrawer:
         ser.write(",,\r\n".encode())  # send over serial to JDY40
         print("Finished!")
 
+    # Draw a suqare on the canvas
     def draw_square(self):
         self.clear_canvas()
         side_length = min(self.canvas.winfo_width(), self.canvas.winfo_height()) / 2
@@ -305,6 +306,7 @@ class PathDrawer:
         self.phasors_list.append([50,90])
         self.phasors_list.append([0,90]) #reset to original direction
 
+    # Convert polar coordinates to the corresponding ASCII character sent
     def polar_to_ascii(self, magnitude, argument):
     # Iterate through the dictionary to find the corresponding character
         for key, value in ascii_mapping.items():
@@ -316,6 +318,7 @@ class PathDrawer:
 
     def on_closing(self):
         self.master.destroy()  # Destroy the Tkinter window
+
 # Function: Python class with functions for voice control
 # Creates a master object with a text attribute, icon attribute and functions
 class VoiceControl:
@@ -394,10 +397,10 @@ class VoiceControl:
             except sr.RequestError as e:
                     print(f"Could not request results from Google Speech Recognition service; {e}")     
 
-            self.send_voice_data() # then send the data
+            self.send_voice_data() # send the data
             print("Data Sent!")
             print("")
-
+    # Mic press GUI
     def on_mic_press_GUI(self):
         if self.is_pressed:
             self.record_button.config(image=self.icon_photo_on)
@@ -431,40 +434,48 @@ class VoiceControl:
 
         self.is_pressed = not self.is_pressed
 
+    # Detectable Phrases 
     def send_voice_data(self):
-      # matching against "drive straight" 
+        # move forward
         voice_char = ' '
         if "straight" in self.text:
             voice_char = '&'
         if "forward" in self.text:
             voice_char = '&'
 
+        # go back
         if "backward" in self.text:
             voice_char = '{'
         if "back" in self.text:
             voice_char = '{'
 
+        # turns
         if "left" in self.text:
             voice_char = '|'
         if "right" in self.text:
             voice_char = '-'
 
+        # move in a square
         if "Square" in self.text:
             voice_char = '/'
         if "square" in self.text:
             voice_char = '/'
         if "where" in self.text:
             voice_char = '/'
-            
+        
+        # move in a circle
         if "Circle" in self.text:
             voice_char = "'"
 
+        # move in a figure 8
         if "Figure" in self.text:
             voice_char = '"'
         if "8" in self.text:
             voice_char = '"'
 
+        # print the char sent for debugging
         print("char_sent = ",voice_char)
+
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
             print("sent . and ,")
             ser.write("..\r\n".encode())  # send over serial to JDY40
@@ -476,10 +487,12 @@ class VoiceControl:
             time.sleep(0.01)
             ser.write(",,\r\n".encode())  # send over serial to JDY40
             time.sleep(0.1)
+
         ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
         time.sleep(0.01)
         ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
         time.sleep(5)
+
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
             ser.write(",,\r\n".encode())  # send over serial to JDY40
             time.sleep(0.01)
@@ -489,10 +502,10 @@ class VoiceControl:
     def on_closing(self):
         self.master.destroy()
 
-# check if joystick_flag is zero
+# Joystick Flag
+
+# If 0, run path drawer
 if (joystick_flag == 0):
-    # Create an instance of the PathDrawer class
-    # print("draw yay")
     root = tk.Tk()
     drawer = PathDrawer(root)   
     # start main tkinter loop
@@ -500,6 +513,7 @@ if (joystick_flag == 0):
 
     joystick_flag = 1
 
+# If 2 or 3, run voice commands
 if (joystick_flag == 2 or joystick_flag == 3):
     root = tk.Tk()
     voiceController = VoiceControl(root)
@@ -507,18 +521,17 @@ if (joystick_flag == 2 or joystick_flag == 3):
 
     joystick_flag = 1
 
+# If 4, use keyboard commands
 if (joystick_flag == 4):
-    # WASD mode
-    
     key_to_command = {
-        ord('w'): ('B'),  # forward mid, char 'B'
-        ord('a'): ('J'),  # CCW in place mid (Left), char 'J'
-        ord('s'): ('E'),  # backwards mid
-        ord('d'): ('H'),  # CW in place mid (Right), char 'H'
+        ord('w'): ('B'),  # N
+        ord('a'): ('J'),  # W 
+        ord('s'): ('E'),  # S 
+        ord('d'): ('H'),  # E
         ord('q'): ('L'), # NW
-        ord ('e'): ('N'),
-        ord('z'):('M'),
-        ord('c'):('K')
+        ord ('e'): ('N'), # NE
+        ord('z'):('M'), # SW
+        ord('c'):('K') #SE
     }
 
     # Print letter to serial port / terminal
