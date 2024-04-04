@@ -1,0 +1,46 @@
+import tkinter as tk
+
+class VirtualKeyboard:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Keybord Control")
+        self.root.configure(bg="#222222")  # Set background color to dark gray
+        
+        # Define the keys on the virtual keyboard (only WASD)
+        self.keys = [
+            ['Q', 'W', 'E'],
+            ['A', 'S', 'D'],
+            ['Z', ' ', 'C']
+        ]
+
+        # Create a dictionary to store the labels
+        self.labels = {}
+
+        # Create and place the keys on the virtual keyboard
+        for i, row in enumerate(self.keys):
+            for j, key in enumerate(row):
+                label = tk.Label(root, text=key, width=10, height=5, relief="flat", font=("Helvetica", 16), bg="#555555", fg="black")
+                label.grid(row=i, column=j, padx=5, pady=5)
+                self.labels[key] = label  # Store the label in the dictionary
+
+        # Bind key press and release events to the root window
+        root.bind("<KeyPress>", self.on_key_press)
+        root.bind("<KeyRelease>", self.on_key_release)
+
+    def on_key_press(self, event):
+        # Handle key press event
+        key = event.keysym.upper()
+        print(f"Key pressed: {key}")
+        if key in self.labels:
+            self.labels[key].config(bg="#e3e3e3", fg="black")  # Change label color to indicate key press
+
+    def on_key_release(self, event):
+        # Handle key release event
+        key = event.keysym.upper()
+        if key in self.labels:
+            self.labels[key].config(bg="#555555", fg="black")  # Restore label color to default
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    keyboard = VirtualKeyboard(root)
+    root.mainloop()
