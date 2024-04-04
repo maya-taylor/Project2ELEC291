@@ -8,25 +8,26 @@
 #include <string.h>
 #include <math.h>
 
-#define SYSCLK 72000000
+#define SYSCLK   72000000
 #define BAUDRATE 115200L
-#define SARCLK 18000000L
+#define SARCLK   18000000L
 #define XPOS_PIN QFP32_MUX_P1_4
 #define YPOS_PIN QFP32_MUX_P1_5
 
 #define LCD_RS P1_7
-#define LCD_E P1_6
+#define LCD_E  P1_6
 #define LCD_D4 P1_3
 #define LCD_D5 P1_2
 #define LCD_D6 P1_1
 #define LCD_D7 P1_0
+
 #define CHARS_PER_LINE 16
-#define MAX_VOLTS 3.3049  //this should stay consistent but maybe requires calibration (HY)
-#define SQRT_2 1.41421356237 //saves computation time by using a constant (HY)
+#define MAX_VOLTS      3.3049  //this should stay consistent but maybe requires calibration (HY)
+#define SQRT_2         1.41421356237 //saves computation time by using a constant (HY)
 
 // Buzzer sound
 #define BUZZER_OUT P0_2  // sets buzzer output to pin 1.1
-#define DEFAULT_F 15500L // 
+#define DEFAULT_F  15500L // 
 
 // threshold values for many Hz above baseline frequency for different metal strengths
 #define metalLevel_1   1300
@@ -39,17 +40,17 @@
 
 unsigned char overflow_count;
 
-idata char buff[20];
+idata char    buff[20];
 
 char _c51_external_startup (void)
 {
 	// Disable Watchdog with key sequence
 	SFRPAGE = 0x00;
-	WDTCN = 0xDE; //First key
-	WDTCN = 0xAD; //Second key
+	WDTCN   = 0xDE; //First key
+	WDTCN   = 0xAD; //Second key
   
-	VDM0CN=0x80;       // enable VDD monitor
-	RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
+	VDM0CN  = 0x80;       // enable VDD monitor
+	RSTSRC  = 0x02|0x04;  // Enable reset on missing clock detector and VDD
 
 	#if (SYSCLK == 48000000L)	
 		SFRPAGE = 0x10;
@@ -100,22 +101,22 @@ char _c51_external_startup (void)
 		#error Timer 0 reload value is incorrect because (SYSCLK/BAUDRATE)/(2L*12L) > 0xFF
 	#endif
 	SCON0 = 0x10;
-	TH1 = 0x100-((SYSCLK/BAUDRATE)/(2L*12L));
-	TL1 = TH1;      // Init Timer1
+	TH1   = 0x100-((SYSCLK/BAUDRATE)/(2L*12L));
+	TL1   = TH1;      // Init Timer1
 	TMOD &= ~0xf0;  // TMOD: timer 1 in 8-bit auto-reload
 	TMOD |=  0x20;                       
-	TR1 = 1; // START Timer1
-	TI = 1;  // Indicate TX0 ready
+	TR1   = 1; // START Timer1
+	TI    = 1;  // Indicate TX0 ready
 
 	
 	// Initialize timer 2 for periodic interrupts
-	TMR2CN0=0x00;   // Stop Timer2; Clear TF2;
-	CKCON0|=0b_0001_0000;
-	TMR2RL=(-(SYSCLK/(2*DEFAULT_F))); // Initialize reload value
-	TMR2=0xffff;   // Set to reload immediately
-	ET2=1;         // Enable Timer2 interrupts
-	TR2=1;         // Start Timer2
-	EA=1; // Global interrupt enable
+	TMR2CN0 = 0x00;   // Stop Timer2; Clear TF2;
+	CKCON0 |=0b_0001_0000;
+	TMR2RL  =(-(SYSCLK/(2*DEFAULT_F))); // Initialize reload value
+	TMR2    = 0xffff;   // Set to reload immediately
+	ET2     = 1 ;         // Enable Timer2 interrupts
+	TR2     = 1;         // Start Timer2
+	EA      = 1; // Global interrupt enable
   	
 	return 0;
 }
@@ -172,10 +173,10 @@ void Timer3us(unsigned char us)
 	unsigned char i;               // usec counter
 	
 	// The input for Timer 3 is selected as SYSCLK by setting T3ML (bit 6) of CKCON0:
-	CKCON0|=0b_0100_0000;
+	CKCON0 |= 0b_0100_0000;
 	
-	TMR3RL = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
-	TMR3 = TMR3RL;                 // Initialize Timer3 for first overflow
+	TMR3RL  = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
+	TMR3    = TMR3RL;                 // Initialize Timer3 for first overflow
 	
 	TMR3CN0 = 0x04;                 // Sart Timer3 and clear overflow flag
 	for (i = 0; i < us; i++)       // Count <us> overflows
@@ -233,7 +234,7 @@ void TIMER0_Init(void)
 unsigned int ADC_at_Pin(unsigned char pin)
 {
 	ADC0MX = pin;   // Select input from pin
-	ADINT = 0;
+	ADINT  = 0;
 	ADBUSY = 1;     // Convert voltage at the pin
 	while (!ADINT); // Wait for conversion to complete
 	return (ADC0);
@@ -241,7 +242,7 @@ unsigned int ADC_at_Pin(unsigned char pin)
 
 unsigned int Get_ADC (void)
 {
-	ADINT = 0;
+	ADINT  = 0;
 	ADBUSY = 1;
 	while (!ADINT); // Wait for conversion to complete
 	return (ADC0);

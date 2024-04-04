@@ -77,12 +77,16 @@ void emergency_stop () {
 	while(1){
 		if (ReceivedBytes2()>0)
 		{
+			
 			egets2(buff, sizeof(buff)-1);
 			//printf("%s", buff);
 			if (buff[0]=='?')
 			{	
 				GPIOA->ODR &= ~BIT7; 
 				printf("Restart :)\r\n");
+				eputs2("<<\r\n");
+				waitms(3);
+				eputs2("<<\r\n");
 				waitms(500);
 				return;
 			}

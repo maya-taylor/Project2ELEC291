@@ -59,66 +59,64 @@ LOW_STRENGTH = 0
 
 
 def process_csv(filename):
-    # Open the CSV file
-    with open(filename, 'r') as file:
-        # Create a CSV reader object
-        reader = csv.reader(file)
-        coord_map = [] #dynamic initialization of x,y
-        strength_map = [] #dynamic initialization of strength value
-        xpos = 0 #variables that are used as buffers 
-        ypos = 0
+    with open(filename, 'r') as file: # Open the CSV file
+        reader         = csv.reader(file) # Create a CSV reader object
+        coord_map      = [] #dynamic initialization of x,y
+        strength_map   = [] #dynamic initialization of strength value
+        xpos           = 0 #variables that are used as buffers 
+        ypos           = 0
         metal_strength = 0
         # Iterate through each row in the CSV file
         for row in reader:
             # Assuming one column in the CSV file
-            data = row[0]
+            data       = row[0]
             
             # Check if the data contains location flags and process accordingly
             if ff_flag in data:
-                xpos += 0
-                ypos += 50
+                xpos  += 0
+                ypos  += 50
             elif fm_flag in data:
-                xpos += 0
-                ypos += 30
+                xpos  += 0
+                ypos  += 30
             elif fs_flag in data:
-                xpos += 0
-                ypos += 20
+                xpos  += 0
+                ypos  += 20
             elif bf_flag in data:
-                xpos += 0
-                ypos += -50
+                xpos  += 0
+                ypos  += -50
             elif bm_flag in data:
-                xpos += 0
-                ypos += -30
+                xpos  += 0
+                ypos  += -30
             elif bs_flag in data:
-                xpos += 0
-                ypos += -10
+                xpos  += 0
+                ypos  += -10
             elif cwf_flag in data:
-                xpos += 50
-                ypos += 0
+                xpos  += 50
+                ypos  += 0
             elif cwm_flag in data:
-                xpos += 30
-                ypos += 0
+                xpos  += 30
+                ypos  += 0
             elif ccwf_flag in data:
-                xpos += -50
-                ypos += 0
+                xpos  += -50
+                ypos  += 0
             elif ccwm_flag in data:
-                xpos += -30
-                ypos += 0
+                xpos  += -30
+                ypos  += 0
             elif ne_flag in data:
-                xpos += 20
-                ypos += 45
+                xpos  += 20
+                ypos  += 45
             elif nw_flag in data:
-                xpos += -20
-                ypos += 45
+                xpos  += -20
+                ypos  += 45
             elif se_flag in data:
-                xpos += 20
-                ypos += -45
+                xpos  += 20
+                ypos  += -45
             elif sw_flag in data:
-                xpos += -20
-                ypos += -45
+                xpos  += -20
+                ypos  += -45
             else: #default case is no movement so we add nothing new
-                xpos += 0
-                ypos += 0
+                xpos  += 0
+                ypos  += 0
             
             coord_map.append([xpos, ypos])
 

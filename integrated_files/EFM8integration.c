@@ -629,6 +629,11 @@ void main(void)
 	SendATCommand("AT+POWE\r\n");
 	SendATCommand("AT+CLSS\r\n");
 
+
+	sendstr1("ZZ\r\n");
+	waitms(5);
+	sendstr1("ZZ\r\n");
+
     mid[0] = Volts_at_Pin(XPOS_PIN);
     mid[1] = Volts_at_Pin(YPOS_PIN);
 
@@ -721,6 +726,7 @@ void main(void)
 
 		}
 
+
 		
 
 		waitms(10); // testing metal detecting reading
@@ -748,6 +754,11 @@ void main(void)
 			getstr1(buff);
             printf("%s\r\n", buff);
 
+			if(buff[0] == '>')
+				ToggleJoyStick = 1;
+			else if(buff[0] == '<')
+				ToggleJoyStick = 0;
+
             if(buff[0] != 'z')
             {
             	if(buff[0] == 'a') {
@@ -770,10 +781,6 @@ void main(void)
             		loadTimer2(metalLevel_5);
 					metal_lev = 5;
 				}
-				else if(buff[0] == '>')
-					ToggleJoyStick = 1;
-				else if(buff[0] == '<')
-					ToggleJoyStick = 0;
             }
             else
             {

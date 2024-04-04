@@ -14,7 +14,7 @@
 
 #define PI 3.141592654
 #define FORWARD_ACCELERATION    77.355 // calculated via solving x = a * t^2
-#define FORWARD_VELOCITY 		15.0  // cm/s -- measured value for x = 0, y = 50
+#define FORWARD_VELOCITY 		14.0  // cm/s -- measured value for x = 0, y = 50
 #define ANGULAR_ACCELERATION    77.355 // calculated via solving theta = a * t^2, a is our anglular acceleration
 #define CW_VELOCITY      		108.0 // angular velocity in degrees/s CW -- measured for forward (this value is good)
 #define CCW_VELOCITY     		110.0 // angular velocity in degrees/s CCW -- measured for forward (not measured yet)
@@ -257,7 +257,7 @@ void square () {
 			break;
 		}
 
-		CW_turn(88);
+		CW_turn(100);
 		stopCar_ms(10); 
 		if (e_stopped) {
 			e_stopped = 0;
