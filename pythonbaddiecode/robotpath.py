@@ -40,7 +40,7 @@ ser = serial.Serial(
 )
 
 # Coordinates to map to for A to N going from EFM8 to STM
-coordinates = {65: (0, 50), #A to N
+coordinates = {65: (0, 50),     #A to N
                66: (0, 30),
                67: (0, 20),
                68: (0, -50),
@@ -53,8 +53,8 @@ coordinates = {65: (0, 50), #A to N
                75: (20, 45),
                76: (-20, 45),
                77: (20, -45),
-               78: (-20, -45), #N
-               90: (0, 0)} #Z, AKA no movement
+               78: (-20, -45),  #N
+               90: (0, 0)}      #Z, AKA no movement
 
 # Dictionary mapping magnitude and argument ranges to characters
 ascii_mapping = {
@@ -140,7 +140,7 @@ elif selected_option.get() == 'Keyboard':
 class PathDrawer:
     def __init__(self, master):
         self.master = master
-        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white") # canvas value previously 400, changed down to 120
+        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")                             # canvas value previously 400, changed down to 120
         self.canvas.pack()
 
         # Data array attributes ot the class
@@ -154,17 +154,17 @@ class PathDrawer:
         self.canvas.bind("<Button-1>", self.on_click) 
         self.canvas.bind("<B1-Motion>", self.on_drag) 
 
-        self.clear_button = tk.Button(self.master, text="Clear", command=self.clear_canvas) # call clear canvas command on press
+        self.clear_button = tk.Button(self.master, text="Clear", command=self.clear_canvas)                 # call clear canvas command on press
         self.clear_button.pack(side=tk.LEFT)
 
-        self.send_button = tk.Button(self.master, text="Send", command=self.send_data)   # call send data command on press
+        self.send_button = tk.Button(self.master, text="Send", command=self.send_data)                      # call send data command on press
         self.send_button.pack(side=tk.LEFT)
 
         # Draw Square
         self.square_button = tk.Button(self.master, text="Draw squre", command=self.draw_square)
         self.square_button.pack(side=tk.LEFT)
 
-        self.approx_button = tk.Button(self.master, text="Approximate", command=self.approximate_and_draw) # call approximate_and_draw command on press
+        self.approx_button = tk.Button(self.master, text="Approximate", command=self.approximate_and_draw)  # call approximate_and_draw command on press
         self.approx_button.pack(side=tk.LEFT)
         
         # Input value which will be used to determine the resolution of path approximation
@@ -212,8 +212,8 @@ class PathDrawer:
         if ((length_data) % num_segments == 0):
             approx_points.append(self.data_points[length_data-1])
 
-        self.canvas.delete("line") # delete previous path on the canvas on press
-        self.approx_points = approx_points #save as attribute to self
+        self.canvas.delete("line")          # delete previous path on the canvas on press
+        self.approx_points = approx_points  #save as attribute to self
 
         # plot new approximated path
         for i in range(len(approx_points) - 1):
@@ -253,10 +253,10 @@ class PathDrawer:
 
     # Send data to the JDY-40
     def send_data(self):
-        print("Phasors:") # send data to serial on a set time  
-        ser.write("..\r\n".encode())  # send over serial to JDY40
+        print("Phasors:")               # send data to serial on a set time  
+        ser.write("..\r\n".encode())    # send over serial to JDY40
         time.sleep(0.1)
-        ser.write("..\r\n".encode())  # send over serial to JDY40
+        ser.write("..\r\n".encode())    # send over serial to JDY40
         time.sleep(0.1)
         for phasor in self.phasors_list:
             phasor_ascii_char = self.polar_to_ascii(phasor[0], phasor[1])
@@ -271,17 +271,17 @@ class PathDrawer:
             wait_time = wait_time * 1.2 + 0.25
             # wait_time = 1
 
-            ser.write(f"{phasor_ascii_char*2}\r\n".encode())  # send over serial to JDY40
+            ser.write(f"{phasor_ascii_char*2}\r\n".encode())                # send over serial to JDY40
             time.sleep(0.01)
             ser.write(f"{phasor_ascii_char*2}\r\n".encode())
             print(f"Sent string = {phasor_ascii_char*2}\r\n".encode())      # check the string sent
-            print(f"{phasor},{phasor_ascii_char}, wait = {wait_time}") # print what character is sent
+            print(f"{phasor},{phasor_ascii_char}, wait = {wait_time}")      # print what character is sent
             
             time.sleep(wait_time)   
-        time.sleep(0.1)              # pause program while we wait for phasors to be sent over
+        time.sleep(0.1)                 # pause program while we wait for phasors to be sent over
         ser.write(",,\r\n".encode()) 
         time.sleep(0.1)
-        ser.write(",,\r\n".encode())  # send over serial to JDY40
+        ser.write(",,\r\n".encode())    # send over serial to JDY40
         print("Finished!")
 
     # Draw a suqare on the canvas
@@ -317,23 +317,23 @@ class PathDrawer:
         return None
 
     def on_closing(self):
-        self.master.destroy()  # Destroy the Tkinter window
+        self.master.destroy()               # Destroy the Tkinter window
 
 # Function: Python class with functions for voice control
 # Creates a master object with a text attribute, icon attribute and functions
 class VoiceControl:
     def __init__(self, master):
         self.master = master
-        self.is_pressed = True # boolean to track if button is pressed or not presesd
+        self.is_pressed = True              # boolean to track if button is pressed or not presesd
 
         self.text = ''
-        self.recognizer = sr.Recognizer() # speech recognition object
+        self.recognizer = sr.Recognizer()   # speech recognition object
 
         # Check the value of joystick_flag to either open up voice control in GUI or terminal
         if (joystick_flag == 2):
-            self.GUI_on = True # GUI 
+            self.GUI_on = True              # GUI 
         else :
-            self.GUI_on = False # Terminal
+            self.GUI_on = False             # Terminal
 
         # Get the directory of the script so that this works on person's computer (assuming they download the files)
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -356,9 +356,9 @@ class VoiceControl:
             self.record_button = tk.Button(
                 self.master, 
                 image=self.icon_photo_off, 
-                command=self.on_mic_press_GUI, # on button perssed
-                bd = 0, #Remove button border
-                highlightthickness=0) #Remove Button Shadow
+                command=self.on_mic_press_GUI,  # on button perssed
+                bd = 0,                         # Remove button border
+                highlightthickness=0)           # Remove Button Shadow
 
             self.record_button.pack()
         
@@ -478,25 +478,25 @@ class VoiceControl:
 
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
             print("sent . and ,")
-            ser.write("..\r\n".encode())  # send over serial to JDY40
+            ser.write("..\r\n".encode())            # send over serial to JDY40
             time.sleep(0.01)
-            ser.write("..\r\n".encode())  # send over serial to JDY40
+            ser.write("..\r\n".encode())            # send over serial to JDY40
             time.sleep(0.1)
         if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
-            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            ser.write(",,\r\n".encode())            # send over serial to JDY40
             time.sleep(0.01)
-            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            ser.write(",,\r\n".encode())            # send over serial to JDY40
             time.sleep(0.1)
 
-        ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
+        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
         time.sleep(0.01)
-        ser.write(f"{voice_char*2}\r\n".encode())  # send over serial to JDY40
+        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
         time.sleep(5)
 
         if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
-            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            ser.write(",,\r\n".encode())            # send over serial to JDY40
             time.sleep(0.01)
-            ser.write(",,\r\n".encode())  # send over serial to JDY40
+            ser.write(",,\r\n".encode())            # send over serial to JDY40
             time.sleep(0.01)
 
     def on_closing(self):
@@ -524,59 +524,52 @@ if (joystick_flag == 2 or joystick_flag == 3):
 # If 4, use keyboard commands
 if (joystick_flag == 4):
     key_to_command = {
-        ord('w'): ('B'),  # N
-        ord('a'): ('J'),  # W 
-        ord('s'): ('E'),  # S 
-        ord('d'): ('H'),  # E
-        ord('q'): ('L'), # NW
-        ord ('e'): ('N'), # NE
-        ord('z'):('M'), # SW
-        ord('c'):('K') #SE
+        ord('w'): ('B'),            # N
+        ord('a'): ('J'),            # W 
+        ord('s'): ('E'),            # S 
+        ord('d'): ('H'),            # E
+        ord('q'): ('L'),            # NW
+        ord ('e'): ('N'),           # NE
+        ord('z'):('M'),             # SW
+        ord('c'):('K')              # SE
     }
 
-    # Print letter to serial port / terminal
+    # Sends letter to JDY-40
     def send_letter(letter):        
-        #jdy
-        ser.write(f"{letter*2}\r\n".encode())  # send over serial to JDY40 <- use this one
-        #prints corresponding letter to terminal
+        ser.write(f"{letter*2}\r\n".encode()) 
         print(letter+"\r\n")
 
-    # Main loop
     try:
-        # Initialize curses
-        stdscr = curses.initscr()# creates a curses window object
-        #stdscr.nodelay(True)      # this configures getch() to be non-blocking and returns -1
-        curses.noecho()  # Turn off echoing of keys
-        stdscr.keypad(True)  # Enable keypad mode
-        curses.cbreak()  # React to keys immediately without waiting for Enter key
-        stdscr.clear() # added
+        # Initialize curses library
+        stdscr = curses.initscr()   # creates a curses window object
+        #stdscr.nodelay(True)       # this configures getch() to be non-blocking and returns -1
+        curses.noecho()             # Turn off echoing of keys
+        stdscr.keypad(True)         # Enable keypad mode
+        curses.cbreak()             # React to keys immediately without waiting for Enter key
+        stdscr.clear() 
         stdscr.addstr(0, 0, "Press 'ESC' to quit...")
-        send_letter('>')
+        send_letter('>')            # Tell the robot we are beginning keyboard control
         time.sleep(0.01)
-        send_letter('>')
+        send_letter('>')            
         time.sleep(0.1)
 
         while True:        
-        # Get user input
+            # Get user input
             key = stdscr.getch()
-            print(key) # check if key is -1 for no inputs -- comment out later
+            print(key)              # check if key is -1 for no inputs
 
-            if key == 27: # if escape key is pressed, exit
+            if key == 27:           # if escape key is pressed, exit
                 break
-            # maybe add the z here? not sure how you want the logic here
-            #ser.write(f"{letter*2}\r\n".encode())
-            # Check for keypresses
-
-            if key in key_to_command: # will be true if it's in a diagonal
+           
+            # check for key presses
+            if key in key_to_command: 
                 send_letter(key_to_command[key])        
             else:
-                send_letter('Z') #stop
-
+                send_letter('Z')    #stop
             
-            if key == -1: # .getch returns -1 for no input
+            if key == -1:           #.getch returns -1 for no input
                 send_letter('Z')
 
-            # Wait for 1 second to reduce errors
             time.sleep(0.1)
 
     except KeyboardInterrupt:
@@ -590,7 +583,7 @@ if (joystick_flag == 4):
         curses.echo()
         curses.endwin()
 
-        #ser.close()  # Close the serial port when done
+        # Tell the robot we are returning control from keyboard
         send_letter('<')
         time.sleep(0.01)
         send_letter('<')
@@ -600,10 +593,11 @@ if (joystick_flag == 4):
         joystick_flag = 1 # set flag to 1 so that joystick mode will open
 
 
-
+# Obtain coordinates from letter command
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))
 
+# Map the letter received to a metal detection level
 def map_letter_to_level(letter):
     if letter == 97:
         return 'Level 1'
@@ -618,7 +612,7 @@ def map_letter_to_level(letter):
     else:
         return 'None'  # Return an empty string for 'z' or any other letter
     
-
+# Encode polar values in ascii
 def polar_to_ascii(magnitude, argument):
     # Iterate through the dictionary to find the corresponding character
     for key, value in ascii_mapping.items():
@@ -641,10 +635,10 @@ def update_joystick_position(xpos, ypos):
         xpos_data.pop(0)
         ypos_data.pop(0)
     # Update plot
-    plt.clf()  # Clear the previous plot
+    plt.clf()                                           # Clear the previous plot
     plt.plot(xpos_data, ypos_data, 'o-', color='blue')  # Plot joystick position
-    plt.xlim(-1, 1)  # Set x-axis limit
-    plt.ylim(-1, 1)  # Set y-axis limit
+    plt.xlim(-1, 1)                                     # Set x-axis limit
+    plt.ylim(-1, 1)                                     # Set y-axis limit
     plt.xlabel('X Position')
     plt.ylabel('Y Position')
     plt.title('Joystick Position')
@@ -673,9 +667,9 @@ fig = plt.figure()
 
 # Function to handle figure close event
 def on_close(event):
-    plt.close()  # Close the plot window immediately
-    ser.close()  # Close the serial port
-    exit()  # Exit the program
+    plt.close()     # Close the plot window immediately
+    ser.close()     # Close the serial port
+    exit()          # Exit the program
 
 # Attach the close event handler to the figure
 fig.canvas.mpl_connect('close_event', on_close)
@@ -692,7 +686,7 @@ while (joystick_flag==1):
         if strin:
             letter = strin[0]
             print(letter)
-            #41 to 78 corresponds to ASCII A to N, 90 is 'Z'
+            # 41 to 78 corresponds to ASCII A to N, 90 is 'Z'
             if (letter >= 41 and letter <= 78) or letter == 90:   
                 #print(letter)
                 xpos, ypos = get_coordinates(letter)
@@ -700,7 +694,7 @@ while (joystick_flag==1):
                 update_joystick_position(xpos, ypos)
                 #ser.write(b'o\r\n')
 
-            #97 to 101 corresponds to ASCII a to e, 122 is 'z'
+            # 97 to 101 corresponds to ASCII a to e, 122 is 'z'
             elif (letter >= 97 and letter <= 101) or letter == 122:
                strength = map_letter_to_level(letter)
                #print(f"metal strength is {strength}")
