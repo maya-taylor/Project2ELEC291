@@ -436,13 +436,18 @@ class VoiceControl:
         # move forward
         command_string = ""
         wait_times = []
-        square_keywords = ["Square", "square", "where"]
-        forward_keywords = ["straight", "forward", "traight", "orward", "bored", "Ford"]
-        circle_keywords = ["circle"]
-        figure8_keywords = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
-        left_keywords = ["left"]
-        right_keywords = ["right"]
+        square_keywords    = ["Square", "square", "where"]
+        forward_keywords   = ["straight", "forward", "traight", "orward", "bored", "Ford"]
+        circle_keywords    = ["circle"]
+        figure8_keywords   = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
+        left_keywords      = ["left"]
+        right_keywords     = ["right"]
         backwards_keywords = ["back", "backwards", "turn around", "return"]
+
+        # Matching is done using the any() function which returns true if any of the items in it's iterable is True
+        # First iterate over every keyword in each keywords list, check if that keyword is in the text => iterable containing booleans
+        # Check if any of those booleans are true using any(), then append the command string with that character
+        # Append wait times array with the time it takes to perform that action
 
         # go forward
         if (any(keyword in self.text for keyword in forward_keywords)):
@@ -477,7 +482,7 @@ class VoiceControl:
             command_string += '"'
             wait_times.append(285*2/35+2.5)
 
-        # print the char sent for debugging
+        # print the char sent for debugging / Use in the terminal
         print("command_string = ",command_string)
         print("wait times = ", wait_times)
         print("Sending...")
