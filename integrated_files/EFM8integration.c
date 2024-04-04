@@ -26,7 +26,7 @@
 
 #define BUZZER_OUT     P0_2  			// sets buzzer output to pin 1.1
 
-//computational constants
+// computational constants
 #define CHARS_PER_LINE 16
 #define MAX_VOLTS      3.3049  			//maximum voltage reading possible from joystick
 #define SQRT_2         1.41421356237 	//saves computation time by using a constant 
