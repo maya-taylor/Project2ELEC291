@@ -11,6 +11,8 @@ import speech_recognition as sr
 import threading
 import os
 from PIL import Image, ImageTk
+
+# keyboard input module
 import curses
 
 # velocity at full is 0.8 second per breadboard
@@ -37,6 +39,7 @@ ser = serial.Serial(
     bytesize=serial.EIGHTBITS
 )
 
+# Coordinates to map to for A to N going from EFM8 to STM
 coordinates = {65: (0, 50), #A to N
                66: (0, 30),
                67: (0, 20),
@@ -84,7 +87,7 @@ import tkinter as tk
 import numpy as np
 import cmath # for vector math
 
-
+# Create an interface and drop down for options on how to control the car
 def on_option_select():
     selected = selected_option.get()
     result_label.config(text=f"Selected Option: {selected}")
@@ -137,7 +140,7 @@ elif selected_option.get() == 'Voice Control(Terminal)':
 elif selected_option.get() == 'Keyboard':
     joystick_flag = 4
     
-
+# Code to draw a path on a canvas
 class PathDrawer:
     def __init__(self, master):
         self.master = master
@@ -150,10 +153,10 @@ class PathDrawer:
         self.vectors_list = []  # Turning into lists of vectors
         self.phasors_list = []  # Angle for CW rotation as a list calculated from previous vector
 
-        master.protocol("WM_DELETE_WINDOW", self.on_closing)
+        master.protocol("WM_DELETE_WINDOW", self.on_closing) 
 
-        self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<B1-Motion>", self.on_drag)
+        self.canvas.bind("<Button-1>", self.on_click) 
+        self.canvas.bind("<B1-Motion>", self.on_drag) 
 
         self.clear_button = tk.Button(self.master, text="Clear", command=self.clear_canvas) # call clear canvas command on press
         self.clear_button.pack(side=tk.LEFT)
@@ -313,32 +316,37 @@ class PathDrawer:
 
     def on_closing(self):
         self.master.destroy()  # Destroy the Tkinter window
-
+# Function: Python class with functions for voice control
+# Creates a master object with a text attribute, icon attribute and functions
 class VoiceControl:
     def __init__(self, master):
         self.master = master
         self.is_pressed = True # boolean to track if button is pressed or not presesd
 
         self.text = ''
-        self.recognizer = sr.Recognizer()
+        self.recognizer = sr.Recognizer() # speech recognition object
 
+        # Check the value of joystick_flag to either open up voice control in GUI or terminal
         if (joystick_flag == 2):
             self.GUI_on = True # GUI 
         else :
             self.GUI_on = False # Terminal
 
-        # Get the directory of the script
+        # Get the directory of the script so that this works on person's computer (assuming they download the files)
         script_dir = os.path.dirname(os.path.abspath(__file__))
         mic_on_path = os.path.join(script_dir, "mic_on.png")
         mic_off_path = os.path.join(script_dir, "mic_off.png")
 
-        # # Load microphone icons -- images are fake why
-        # self.icon_off = Image.open(mic_off_path)
-        # self.icon_on = Image.open(mic_on_path)
-        # self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS)
-        # self.icon_on = self.icon_on.resize((80, 80), Image.LANCZOS)
-        # self.icon_photo_off = ImageTk.PhotoImage(self.icon_off)
-        # self.icon_photo_on = ImageTk.PhotoImage(self.icon_on)
+        # Create image attributes using Pillow and resize using Lanczos resampling
+        # Lanczos has the best downscaling quality but has poor performance
+        # This is only being done once so this is acceptable
+
+        self.icon_off = Image.open(mic_off_path)
+        self.icon_on = Image.open(mic_on_path)
+        self.icon_off = self.icon_off.resize((80, 80), Image.LANCZOS) # .resize() takes size, tuple, and a resampling method
+        self.icon_on = self.icon_on.resize((80, 80), Image.LANCZOS)
+        self.icon_photo_off = ImageTk.PhotoImage(self.icon_off)
+        self.icon_photo_on = ImageTk.PhotoImage(self.icon_on)
         
         if (self.GUI_on is True):
             # Create voice recording button
@@ -366,8 +374,6 @@ class VoiceControl:
             )
 
             self.record_button_terminal.pack()
-            pass
-
 
         # define behaviour for when the window is closed
         master.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -409,7 +415,7 @@ class VoiceControl:
                     self.text_label.config(text=f"You said: {self.text}")
                     self.master.update_idletasks()
                     # Wait for the recognition thread to finish
-                    time.sleep(2)
+                    time.sleep(1.2)
                     self.send_voice_data()
                     self.text_label.config(text = "Command Sent!")
                 except sr.UnknownValueError:
@@ -504,55 +510,61 @@ if (joystick_flag == 2 or joystick_flag == 3):
 if (joystick_flag == 4):
     # WASD mode
     
-    key_to_coords = {
-        ord('w'): ('C'),  # forward mid, char 'C'
+    key_to_command = {
+        ord('w'): ('B'),  # forward mid, char 'B'
         ord('a'): ('J'),  # CCW in place mid (Left), char 'J'
-        ord('s'): ('E'),  # backward mid, char 'E'
+        ord('s'): ('E'),  # backwards mid
         ord('d'): ('H'),  # CW in place mid (Right), char 'H'
+        ord('q'): ('L'), # NW
+        ord ('e'): ('N'),
+        ord('z'):('M'),
+        ord('c'):('K')
     }
 
     # Print letter to serial port / terminal
-    def send_letter(letter):
-        #ser.write(letter.encode()) # change this if you want to print to serial
-        print(letter)
+    def send_letter(letter):        
+        #jdy
+        ser.write(f"{letter*2}\r\n".encode())  # send over serial to JDY40 <- use this one
+        #prints corresponding letter to terminal
+        print(letter+"\r\n")
 
     # Main loop
     try:
         # Initialize curses
-        stdscr = curses.initscr()
+        stdscr = curses.initscr()# creates a curses window object
+        #stdscr.nodelay(True)      # this configures getch() to be non-blocking and returns -1
         curses.noecho()  # Turn off echoing of keys
         stdscr.keypad(True)  # Enable keypad mode
         curses.cbreak()  # React to keys immediately without waiting for Enter key
+        stdscr.clear() # added
+        stdscr.addstr(0, 0, "Press 'ESC' to quit...")
+        send_letter('>')
+        time.sleep(0.01)
+        send_letter('>')
+        time.sleep(0.1)
 
-        while True:
-            x, y = 0, 0
-            
-            # Get user input
+        while True:        
+        # Get user input
             key = stdscr.getch()
+            print(key) # check if key is -1 for no inputs -- comment out later
 
+            if key == 27: # if escape key is pressed, exit
+                break
+            # maybe add the z here? not sure how you want the logic here
+            #ser.write(f"{letter*2}\r\n".encode())
             # Check for keypresses
-            if key in key_to_coords:
-                send_letter(key_to_coords[key])
 
-            # Check for diagonal movements
-            # NW Diagonal
-            if key == ord('w') and stdscr.getch() == ord('a'):
-                send_letter('L')
+            if key in key_to_command: # will be true if it's in a diagonal
+                send_letter(key_to_command[key])        
+            else:
+                send_letter('Z') #stop
 
-            # SW Diagonal
-            elif key == ord('a') and stdscr.getch() == ord('s'):
-                send_letter('N')
-
-            # SE Diagonal
-            elif key == ord('s') and stdscr.getch() == ord('d'):
-                send_letter('M')
-
-            # NE Diagonal
-            elif key == ord('d') and stdscr.getch() == ord('w'):
-                send_letter('K')
+            
+            if key == -1: # .getch returns -1 for no input
+                send_letter('Z')
 
             # Wait for 1 second to reduce errors
-            #time.sleep(1)
+            time.sleep(0.1)
 
     except KeyboardInterrupt:
         pass
@@ -565,9 +577,16 @@ if (joystick_flag == 4):
         curses.echo()
         curses.endwin()
 
-        ser.close()  # Close the serial port when done
+        #ser.close()  # Close the serial port when done
+        send_letter('<')
+        time.sleep(0.01)
+        send_letter('<')
+        time.sleep(0.1)
 
-    joystick_flag = 1
+
+        joystick_flag = 1 # set flag to 1 so that joystick mode will open
+
+
 
 def get_coordinates(letter):
     return coordinates.get(letter, (0, 0))
@@ -632,11 +651,10 @@ def update_joystick_position(xpos, ypos):
     plt.text(-0.8, -0.8, f"Angular Velocity Factor: {xpos/10} \n Total Distance Travelled (Breadboards) = {round(dis_trav+ypos/50*1.25*0.3*0.6,2)}", fontsize=10, ha='left', va='bottom', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.5'))
     dis_trav += abs(ypos/50*1.25*0.3*0.6)
     plt.draw()
-    plt.pause(0.002)
+    plt.pause(0.001)
 
 
 plt.ion()  # Turn on interactive mode for Matplotlib
-
 # Create a figure
 fig = plt.figure()
 
@@ -652,14 +670,15 @@ fig.canvas.mpl_connect('close_event', on_close)
 if(joystick_flag == 1):
     plt.show()
 
-while joystick_flag:
+while (joystick_flag==1):
     try:
         # Read data from serial port
         strin = ser.readline()
+        ser.reset_input_buffer()
         # print(strin)
         if strin:
             letter = strin[0]
-            #print(letter)
+            print(letter)
             #41 to 78 corresponds to ASCII A to N, 90 is 'Z'
             if (letter >= 41 and letter <= 78) or letter == 90:   
                 #print(letter)

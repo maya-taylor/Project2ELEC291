@@ -1,3 +1,9 @@
+'''
+purpose: create a metalography chart in cartesian coordinates
+info   : loci with higher metal density (a.k.a., frequency difference is bigger) will appear more 
+         red, whilst loci with lower metal density will appear more purple 
+'''
+
 import time
 import re
 import matplotlib.pyplot as plt
@@ -6,89 +12,52 @@ import csv
 import random
  
 
-'''
-purpose: create a metalography chart in cartesian coordinates
-info   : loci with higher metal density (a.k.a., frequency difference is bigger) will appear more 
-         red, whilst loci with lower metal density will appear more purple 
-
-'''
-
-'''
-note: may have to divide all the plots by a factor of 50 since the ascii table is 
-'''
-
-
 FILE = 'serial_data_log.csv' #edit!!!
 
 # RGB values for light colors
 lightorange = (255/255, 204/255, 153/255)
 lightyellow = (255/255, 255/255, 153/255)
-lightgreen = (204/255, 255/255, 204/255)
-lightblue = (153/255, 204/255, 255/255)
+lightgreen  = (204/255, 255/255, 204/255)
+lightblue   = (153/255, 204/255, 255/255)
 lightpurple = (204/255, 153/255, 255/255)
-lightred = (255/255, 153/255, 153/255)   
+lightred    = (255/255, 153/255, 153/255)   
 
 # Define the ASCII characters marking the three specific kinds of data
 
 #flags for x, y loci
-ff_flag = 'A' #forward fast
-fm_flag = 'B'
-fs_flag = 'C'
-bf_flag = 'D'
-bm_flag = 'E'
-bs_flag = 'F'
-cwf_flag = 'G'
-cwm_flag = 'H'
-ccwf_flag = 'I'
-ccwm_flag = 'J'
-ne_flag = 'K'
-nw_flag = 'L'
-se_flag = 'M'
-sw_flag = 'N'
+ff_flag       = 'A' #forward fast
+fm_flag       = 'B'
+fs_flag       = 'C'
+bf_flag       = 'D'
+bm_flag       = 'E'
+bs_flag       = 'F'
+cwf_flag      = 'G'
+cwm_flag      = 'H'
+ccwf_flag     = 'I'
+ccwm_flag     = 'J'
+ne_flag       = 'K'
+nw_flag       = 'L'
+se_flag       = 'M'
+sw_flag       = 'N'
 no_movmt_flag = 'Z'
 
 #flags for strength
-level_1 = 'a'
-level_2 = 'b'
-level_3 = 'c'
-level_4 = 'd'
-level_5 = 'e'
+level_1     = 'a'
+level_2     = 'b'
+level_3     = 'c'
+level_4     = 'd'
+level_5     = 'e'
 null_detect = 'z'
 
-L1F = 225
-L2F = 300
-L3F = 400
-L4F = 500
-L5F = 700
+L1F          = 225
+L2F          = 300
+L3F          = 400
+L4F          = 500
+L5F          = 700
 LOW_STRENGTH = 0
 
 
-#dummy data file generation, used for testing
-'''
-def dummy_data_gen(rows):
-    data = []
-    for _ in range(rows):
-        dummy_loci = random.choice([ff_flag, fm_flag,fs_flag,
-                                 bf_flag,bm_flag,bs_flag,
-                                 cwf_flag,cwm_flag,ccwf_flag,ccwm_flag,
-                                 ne_flag,nw_flag,se_flag,sw_flag,
-                                 no_movmt_flag
-                                 ])
-        dummy_strength = random.choice([level_1, level_2, level_3,
-                                         level_4, level_5, null_detect])
 
-        data.append(dummy_loci)
-        data.append(dummy_strength)
-
-    return data
-    
-def dummy_file_gen(filename, data, rows):
-    with open(filename, 'w', newline='') as file:
-        writer = csv.writer(file)
-        
-        for i in range(rows):
-            writer.writerow(data[i])
-'''
 def process_csv(filename):
     # Open the CSV file
     with open(filename, 'r') as file:
