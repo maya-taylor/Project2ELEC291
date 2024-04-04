@@ -11,11 +11,11 @@
 #define SYSCLK         72000000
 #define BAUDRATE       115200L
 #define SARCLK         18000000L
-#define DEFAULT_F      15500L // 
+#define DEFAULT_F      15500L 
 
-//pin constants
-#define XPOS_PIN       QFP32_MUX_P1_4 //analog input for x coords
-#define YPOS_PIN       QFP32_MUX_P1_5 //analog input for y coords
+// pin constants
+#define XPOS_PIN       QFP32_MUX_P1_4 	// analog input for x coords
+#define YPOS_PIN       QFP32_MUX_P1_5 	// analog input for y coords
 
 #define LCD_RS         P1_7
 #define LCD_E          P1_6
@@ -24,12 +24,12 @@
 #define LCD_D6 		   P1_1
 #define LCD_D7         P1_0
 
-#define BUZZER_OUT     P0_2  // sets buzzer output to pin 1.1
+#define BUZZER_OUT     P0_2  			// sets buzzer output to pin 1.1
 
 //computational constants
 #define CHARS_PER_LINE 16
-#define MAX_VOLTS      3.3049  //maximum voltage reading possible from joystick
-#define SQRT_2         1.41421356237 //saves computation time by using a constant 
+#define MAX_VOLTS      3.3049  			//maximum voltage reading possible from joystick
+#define SQRT_2         1.41421356237 	//saves computation time by using a constant 
 
 // threshold values for how many Hz above baseline frequency for different metal strengths
 #define metalLevel_1   1300
@@ -38,20 +38,21 @@
 #define metalLevel_4   1600
 #define metalLevel_5   1700
 
+#define VDD 3.3035 // The measured value of VDD in volts
 
-//global variable initializations
+// global variable initializations
 unsigned char          overflow_count;
 idata char             buff[20];
 
 char _c51_external_startup (void)
 {
-	// Disable Watchdog with key sequence
+	// disable Watchdog with key sequence
 	SFRPAGE = 0x00;
-	WDTCN = 0xDE; //First key
-	WDTCN = 0xAD; //Second key
+	WDTCN = 0xDE; 		// First key
+	WDTCN = 0xAD; 		// Second key
   
-	VDM0CN=0x80;       // enable VDD monitor
-	RSTSRC=0x02|0x04;  // Enable reset on missing clock detector and VDD
+	VDM0CN=0x80;       	// enable VDD monitor
+	RSTSRC=0x02|0x04; 	// Enable reset on missing clock detector and VDD
 
 	#if (SYSCLK == 48000000L)	
 		SFRPAGE = 0x10;
@@ -106,18 +107,18 @@ char _c51_external_startup (void)
 	TL1 = TH1;      // Init Timer1
 	TMOD &= ~0xf0;  // TMOD: timer 1 in 8-bit auto-reload
 	TMOD |=  0x20;                       
-	TR1 = 1; // START Timer1
-	TI = 1;  // Indicate TX0 ready
+	TR1 = 1; 		// START Timer1
+	TI = 1;  		// Indicate TX0 ready
 
 	
 	// Initialize timer 2 for periodic interrupts
 	TMR2CN0=0x00;   // Stop Timer2; Clear TF2;
 	CKCON0|=0b_0001_0000;
 	TMR2RL=(-(SYSCLK/(2*DEFAULT_F))); // Initialize reload value
-	TMR2=0xffff;   // Set to reload immediately
-	ET2=1;         // Enable Timer2 interrupts
-	TR2=1;         // Start Timer2
-	EA=1; // Global interrupt enable
+	TMR2=0xffff;   	// Set to reload immediately
+	ET2=1;         	// Enable Timer2 interrupts
+	TR2=1;         	// Start Timer2
+	EA=1; 			// Global interrupt enable
   	
 	return 0;
 }
@@ -125,7 +126,7 @@ char _c51_external_startup (void)
 //interrupt service routine for buzzer sound output
 void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 {
-	TF2H = 0; // Clear Timer2 interrupt flag
+	TF2H = 0; 				// Clear Timer2 interrupt flag
 	BUZZER_OUT=!BUZZER_OUT; // complements the value of BUZZER_OUT to generate a square wave
 }
 
@@ -133,16 +134,16 @@ void Timer2_ISR (void) interrupt INTERRUPT_TIMER2
 void InitADC (void)
 {
 	SFRPAGE = 0x00;
-	ADEN    = 0; // Disable ADC
+	ADEN    = 0; 		// Disable ADC
 	
 	ADC0CN1 =
-		(0x2 << 6) | // 0x0: 10-bit, 0x1: 12-bit, 0x2: 14-bit
-        (0x0 << 3) | // 0x0: No shift. 0x1: Shift right 1 bit. 0x2: Shift right 2 bits. 0x3: Shift right 3 bits.		
-		(0x0 << 0) ; // Accumulate n conversions: 0x0: 1, 0x1:4, 0x2:8, 0x3:16, 0x4:32
+		(0x2 << 6) | 	// 0x0: 10-bit, 0x1: 12-bit, 0x2: 14-bit
+        (0x0 << 3) | 	// 0x0: No shift. 0x1: Shift right 1 bit. 0x2: Shift right 2 bits. 0x3: Shift right 3 bits.		
+		(0x0 << 0) ; 	// Accumulate n conversions: 0x0: 1, 0x1:4, 0x2:8, 0x3:16, 0x4:32
 	
 	ADC0CF0=
-	    ((SYSCLK/SARCLK) << 3) | // SAR Clock Divider. Max is 18MHz. Fsarclk = (Fadcclk) / (ADSC + 1)
-		(0x0 << 2); // 0:SYSCLK ADCCLK = SYSCLK. 1:HFOSC0 ADCCLK = HFOSC0.
+	    ((SYSCLK/SARCLK) << 3) | 	// SAR Clock Divider. Max is 18MHz. Fsarclk = (Fadcclk) / (ADSC + 1)
+		(0x0 << 2); 				// 0:SYSCLK ADCCLK = SYSCLK. 1:HFOSC0 ADCCLK = HFOSC0.
 	
 	ADC0CF1=
 		(0 << 7)   | // 0: Disable low power mode. 1: Enable low power mode.
@@ -166,22 +167,22 @@ void InitADC (void)
 		(0x0 << 7) | // PACEN. 0x0: The ADC accumulator is over-written.  0x1: The ADC accumulator adds to results.
 		(0x0 << 0) ; // ADCM. 0x0: ADBUSY, 0x1: TIMER0, 0x2: TIMER2, 0x3: TIMER3, 0x4: CNVSTR, 0x5: CEX5, 0x6: TIMER4, 0x7: TIMER5, 0x8: CLU0, 0x9: CLU1, 0xA: CLU2, 0xB: CLU3
 
-	ADEN = 1; // Enable ADC
+	ADEN = 1; 		 // Enable ADC
 }
 
 // Uses Timer3 to delay <us> micro-seconds. 
 void Timer3us(unsigned char us)
 {
-	unsigned char i;               // usec counter
+	unsigned char i;               	// usec counter
 	
 	// The input for Timer 3 is selected as SYSCLK by setting T3ML (bit 6) of CKCON0:
 	CKCON0|=0b_0100_0000;
 	
-	TMR3RL = (-(SYSCLK)/1000000L); // Set Timer3 to overflow in 1us.
-	TMR3 = TMR3RL;                 // Initialize Timer3 for first overflow
+	TMR3RL = (-(SYSCLK)/1000000L); 	// Set Timer3 to overflow in 1us.
+	TMR3 = TMR3RL;                 	// Initialize Timer3 for first overflow
 	
 	TMR3CN0 = 0x04;                 // Sart Timer3 and clear overflow flag
-	for (i = 0; i < us; i++)       // Count <us> overflows
+	for (i = 0; i < us; i++)       	// Count <us> overflows
 	{
 		while (!(TMR3CN0 & 0x80));  // Wait for overflow
 		TMR3CN0 &= ~(0x80);         // Clear overflow indicator
@@ -197,8 +198,6 @@ void waitms (unsigned int ms)
 		for (k=0; k<4; k++) Timer3us(250);
 }
 
-#define VDD 3.3035 // The measured value of VDD in volts
-
 void InitPinADC (unsigned char portno, unsigned char pinno)
 {
 	unsigned char mask;
@@ -209,16 +208,16 @@ void InitPinADC (unsigned char portno, unsigned char pinno)
 	switch (portno)
 	{
 		case 0:
-			P0MDIN &= (~mask); // Set pin as analog input
-			P0SKIP |= mask; // Skip Crossbar decoding for this pin
+			P0MDIN &= (~mask); 	// Set pin as analog input
+			P0SKIP |= mask; 	// Skip Crossbar decoding for this pin
 		break;
 		case 1:
-			P1MDIN &= (~mask); // Set pin as analog input
-			P1SKIP |= mask; // Skip Crossbar decoding for this pin
+			P1MDIN &= (~mask); 	// Set pin as analog input
+			P1SKIP |= mask; 	// Skip Crossbar decoding for this pin
 		break;
 		case 2:
-			P2MDIN &= (~mask); // Set pin as analog input
-			P2SKIP |= mask; // Skip Crossbar decoding for this pin
+			P2MDIN &= (~mask); 	// Set pin as analog input
+			P2SKIP |= mask; 	// Skip Crossbar decoding for this pin
 		break;
 		default:
 		break;
@@ -228,9 +227,9 @@ void InitPinADC (unsigned char portno, unsigned char pinno)
 
 void TIMER0_Init(void)
 {
-	TMOD&=0b_1111_0000; // Set the bits of Timer/Counter 0 to zero
-	TMOD|=0b_0000_0001; // Timer/Counter 0 used as a 16-bit timer
-	TR0=0; // Stop Timer/Counter 0
+	TMOD&=0b_1111_0000; 	// Set the bits of Timer/Counter 0 to zero
+	TMOD|=0b_0000_0001; 	// Timer/Counter 0 used as a 16-bit timer
+	TR0=0; 					// Stop Timer/Counter 0
 }
 
 unsigned int ADC_at_Pin(unsigned char pin)
@@ -267,14 +266,14 @@ void LCD_pulse (void)
 void LCD_byte (unsigned char x)
 {
 	// The accumulator in the C8051Fxxx is bit addressable!
-	ACC=x; //Send high nible
+	ACC=x; 			//Send high nible
 	LCD_D7=ACC_7;
 	LCD_D6=ACC_6;
 	LCD_D5=ACC_5;
 	LCD_D4=ACC_4;
 	LCD_pulse();
 	Timer3us(40);
-	ACC=x; //Send low nible
+	ACC=x; 			//Send low nible
 	LCD_D7=ACC_3;
 	LCD_D6=ACC_2;
 	LCD_D5=ACC_1;
@@ -299,8 +298,8 @@ void WriteCommand (unsigned char x)
 
 void LCD_4BIT (void)
 {
-	LCD_E=0; // Resting state of LCD's enable is zero
-	// LCD_RW=0; // We are only writing to the LCD in this program
+	LCD_E=0; 			// Resting state of LCD's enable is zero
+	// LCD_RW=0; 		// We are only writing to the LCD in this program
 	waitms(20);
 	// First make sure the LCD is in 8-bit mode and then change to 4-bit mode
 	WriteCommand(0x33);
@@ -310,7 +309,7 @@ void LCD_4BIT (void)
 	WriteCommand(0x28);
 	WriteCommand(0x0c);
 	WriteCommand(0x01); // Clear screen command (takes some time)
-	waitms(20); // Wait for clear screen command to finsih.
+	waitms(20); 		// Wait for clear screen command to finsih.
 }
 
 void LCDprint(char * string, unsigned char line, bit clear)
@@ -318,16 +317,18 @@ void LCDprint(char * string, unsigned char line, bit clear)
 	int j;
 	WriteCommand(line==2?0xc0:0x80);
 	waitms(5);
-	for(j=0; string[j]!=0; j++) WriteData(string[j]);// Write the message
-	if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); // Clear the rest ofthe line
+	for(j=0; string[j]!=0; j++) WriteData(string[j]);		// Write the message
+	if(clear) for(; j<CHARS_PER_LINE; j++) WriteData(' '); 	// Clear the rest ofthe line
 }
 
+// Maps a range of values to another range of values
 float map2(float x, float in_min, float in_max, float out_min, float out_max)
 {	
 	float value =  (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     return value;
 }
 
+// Obtains the mapped coordinates of a joystick given voltage readings 
 void GetPosition2 (float volts[2], float pos[2], float mid[2]) {
 
 	float mid_x = mid[0];
@@ -339,33 +340,38 @@ void GetPosition2 (float volts[2], float pos[2], float mid[2]) {
 	float max = 3.3;
 	float min = 0.0;
 
+	// Map values to the left of the x-midpoint to -50 to 0
 	if (pos[0] < mid_x) {
 		pos[0] = map2(vx, min, mid_x, -50.0, 0);
 	}
+	// Map values to the right of the x-midpoint to 0 to 50
 	else {
 		pos[0] = map2(vx, mid_x, max, 0.0, 50.0);
 	}
-
+	// Map values below the y-midpoint to -50 to 0
 	if (pos[1] < mid_y) {
 		pos[1] = map2(vy, min, mid_y, -50.0, 0.0);
 	}
+	// Map values above the y-midpoint to 0 to 50
 	else {
 		pos[1] = map2(vy, mid_y, max, 0.0, 50.0);
 	}
 }
 
+// Initialize UART1
 void UART1_Init (unsigned long baudrate)
 {
     SFRPAGE = 0x20;
-	SMOD1 = 0x0C; // no parity, 8 data bits, 1 stop bit
+	SMOD1 = 0x0C; 	// no parity, 8 data bits, 1 stop bit
 	SCON1 = 0x10;
 	SBCON1 =0x00;   // disable baud rate generator
 	SBRL1 = 0x10000L-((SYSCLK/baudrate)/(12L*2L));
-	TI1 = 1; // indicate ready for TX
-	SBCON1 |= 0x40;   // enable baud rate generator
+	TI1 = 1; 		// indicate ready for TX
+	SBCON1 |= 0x40; // enable baud rate generator
 	SFRPAGE = 0x00;
 }
 
+// Sends a single character over UART
 void putchar1 (char c) 
 {
     SFRPAGE = 0x20;
@@ -375,6 +381,7 @@ void putchar1 (char c)
 	SFRPAGE = 0x00;
 }
 
+// Sends a null terminated string over UART
 void sendstr1 (char * s)
 {
 	while(*s)
@@ -384,6 +391,7 @@ void sendstr1 (char * s)
 	}
 }
 
+// Receives a single character over UART
 char getchar1 (void)
 {
 	char c;
@@ -396,7 +404,7 @@ char getchar1 (void)
 	SFRPAGE = 0x00;
 	return (c);
 }
-
+// Receives a string over UART with a timeout
 char getchar1_with_timeout (void)
 {
 	char c;
@@ -423,7 +431,7 @@ char getchar1_with_timeout (void)
 	return (c);
 }
 
-
+// Receives a string over UART
 void getstr1 (char * s)
 {
 	char c;
@@ -468,12 +476,12 @@ void waitms_or_RI1 (unsigned int ms)
 void SendATCommand (char * s)
 {
 	printf("Command: %s", s);
-	P2_0=0; // 'set' pin to 0 is 'AT' mode.
+	P2_0=0; 	// 'set' pin to 0 is 'AT' mode.
 	waitms(5);
 	sendstr1(s);
 	getstr1(buff);
 	waitms(10);
-	P2_0=1; // 'set' pin to 1 is normal operation mode.
+	P2_0=1; 	// 'set' pin to 1 is normal operation mode.
 	printf("Response: %s\r\n", buff);
 }
 
@@ -482,9 +490,9 @@ void SendATCommand (char * s)
 void loadTimer2(unsigned long int freq) {
 	unsigned long int x=(SYSCLK/(2L*freq));
 
-	TR2=0; // Stop timer 2
-	TMR2RL=0x10000L-x; // Change reload value for new frequency
-	TR2=1; // Start timer 2
+	TR2=0; 				// Stop timer 2
+	TMR2RL=0x10000L-x; 	// Change reload value for new frequency
+	TR2=1; 				// Start timer 2
 }
 
 /*
@@ -583,7 +591,7 @@ char matchRange (int x, int y)
 void main(void)
 {
 	float      v[2];
-    float      xy_pos[2]; //positioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (
+    float      xy_pos[2]; //p ositioning array, xy_pos[0] corresponds to the x-coord, y-coord is the latter (
 	float      mid[2];
     char       mapped_dir;
 	xdata char buff_x[17];
@@ -593,10 +601,7 @@ void main(void)
 	int        ToggleJoyStick = 0;
 	int        timeout_cnt = 0;
 	int        metal_lev = 0;
-	
-
-	// TIMER0_Init(); commented out since I'll be using TIMER2 ISR - GL
-	
+		
 	LCD_4BIT();
 	waitms(500);
 	printf("\x1b[2J"); // Clear screen using ANSI escape sequence.
@@ -613,17 +618,9 @@ void main(void)
 
 
 
-	// To configure the device (shown here using default values).
 	// For some changes to take effect, the JDY-40 needs to be power cycled.
 	// Communication can only happen between devices with the
 	// same RFID and DVID in the same channel.
-	
-	//SendATCommand("AT+BAUD4\r\n");
-	//SendATCommand("AT+RFID8899\r\n");
-	//SendATCommand("AT+DVID1122\r\n"); // Default device ID.
-	//SendATCommand("AT+RFC001\r\n");
-	//SendATCommand("AT+POWE9\r\n");
-	//SendATCommand("AT+CLSSA0\r\n");
 	
 	// We should select an unique device ID.  The device ID can be a hex
 	// number from 0x0000 to 0xFFFF.  In this case is set to 0xABBA
@@ -651,101 +648,84 @@ void main(void)
 
 	while(1)
 	{
-		//waitms(50);
+		// Determine the volts at each pin
         v[0] = Volts_at_Pin(XPOS_PIN) ;
 	    v[1] = Volts_at_Pin(YPOS_PIN) ;
 	
+		// Obtain coordinates
         GetPosition2(v, xy_pos, mid);
 
+		// Encode into letters
         mapped_dir = matchRange((int) xy_pos[0], (int) xy_pos[1]);
 
-
-
-		//BUTTON MAPPINGS
-		// EMERGENCY STOP -. MAYBE MAP THIS TO THE JOYCON BUTTONé
-
+		// Display on LCD
 		sprintf(buff_x, "x=%.2f, Mlev:%d", xy_pos[0], metal_lev);
     	LCDprint(buff_x, 1, 1);
 	    sprintf(buff_y, "y=%.2f, pos=%c", xy_pos[1], mapped_dir);
     	LCDprint(buff_y, 2, 1);
 		
+		// Send encoded instruction over JDY-40
         sprintf(temp_buff, "%c\r\n", mapped_dir);
 		if(ToggleJoyStick == 0){
 			 sendstr1(temp_buff);
 		}
        
     
-		//for Emergency Stop
+		// Emergency Stop
 		if(P2_1 == 0)
 		{
-			//this is the emergency stop character
 			waitms(10);
 			if(P2_1 == 0)
 			{
 				while(P2_1 == 0);
 				printf("--EMERGENCY--\r\n");
 				sendstr1("??\r\n");
-				//sendstr1("€\r\n");
-
 			}
-
 		}
 
+		// Square sequence button
 		if(P3_3 == 0)
 		{
-			//this is the emergency stop character
 			waitms(10);
 			if(P3_3 == 0)
 			{
 				while(P3_3 == 0);
 				printf("--SQUARE--\r\n");
 				sendstr1("//\r\n");
-				//sendstr1("€\r\n");
-
 			}
 		}
 
+		// Circle sequence button
 		if(P3_1 == 0)
 		{
-			//this is the emergency stop character
 			waitms(10);
 			if(P3_1 == 0)
 			{
 				while(P3_1 == 0);
 				printf("--CIRCLE--\r\n");
 				sendstr1("''\r\n");
-				//sendstr1("€\r\n");
-
 			}
 		}
 
+		// Figure 8 sequence button
 		if(P2_6 == 0)
 		{
-			//this is the emergency stop character
 			waitms(10);
 			if(P2_6 == 0)
 			{
 				while(P2_6 == 0);
 				printf("--FIGURE8--\r\n");
 				sendstr1("\"""\r\n");
-
-				//sendstr1("€\r\n");
-
 			}
 
 		}
 
-
-		
-
 		waitms(10); // testing metal detecting reading
-		
+	
 		sendstr1("m\r\n");
 		
 		putchar('.');
 			
-		//waitms(10);
-
 		timeout_cnt = 0;
 		while (1) 
 		{
@@ -759,7 +739,6 @@ void main(void)
 		}
 		if (RXU1()) 
 		{
-			//printf("got\r\n");
 			getstr1(buff);
             printf("%s\r\n", buff);
 
