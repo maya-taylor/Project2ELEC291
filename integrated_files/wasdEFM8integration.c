@@ -236,7 +236,7 @@ unsigned int ADC_at_Pin(unsigned char pin)
 	ADC0MX = pin;   // Select input from pin
 	ADINT  = 0;
 	ADBUSY = 1;     // Convert voltage at the pin
-	while (!ADINT); // Wait for conversion to complete
+	while  (!ADINT); // Wait for conversion to complete
 	return (ADC0);
 }
 
@@ -244,7 +244,7 @@ unsigned int Get_ADC (void)
 {
 	ADINT  = 0;
 	ADBUSY = 1;
-	while (!ADINT); // Wait for conversion to complete
+	while  (!ADINT); // Wait for conversion to complete
 	return (ADC0);
 }
 
@@ -257,9 +257,9 @@ float Volts_at_Pin(unsigned char pin)
 
 void LCD_pulse (void)
 {
-	LCD_E=1;
+	LCD_E = 1;
 	Timer3us(40);
-	LCD_E=0;
+	LCD_E =0;
 }
 
 void LCD_byte (unsigned char x)
