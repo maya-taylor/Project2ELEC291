@@ -1,6 +1,6 @@
 # Automated Metal Detector and Radio-Controlled Car
 
-![Project Image](https://placekitten.com/600/300)
+![Project Image]((https://lh3.googleusercontent.com/pw/AP1GczOcW3wfgajlQCIG8qUwEM1jUiJOTqUuFccGg2fd2lvFVMFN5OcF2vUKwPXZQioUMmjS_UoIKbbBs-OePOIWdmQnYiW0nyf-wlhE3F_cbiwZ2f0h8og=w2400))
 
 This project showcases an automated metal detector integrated with a radio-controlled car, designed for applications in the military, treasure hunting, and tracker identification. The system detects changes in oscillation frequency caused by variations in inductance, signaling the presence of metallic objects. Additionally, joystick voltage detection translates into motion commands for the robot, which utilizes an H-bridge for motor control.
 
