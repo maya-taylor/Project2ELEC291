@@ -1,6 +1,6 @@
 # Automated Metal Detector and Radio-Controlled Car
 
-This project showcases an automated metal detector integrated with a radio-controlled car.. The system detects changes in oscillation frequency caused by variations in inductance, signaling the presence of metallic objects. Additionally, joystick voltage detection translates into motion commands for the robot, which utilizes an H-bridge for motor control.
+This project showcases an automated metal detector integrated with a radio-controlled car. The system detects changes in oscillation frequency caused by variations in inductance, signaling the presence of metallic objects. Additionally, joystick voltage detection translates into motion commands for the robot, which utilizes an H-bridge for motor control.
 
 ## Features
 
