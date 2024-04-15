@@ -1,84 +1,53 @@
-import tkinter as tk
-import numpy as np
+text = "Ford turn left driving a figure 8 than a circle"
 
-class PathDrawer:
-    def __init__(self, master):
-        self.master = master
-        self.canvas = tk.Canvas(self.master, width=400, height=400, bg="white")
-        self.canvas.pack()
-        self.data_points = []
+voice_char = ""
+wait_times = []
+square_keywords = ["Square", "square", "where"]
+forward_keywords = ["straight", "forward", "traight", "orward", "bored"]
+circle_keywords = ["circle"]
+figure8_keywords = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
+left_keywords = ["left"]
+right_keywords = ["right"]
+backwards_keywords = ["back", "backwards", "turn around", "return"]
 
-        self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<B1-Motion>", self.on_drag)
+# go forward
+if (any(keyword in text for keyword in forward_keywords)):
+    voice_char += '&'
+    wait_times.append(1.5)
 
-        self.clear_button = tk.Button(self.master, text="Clear", command=self.clear_canvas)
-        self.clear_button.pack()
+# go back
+if (any(keyword in text for keyword in backwards_keywords)):
+    voice_char += '{'
+    wait_times.append(2)
 
-        self.approx_button = tk.Button(self.master, text="Approximate", command=self.approximate_and_draw)
-        self.approx_button.pack()
+# turns
+if (any(keyword in text for keyword in left_keywords)):
+    voice_char += '|'
+    wait_times.append(2)
 
-        self.send_button = tk.Button(self.master, text="Send", command=self.send_data)
-        self.send_button.pack()
+if (any(keyword in text for keyword in right_keywords)):
+    voice_char += '-'
+    wait_times.append(2)
 
-        self.num_segments_entry = tk.Entry(self.master)
-        self.num_segments_entry.pack()
-        self.num_segments_entry.insert(tk.END, "5")
+if (any(keyword in text for keyword in square_keywords)):
+# move in a square
+    voice_char += '/'
+    wait_times.append(8)
 
-    def on_click(self, event):
-        self.data_points.append((event.x, event.y))
+if (any(keyword in text for keyword in circle_keywords)):
+    voice_char += "'"
+    wait_times.append(390/35*1.05+1.0)
 
-    def on_drag(self, event):
-        self.data_points.append((event.x, event.y))
-        self.draw_lines()
 
-    def draw_lines(self):
-        self.canvas.delete("line")
-        if len(self.data_points) >= 2:
-            for i in range(len(self.data_points) - 1):
-                x0, y0 = self.data_points[i]
-                x1, y1 = self.data_points[i + 1]
-                self.canvas.create_line(x0, y0, x1, y1, tags="line")
+if (any(keyword in text for keyword in figure8_keywords)):
+    voice_char += '"'
+    wait_times.append(285*2/35+2.5)
 
-    def clear_canvas(self):
-        self.canvas.delete("all")
-        self.data_points = []
+# print the char sent for debugging
+# print("charString = ",voice_char)
+# print("wait times = ", wait_times)
 
-    def approximate_and_draw(self):
-        num_segments = int(self.num_segments_entry.get())
-        if len(self.data_points) >= 2 and num_segments > 0:
-            approx_points = self.approximate_path(self.data_points, num_segments)
-            self.canvas.delete("line")
-            for i in range(len(approx_points) - 1):
-                x0, y0 = approx_points[i]
-                x1, y1 = approx_points[i + 1]
-                self.canvas.create_line(x0, y0, x1, y1, tags="line")
+for i in range (0, len(voice_char)):
+    print(voice_char[i])     
+    print(i)   
 
-    def send_data(self):
-        approx_points = self.approximate_path(self.data_points, int(self.num_segments_entry.get()))
-        print("Final Approximated Points:")
-        for point in approx_points:
-            print(point)
-
-    def approximate_path(self, points, num_segments):
-        approx_points = []
-        for i in range(num_segments):
-            start_idx = int(i * len(points) / num_segments)
-            end_idx = int((i + 1) * len(points) / num_segments)
-            segment_points = points[start_idx:end_idx+1]
-            if len(segment_points) > 1:
-                start_point = segment_points[0]
-                end_point = segment_points[-1]
-                approx_points.extend(self.interpolate_line(start_point, end_point, 10))
-        approx_points.append(points[-1])
-        return np.array(approx_points)
-
-    def interpolate_line(self, start_point, end_point, num_points):
-        x0, y0 = start_point
-        x1, y1 = end_point
-        x_step = (x1 - x0) / num_points
-        y_step = (y1 - y0) / num_points
-        return [(int(x0 + i * x_step), int(y0 + i * y_step)) for i in range(num_points)]
-
-root = tk.Tk()
-app = PathDrawer(root)
-root.mainloop()

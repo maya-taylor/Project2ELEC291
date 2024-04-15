@@ -10,18 +10,18 @@ allowed_characters = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'
 
 
 ser = serial.Serial(
-    port='COM16',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_TWO,
-    bytesize=serial.EIGHTBITS
+    port     = 'COM16',
+    baudrate = 9600,
+    parity   = serial.PARITY_NONE,
+    stopbits = serial.STOPBITS_TWO,
+    bytesize = serial.EIGHTBITS
 )
 
 # If key is pressed, send the ascii code to the serial
 def pressed (key):
     try:
         # Convert the pressed key to its corresponding ASCII code
-        key_char = key.char
+        key_char   = key.char
         ascii_code = ord(key_char)
         
         # Send the ASCII code through the serial port

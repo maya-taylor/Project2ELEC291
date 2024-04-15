@@ -12,9 +12,6 @@ import threading
 import os
 from PIL import Image, ImageTk
 
-# keyboard input module
-import curses
-
 # velocity at full is 0.8 second per breadboard
 # 0.5 breadboards per second
 # Global variables for joystick position
@@ -437,71 +434,161 @@ class VoiceControl:
     # Detectable Phrases 
     def send_voice_data(self):
         # move forward
-        voice_char = ' '
-        if "straight" in self.text:
-            voice_char = '&'
-        if "forward" in self.text:
-            voice_char = '&'
+        command_string = ""
+        wait_times = []
+        square_keywords    = ["Square", "square", "where"]
+        forward_keywords   = ["straight", "forward", "traight", "orward", "bored", "Ford"]
+        circle_keywords    = ["circle"]
+        figure8_keywords   = ["figure", "Figure", "8", "igure", "ight", "eight", "Eight"]
+        left_keywords      = ["left"]
+        right_keywords     = ["right"]
+        backwards_keywords = ["back", "backwards", "turn around", "return"]
+
+        # Matching is done using the any() function which returns true if any of the items in it's iterable is True
+        # First iterate over every keyword in each keywords list, check if that keyword is in the text => iterable containing booleans
+        # Check if any of those booleans are true using any(), then append the command string with that character
+        # Append wait times array with the time it takes to perform that action
+
+        # go forward
+        if (any(keyword in self.text for keyword in forward_keywords)):
+            command_string += '&'
+            wait_times.append(1.5)
 
         # go back
-        if "backward" in self.text:
-            voice_char = '{'
-        if "back" in self.text:
-            voice_char = '{'
+        if (any(keyword in self.text for keyword in backwards_keywords)):
+            command_string += '{'
+            wait_times.append(2)
 
         # turns
-        if "left" in self.text:
-            voice_char = '|'
-        if "right" in self.text:
-            voice_char = '-'
+        if (any(keyword in self.text for keyword in left_keywords)):
+            command_string += '|'
+            wait_times.append(2)
 
-        # move in a square
-        if "Square" in self.text:
-            voice_char = '/'
-        if "square" in self.text:
-            voice_char = '/'
-        if "where" in self.text:
-            voice_char = '/'
+        if (any(keyword in self.text for keyword in right_keywords)):
+            command_string += '-'
+            wait_times.append(2)
         
-        # move in a circle
-        if "Circle" in self.text:
-            voice_char = "'"
+        if (any(keyword in self.text for keyword in square_keywords)):
+        # move in a square
+            command_string += '/'
+            wait_times.append(8)
+        
+        if (any(keyword in self.text for keyword in circle_keywords)):
+            command_string += "'"
+            wait_times.append(390/35*1.05+1.0)
 
-        # move in a figure 8
-        if "Figure" in self.text:
-            voice_char = '"'
-        if "8" in self.text:
-            voice_char = '"'
+        
+        if (any(keyword in self.text for keyword in figure8_keywords)):
+            command_string += '"'
+            wait_times.append(285*2/35+2.5)
 
-        # print the char sent for debugging
-        print("char_sent = ",voice_char)
+        # print the char sent for debugging / Use in the terminal
+        print("command_string = ",command_string)
+        print("wait times = ", wait_times)
+        print("Sending...")
+        for i in range(0, len(command_string)):
+            voice_char = command_string[i]
+            wait_time = wait_times[i]
 
-        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
-            print("sent . and ,")
-            ser.write("..\r\n".encode())            # send over serial to JDY40
+            if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+                print("sent . and ,")
+                ser.write("..\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write("..\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.1)
+            if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.1)
+
+            ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
             time.sleep(0.01)
-            ser.write("..\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.1)
-        if (voice_char == '/' or voice_char == "'" or voice_char == '"'):
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.1)
+            ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
+            time.sleep(wait_time)
+            print("voice_char= ", voice_char)
 
-        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
-        time.sleep(0.01)
-        ser.write(f"{voice_char*2}\r\n".encode())   # send over serial to JDY40
-        time.sleep(5)
-
-        if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
-            ser.write(",,\r\n".encode())            # send over serial to JDY40
-            time.sleep(0.01)
+            if (voice_char=='&' or voice_char=='{' or voice_char=='|' or voice_char=='-'):
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
+                ser.write(",,\r\n".encode())            # send over serial to JDY40
+                time.sleep(0.01)
 
     def on_closing(self):
         self.master.destroy()
 
+class KeybordControl:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Keybord Control")
+        self.root.configure(bg="#222222")  # Set background color to dark gray for a darkmode keyboard
+        
+        # Define the keys on the virtual keyboard
+        self.keys = [
+            ['Q', 'W', 'E'],
+            ['A', 'S', 'D'],
+            ['Z', ' ', 'C']
+        ]
+
+        self.key_to_command = {
+        ('w'): ('B'),            # N
+        ('a'): ('J'),            # W 
+        ('s'): ('E'),            # S 
+        ('d'): ('H'),            # E
+        ('q'): ('L'),            # NW
+        ('e'): ('N'),            # NE
+        ('z'):('M'),             # SW
+        ('c'):('K')              # SE
+        }
+
+        self.key = ''
+        self.time_elapsed = 0
+
+        # Create a dictionary to store the labels
+        self.labels = {}
+
+        # Create and place the keys on the virtual keyboard
+        # Places each level in a grid configuration 
+        # https://www.pythonguis.com/tutorials/create-ui-with-tkinter-grid-layout-manager/
+        for i, row in enumerate(self.keys):
+            for j, key in enumerate(row):
+                label = tk.Label(root, text=key, width=10, height=5, relief="flat", font=("Helvetica", 16), bg="#555555", fg="black")
+                label.grid(row=i, column=j, padx=5, pady=5)
+                self.labels[key] = label  # Store the label in the dictionary
+
+        # Bind key press and release events to the root window
+        # The frame widget in Tkinter has allows you to bind an event object to a callable
+        # Character of keypress is obtained using `.char` attribute on the event
+        root.bind("<KeyPress>", self.on_key_press)
+        root.bind("<KeyRelease>", self.on_key_release)
+        
+        time.sleep(0.1)
+
+    def on_key_press(self, event):
+        # Handle key press event
+        self.key = event.char.upper()
+        if self.key in self.labels:
+            self.labels[self.key].config(bg="#e3e3e3", fg="black")  # Change label color to indicate key press
+        
+        if self.key.lower() in self.key_to_command:
+            self.key = self.key_to_command[self.key.lower()]
+            self.send_letter()       
+    
+    def on_key_release(self, event):
+        # Handle key release event
+        self.time_elapsed = time.time() # set current time
+        self.key = event.char.upper()
+        if self.key in self.labels:
+            self.labels[self.key].config(bg="#555555", fg="black")  # Restore label color to default
+
+        self.key = 'Z' # This makes it so that the car stops on keyboard release
+        self.send_letter()
+        # print("Stop!!")
+
+    def send_letter(self):
+        # ser.write(f"{self.key*2}\r\n".encode()) 
+        print(self.key+"\r\n")
+    
 # Joystick Flag
 
 # If 0, run path drawer
@@ -523,74 +610,21 @@ if (joystick_flag == 2 or joystick_flag == 3):
 
 # If 4, use keyboard commands
 if (joystick_flag == 4):
-    key_to_command = {
-        ord('w'): ('B'),            # N
-        ord('a'): ('J'),            # W 
-        ord('s'): ('E'),            # S 
-        ord('d'): ('H'),            # E
-        ord('q'): ('L'),            # NW
-        ord ('e'): ('N'),           # NE
-        ord('z'):('M'),             # SW
-        ord('c'):('K')              # SE
-    }
+    ser.write(f">>\n\n".encode())            # Tell the robot we are beginning keyboard control
+    time.sleep(0.01)
+    ser.write(f">>\n\n".encode())           
+    time.sleep(0.1)
+    root = tk.Tk()
+    voiceController = KeybordControl(root)
+    root.mainloop()
 
-    # Sends letter to JDY-40
-    def send_letter(letter):        
-        # ser.write(f"{letter*2}\r\n".encode()) 
-        print(letter+"\r\n")
+    # Tell the robot we are returning control from keyboard
+    ser.write(f"<<\n\n".encode())
+    time.sleep(0.01)
+    ser.write(f"<<\n\n".encode())
+    time.sleep(0.1)
 
-    try:
-        # Initialize curses library
-        stdscr = curses.initscr()   # creates a curses window object
-        #stdscr.nodelay(True)       # this configures getch() to be non-blocking and returns -1
-        curses.noecho()             # Turn off echoing of keys
-        stdscr.keypad(True)         # Enable keypad mode
-        curses.cbreak()             # React to keys immediately without waiting for Enter key
-        stdscr.clear() 
-        stdscr.addstr(0, 0, "Press 'ESC' to quit...")
-        send_letter('>')            # Tell the robot we are beginning keyboard control
-        time.sleep(0.01)
-        send_letter('>')            
-        time.sleep(0.1)
-
-        while True:        
-            # Get user input
-            key = stdscr.getch()
-            print(key)              # check if key is -1 for no inputs
-
-            if key == 27:           # if escape key is pressed, exit
-                break
-           
-            # check for key presses
-            if key in key_to_command: 
-                send_letter(key_to_command[key])        
-            else:
-                send_letter('Z')    #stop
-            
-            if key == -1:           #.getch returns -1 for no input
-                send_letter('Z')
-
-            time.sleep(0.1)
-
-    except KeyboardInterrupt:
-        pass
-
-    finally:
-        # Cleanup curses
-        curses.initscr()
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        curses.endwin()
-
-        # Tell the robot we are returning control from keyboard
-        send_letter('<')
-        time.sleep(0.01)
-        send_letter('<')
-        time.sleep(0.1)
-
-
-        joystick_flag = 1 # set flag to 1 so that joystick mode will open
+    joystick_flag = 1 # set flag to 1 so that joystick mode will open
 
 
 # Obtain coordinates from letter command
