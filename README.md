@@ -37,15 +37,21 @@ Extensive testing revealed the unreliability of sending 7-character strings over
 
 ## Detailed Design
 
+![image](https://github.com/maya-taylor/Project2ELEC291/assets/146891846/936e8f9f-cdee-49f4-a9f4-d244722c6f16)
+
 ### STM32 Blocks:
 - **Oscillator/Metal Detector:** Utilized Colpitts oscillator for metal detection with optimized frequency output.
 - **H-Bridge:** Employed two H-bridges with optocouplers for motor control.
 - **JDY40:** Wired separately from H-bridge to prevent signal interference.
-  
+
+![image](https://github.com/maya-taylor/Project2ELEC291/assets/146891846/2fd12ffb-63af-4ede-9a91-bd9b94f42370)
+
 ### EFM8 Blocks:
 - **Joystick:** Connected as per specifications with interpreted wiring.
 - **LCD:** Interfaced according to provided guidelines.
 - **Buzzer:** Configured with resistor and diode for optimal performance.
+
+![image](https://github.com/maya-taylor/Project2ELEC291/assets/146891846/d846ba42-223d-4185-82bb-87d78cf04a4a)
 
 ### Laptop Blocks:
 - **JDY40:** Configured for serial transmission following specific steps.
